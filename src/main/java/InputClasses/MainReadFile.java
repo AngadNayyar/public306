@@ -1,9 +1,8 @@
+package InputClasses;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,12 +14,15 @@ public class MainReadFile {
 		String line; 	
 		String nodeName, edgeOne, edgeTwo; 
 		int nodeWeight, edgeWeight; 
-		String filename = "test.dot";
-		String workingDirectory = System.getProperty("user.dir");
-		String absoluteFilePath = workingDirectory + File.separator + filename;
-		File file = new File(filename);
+		
+		File inputfile = null;
+		if (0 < args.length) {
+		   inputfile = new File(args[0]);
+		} else {
+		   System.err.println("Invalid arguments count:" + args.length);
+		}
 				
-		BufferedReader br = new BufferedReader(new FileReader(file));
+		BufferedReader br = new BufferedReader(new FileReader(inputfile));
 		while ((line = br.readLine()) != null) {
 			System.out.println(line);
 			Pattern nodePattern = Pattern.compile("^([\\w]+)[\\s]*\\[[\\s]*Weight[\\s]*=([\\d]+)\\]"); 
