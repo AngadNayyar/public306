@@ -11,6 +11,7 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 
 public class MainReadFile {
@@ -52,10 +53,12 @@ public class MainReadFile {
 				edgeOne = edgeMatch.group(1);
 				edgeTwo = edgeMatch.group(2);
 				edgeWeight = Integer.parseInt(edgeMatch.group(3));
-				//graph.addEdgeWithVertices()
+				DefaultEdge e = graph.addEdge(hMap.get(edgeOne), hMap.get(edgeTwo));
+				graph.setEdgeWeight(e, edgeWeight);
 		        //System.out.println("name: " + edgeOne);
 		        //System.out.println("name: " + edgeTwo);
 		        //System.out.println("weight: " + edgeWeight);
+				System.out.println(graph.getEdgeWeight(e));
 		    }
 		
 		}
