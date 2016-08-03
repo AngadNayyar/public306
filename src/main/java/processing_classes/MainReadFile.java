@@ -23,7 +23,7 @@ public class MainReadFile {
 		int nodeWeight, edgeWeight;
 		Node node;
 		HashMap <String, Node> hMap = new HashMap<String, Node>();
-		DefaultDirectedWeightedGraph <Node, DefaultEdge> graph = new DefaultDirectedWeightedGraph <Node, DefaultEdge>(DefaultEdge.class);
+		DefaultDirectedWeightedGraph <Node, DefaultEdge> graph = new DefaultDirectedWeightedGraph <Node, DefaultEdge>(DefaultWeightedEdge.class);
 		
 		File inputfile = null;
 		if (0 < args.length) {
@@ -34,7 +34,7 @@ public class MainReadFile {
 				
 		BufferedReader br = new BufferedReader(new FileReader(inputfile));
 		while ((line = br.readLine()) != null) {
-			System.out.println(line);
+//			System.out.println(line);
 			Pattern nodePattern = Pattern.compile("^([\\w]+)[\\s]*\\[[\\s]*Weight[\\s]*=([\\d]+)\\]"); 
 			Matcher nodeMatch = nodePattern.matcher(line); 
 			
@@ -46,7 +46,7 @@ public class MainReadFile {
 				nodeWeight = Integer.parseInt(nodeMatch.group(2));
 				node = new Node(nodeName, nodeWeight, 0,0);
 				hMap.put(nodeName, node);
-				
+				graph.addVertex(node); 				
 		    }	
 		
 			while (edgeMatch.find()) {
@@ -57,11 +57,13 @@ public class MainReadFile {
 				graph.setEdgeWeight(e, edgeWeight);
 		        //System.out.println("name: " + edgeOne);
 		        //System.out.println("name: " + edgeTwo);
-		        //System.out.println("weight: " + edgeWeight);
-				System.out.println(graph.getEdgeWeight(e));
+//		        System.out.println("weight: " + edgeWeight);
+//				System.out.println(graph.getEdgeWeight(e));
 		    }
 		
 		}
+		
+		System.out.println(graph.toString());
 		
 		
 		

@@ -14,4 +14,9 @@ public class Node {
 		allocProc = a;
 	}
 	
+	@Override 
+	public String toString(){
+		return name; 
+	}
+	
 }
