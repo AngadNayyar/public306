@@ -18,7 +18,7 @@ public class MainReadFile {
 
 	public static void main(String[] args) throws IOException {
 		
-		String line; 	
+		String line;
 		String nodeName, edgeOne, edgeTwo; 
 		int nodeWeight, edgeWeight;
 		Node node;
