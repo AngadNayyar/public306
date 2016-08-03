@@ -15,6 +15,9 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 
 public class MainReadFile {
+	
+	public static DefaultDirectedWeightedGraph <Node, DefaultEdge> graph = new DefaultDirectedWeightedGraph <Node, DefaultEdge>(DefaultWeightedEdge.class);
+
 
 	public static void main(String[] args) throws IOException {
 		
@@ -23,7 +26,6 @@ public class MainReadFile {
 		int nodeWeight, edgeWeight;
 		Node node;
 		HashMap <String, Node> hMap = new HashMap<String, Node>();
-		DefaultDirectedWeightedGraph <Node, DefaultEdge> graph = new DefaultDirectedWeightedGraph <Node, DefaultEdge>(DefaultWeightedEdge.class);
 		
 		File inputfile = null;
 		if (0 < args.length) {
@@ -63,7 +65,8 @@ public class MainReadFile {
 		
 		}
 		
-		System.out.println(graph.toString());
+		OutputFile.fileWriter();
+//		System.out.println(graph.toString());
 		
 		
 		
