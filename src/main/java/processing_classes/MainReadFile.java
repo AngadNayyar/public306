@@ -66,6 +66,9 @@ public class MainReadFile {
 				graph.setEdgeWeight(e, edgeWeight);
 		    }
 		}
+		
+		Graph graph1 = new Graph(graph);
+		
 		OutputFile.fileWriter();
 		br.close(); 
 	}
