@@ -8,13 +8,23 @@ import org.jgrapht.graph.DefaultEdge;
 public class Astar {
 
 	private DefaultDirectedWeightedGraph<Node, DefaultEdge> graph;
-	private PriorityBlockingQueue<NodeCostF> frontier = new PriorityBlockingQueue<NodeCostF>();
+	private PriorityBlockingQueue<NodeCostF> openQueue = new PriorityBlockingQueue<NodeCostF>();
 
 	public void setGraph(DefaultDirectedWeightedGraph<Node, DefaultEdge> new_Graph){
 		graph = new_Graph;
 	}
 	
-	public void solveAstar(){
+	public void solveAstar() throws InterruptedException{
+		
+		NodeCostF state;
+		openQueue.add(null);
+		
+		while (!openQueue.isEmpty()){
+			state = openQueue.take();
+			if (isComplete(state)){
+				//return st
+			}
+		}
 		//OPEN priority queue required, ordered by ascending f values
 		//OPEN <- S(init)
 		//while OPEN =/= Empty
@@ -28,6 +38,12 @@ public class Astar {
 		// CLOSED <- CLOSED + s; OPEN <- OPEN - s;
 	}
 	
+	public boolean  isComplete(NodeCostF state) {
+		//If this state is complete ie. everything is assigned return true.
+		return false;
+	}
+	
+	//Possible to have this as apart of the Node class
 	private class NodeCostF implements Comparable<NodeCostF> {
 		public Path states;
 		public Double costF;
@@ -36,7 +52,7 @@ public class Astar {
 			this.states = states;
 			this.costF = costF;
 		}
-		
+
 		public int compareTo(NodeCostF second){
 			return costF.compareTo(second.costF);
 		}
