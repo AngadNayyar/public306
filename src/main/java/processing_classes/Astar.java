@@ -9,22 +9,34 @@ public class Astar {
 
 	private DefaultDirectedWeightedGraph<Node, DefaultEdge> graph;
 	private PriorityBlockingQueue<NodeCostF> openQueue = new PriorityBlockingQueue<NodeCostF>();
+	private PriorityBlockingQueue<NodeCostF> closedQueue = new PriorityBlockingQueue<NodeCostF>();
 
 	public void setGraph(DefaultDirectedWeightedGraph<Node, DefaultEdge> new_Graph){
 		graph = new_Graph;
 	}
 	
-	public void solveAstar() throws InterruptedException{
+	public Path solveAstar() throws InterruptedException{
 		
 		NodeCostF state;
 		openQueue.add(null);
 		
 		while (!openQueue.isEmpty()){
-			state = openQueue.take();
+			state = openQueue.peek();
 			if (isComplete(state)){
-				//return st
+				return state.getPath();
 			}
+			
+			//Expanding the state.
+			expandState(state);			
+			
+			//Removes the state from open queue and adds to the closed queue.
+			openQueue.remove();
+			closedQueue.add(state);
+			
 		}
+		
+		
+		return null;
 		//OPEN priority queue required, ordered by ascending f values
 		//OPEN <- S(init)
 		//while OPEN =/= Empty
@@ -38,6 +50,11 @@ public class Astar {
 		// CLOSED <- CLOSED + s; OPEN <- OPEN - s;
 	}
 	
+	private void expandState(NodeCostF state) {
+		//Expand the state as in pseudo code. (must also add initial state (Si))
+		
+	}
+
 	public boolean  isComplete(NodeCostF state) {
 		//If this state is complete ie. everything is assigned return true.
 		return false;
@@ -52,7 +69,11 @@ public class Astar {
 			this.states = states;
 			this.costF = costF;
 		}
-
+		
+		public Path getPath(){
+			return states;
+		}
+		
 		public int compareTo(NodeCostF second){
 			return costF.compareTo(second.costF);
 		}
