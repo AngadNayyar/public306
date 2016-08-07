@@ -29,11 +29,11 @@ public class Astar {
 	}
 	
 	private class NodeCostF implements Comparable<NodeCostF> {
-		public Node node;
+		public Path states;
 		public Double costF;
 
 		NodeCostF(Node nodes, Double costF){
-			this.node = nodes;
+			this.states = states;
 			this.costF = costF;
 		}
 		
