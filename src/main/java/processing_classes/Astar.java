@@ -1,5 +1,6 @@
 package processing_classes;
 
+import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
@@ -54,6 +55,14 @@ public class Astar {
 		//Expand the state as in pseudo code. (must also add initial state (Si))
 		
 	}
+	
+	private void freeStates(NodeCostF state){
+		Node currentNode = state.states.getCurrent();
+		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(currentNode);
+		for (DefaultEdge e: incomingEdges){
+			MainReadFile.graph.getEdgeSource(e);
+		}
+	}
 
 	public boolean  isComplete(NodeCostF state) {
 		//If this state is complete ie. everything is assigned return true.
@@ -65,7 +74,7 @@ public class Astar {
 		public Path states;
 		public Double costF;
 
-		NodeCostF(Node nodes, Double costF){
+		NodeCostF(Path states, Double costF){
 			this.states = states;
 			this.costF = costF;
 		}

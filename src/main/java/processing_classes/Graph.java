@@ -10,4 +10,7 @@ public class Graph {
 	Graph(DefaultDirectedWeightedGraph<Node, DefaultEdge> prevGraph){
 		this.graph = prevGraph;
 	}
+	
+	
+	
 }
