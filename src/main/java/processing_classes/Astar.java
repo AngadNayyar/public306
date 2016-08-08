@@ -18,9 +18,12 @@ public class Astar {
 	
 	public Path solveAstar() throws InterruptedException{
 		
-		NodeCostF state;
-		//Puts the initial state in the OPEN list TODO replace the null with initial state?
-		openQueue.add(null);
+		//Create the initial path and adds to the OPEN queue.
+		Set<Node> nodeSet = graph.vertexSet();
+		Node firstNode = nodeSet.iterator().next();			//Is this the first node? Its a set.
+		Path firstPath = new Path(firstNode); 				//Creates the first path
+		NodeCostF state = new NodeCostF(firstPath, 0.0);	//Create the state with initial path
+		openQueue.add(state);								//Puts the initial state in the OPEN list.
 		
 		while (!openQueue.isEmpty()){
 			//Gets the state with best f value, top of the queue, without removing it
@@ -59,6 +62,8 @@ public class Astar {
 		//Expand the state to form new states and for each new state check whether it is present in either 
 		//the CLOSED or OPEN queue, if YES discard it otherwise insert into OPEN, as in pseudo code. 
 		
+		freeStates(state);
+		
 	}
 	
 	private void freeStates(NodeCostF state){
@@ -70,27 +75,9 @@ public class Astar {
 	}
 
 	public boolean  isComplete(NodeCostF state) {
-		//If this state is complete ie. everything is assigned return true.
+		//If this state is a goal state.
 		return false;
 	}
 	
-	//Possible to have this as apart of the Node class
-	//needs to represent a schedule AKA 
-	private class NodeCostF implements Comparable<NodeCostF> {
-		public Path states;
-		public Double costF;
-
-		NodeCostF(Path states, Double costF){
-			this.states = states;
-			this.costF = costF;
-		}
-		
-		public Path getPath(){
-			return states;
-		}
-		
-		public int compareTo(NodeCostF second){
-			return costF.compareTo(second.costF);
-		}
-	}
+	
 }
