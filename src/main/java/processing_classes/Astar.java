@@ -19,11 +19,14 @@ public class Astar {
 	public Path solveAstar() throws InterruptedException{
 		
 		NodeCostF state;
+		//Puts the initial state in the OPEN list TODO replace the null with initial state?
 		openQueue.add(null);
 		
 		while (!openQueue.isEmpty()){
+			//Gets the state with best f value, top of the queue, without removing it
 			state = openQueue.peek();
 			if (isComplete(state)){
+				//Returns the optimal path
 				return state.getPath();
 			}
 			
@@ -41,18 +44,20 @@ public class Astar {
 		//OPEN priority queue required, ordered by ascending f values
 		//OPEN <- S(init)
 		//while OPEN =/= Empty
-		// S <- headOf(OPEN)
-		//if s complete state then
-		// return optimal solution S
-		// Expand S to new states NEW
-		//for all Si (E) NEW do
-		// calculate F(si)
-		// Insert si into OPEN, unless duplicate in CLOSED or OPEN
-		// CLOSED <- CLOSED + s; OPEN <- OPEN - s;
+		// 	S <- headOf(OPEN)
+		//	if s complete state then
+		// 		return optimal solution S
+		// 	Expand S to new states NEW
+		//	for all Si (E) NEW do
+		// 	calculate F(si)
+		// 	Insert si into OPEN, unless duplicate in CLOSED or OPEN
+		// 	CLOSED <- CLOSED + s; OPEN <- OPEN - s;
 	}
 	
+
 	private void expandState(NodeCostF state) {
-		//Expand the state as in pseudo code. (must also add initial state (Si))
+		//Expand the state to form new states and for each new state check whether it is present in either 
+		//the CLOSED or OPEN queue, if YES discard it otherwise insert into OPEN, as in pseudo code. 
 		
 	}
 	
@@ -70,6 +75,7 @@ public class Astar {
 	}
 	
 	//Possible to have this as apart of the Node class
+	//needs to represent a schedule AKA 
 	private class NodeCostF implements Comparable<NodeCostF> {
 		public Path states;
 		public Double costF;
