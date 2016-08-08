@@ -6,7 +6,7 @@ public class NodeCostF implements Comparable<NodeCostF> {
 	public Path states;
 	public Double costF;
 	
-	//Sure this should be states? Not node?
+	//Constructor
 	public NodeCostF(Path states, Double costF){
 		this.states = states;
 		this.costF = costF;

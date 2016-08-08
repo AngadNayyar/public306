@@ -1,5 +1,6 @@
 package processing_classes;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -33,9 +34,9 @@ public class Astar {
 				return state.getPath();
 			}
 			
-			//Expanding the state.
-			expandState(state);			
-			
+			//Expanding the state. what do with this?
+			NodeCostF expandedState = expandState(state, firstPath);			
+			System.out.println(expandedState.toString());
 			//Removes the state from open queue and adds to the closed queue.
 			openQueue.remove();
 			closedQueue.add(state);
@@ -57,21 +58,41 @@ public class Astar {
 		// 	CLOSED <- CLOSED + s; OPEN <- OPEN - s;
 	}
 	
-
-	private void expandState(NodeCostF state) {
-		//Expand the state to form new states and for each new state check whether it is present in either 
-		//the CLOSED or OPEN queue, if YES discard it otherwise insert into OPEN, as in pseudo code. 
+	//Expand the state to form new states and for each new state check whether it is present in either 
+	//the CLOSED or OPEN queue, if YES discard it otherwise insert into OPEN, as in pseudo code.
+	//NOTE not complete
+	private NodeCostF expandState(NodeCostF state, Path path) {
 		
-		freeStates(state);
+		
+		//Gets the free nodes connected to the current state
+		ArrayList<Node> freeNodes = freeStates(state);
+		Path cPath = path;
+		Double newWeight = 0.0;
+		Path newPath = null;
+		
+		//Create a new path for each of the free nodes on each of the processors? Do we need a nested for loop for each of the 
+		//processors? This is just building a path with one processor I think.
+		for (Node n: freeNodes){
+			newPath = new Path(cPath, n); //does this work? builds on previous path, e.g previous iteration of the loop.
+			newWeight = 0.0;
+			cPath = newPath;
+		}
+		
+		//Should this be in the for loop, add it to the OPEN queue each iteration or am I dumb.
+		NodeCostF newState = new NodeCostF(newPath, newWeight);
+		return newState;
 		
 	}
 	
-	private void freeStates(NodeCostF state){
+	private ArrayList<Node> freeStates(NodeCostF state){
 		Node currentNode = state.states.getCurrent();
+		ArrayList<Node> nodeList = new ArrayList<Node>();
 		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(currentNode);
 		for (DefaultEdge e: incomingEdges){
-			MainReadFile.graph.getEdgeSource(e);
+			Node n = MainReadFile.graph.getEdgeSource(e);
+			nodeList.add(n);
 		}
+		return nodeList;
 	}
 
 	public boolean  isComplete(NodeCostF state) {
