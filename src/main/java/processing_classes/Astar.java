@@ -10,8 +10,8 @@ import org.jgrapht.graph.DefaultEdge;
 public class Astar {
 
 	private DefaultDirectedWeightedGraph<Node, DefaultEdge> graph;
-	private PriorityBlockingQueue<NodeCostF> openQueue = new PriorityBlockingQueue<NodeCostF>();
-	private PriorityBlockingQueue<NodeCostF> closedQueue = new PriorityBlockingQueue<NodeCostF>();
+	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
+	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 
 	public void setGraph(DefaultDirectedWeightedGraph<Node, DefaultEdge> new_Graph){
 		graph = new_Graph;
@@ -23,7 +23,7 @@ public class Astar {
 		Set<Node> nodeSet = graph.vertexSet();
 		Node firstNode = nodeSet.iterator().next();			//Is this the first node? Its a set.
 		Path firstPath = new Path(firstNode); 				//Creates the first path
-		NodeCostF state = new NodeCostF(firstPath, 0.0);	//Create the state with initial path
+		StateWeights state = new StateWeights(firstPath, 0.0);	//Create the state with initial path
 		openQueue.add(state);								//Puts the initial state in the OPEN list.
 		
 		while (!openQueue.isEmpty()){
@@ -35,7 +35,7 @@ public class Astar {
 			}
 			
 			//Expanding the state. what do with this?
-			NodeCostF expandedState = expandState(state, firstPath);			
+			StateWeights expandedState = expandState(state, firstPath);			
 			System.out.println(expandedState.toString());
 			//Removes the state from open queue and adds to the closed queue.
 			openQueue.remove();
@@ -61,7 +61,7 @@ public class Astar {
 	//Expand the state to form new states and for each new state check whether it is present in either 
 	//the CLOSED or OPEN queue, if YES discard it otherwise insert into OPEN, as in pseudo code.
 	//NOTE not complete
-	private NodeCostF expandState(NodeCostF state, Path path) {
+	private StateWeights expandState(StateWeights state, Path path) {
 		
 		
 		//Gets the free nodes connected to the current state
@@ -79,12 +79,12 @@ public class Astar {
 		}
 		
 		//Should this be in the for loop, add it to the OPEN queue each iteration or am I dumb.
-		NodeCostF newState = new NodeCostF(newPath, newWeight);
+		StateWeights newState = new StateWeights(newPath, newWeight);
 		return newState;
 		
 	}
 	
-	private ArrayList<Node> freeStates(NodeCostF state){
+	private ArrayList<Node> freeStates(StateWeights state){
 		Node currentNode = state.states.getCurrent();
 		ArrayList<Node> nodeList = new ArrayList<Node>();
 		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(currentNode);
@@ -95,7 +95,7 @@ public class Astar {
 		return nodeList;
 	}
 
-	public boolean  isComplete(NodeCostF state) {
+	public boolean  isComplete(StateWeights state) {
 		//If this state is a goal state.
 		return false;
 	}

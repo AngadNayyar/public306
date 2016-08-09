@@ -2,12 +2,12 @@ package processing_classes;
 
 //Possible to have this as apart of the Node class
 //needs to represent a schedule AKA 
-public class NodeCostF implements Comparable<NodeCostF> {
+public class StateWeights implements Comparable<StateWeights> {
 	public Path states;
 	public Double costF;
 	
 	//Constructor
-	public NodeCostF(Path states, Double costF){
+	public StateWeights(Path states, Double costF){
 		this.states = states;
 		this.costF = costF;
 	}
@@ -16,7 +16,7 @@ public class NodeCostF implements Comparable<NodeCostF> {
 		return states;
 	}
 	
-	public int compareTo(NodeCostF second){
+	public int compareTo(StateWeights second){
 		return costF.compareTo(second.costF);
 	}
 }
