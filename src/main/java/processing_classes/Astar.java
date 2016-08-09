@@ -13,9 +13,6 @@ public class Astar {
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 
-	public void setGraph(DefaultDirectedWeightedGraph<Node, DefaultEdge> new_Graph){
-		graph = new_Graph;
-	}
 	
 	public Path solveAstar() throws InterruptedException{
 		
@@ -65,7 +62,7 @@ public class Astar {
 		
 		
 		//Gets the free nodes connected to the current state
-		ArrayList<Node> freeNodes = freeStates(state);
+		ArrayList<Node> freeNodes = freeNodes(state);
 		Path cPath = path;
 		Double newWeight = 0.0;
 		Path newPath = null;
@@ -84,15 +81,26 @@ public class Astar {
 		
 	}
 	
-	private ArrayList<Node> freeStates(StateWeights state){
-		Node currentNode = state.states.getCurrent();
-		ArrayList<Node> nodeList = new ArrayList<Node>();
-		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(currentNode);
-		for (DefaultEdge e: incomingEdges){
-			Node n = MainReadFile.graph.getEdgeSource(e);
-			nodeList.add(n);
+	//Function to get all the freeNodes for the expansion of the current state
+	private ArrayList<Node> freeNodes(StateWeights stateWeight){
+		//This gets all the used nodes in the current path, then removes these nodes from all the nodes in the graph.
+		ArrayList<Node> usedNodes = stateWeight.state.getPath();
+		Set<Node> allNodes = MainReadFile.graph.vertexSet();
+		allNodes.removeAll(usedNodes);
+		
+		//This loops through all the remaining nodes, and checks to see if they pass the predecessor constraint.
+		for (Node n: allNodes){
+			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(n);
+			for (DefaultEdge e: incomingEdges){
+				Node edgeNode = MainReadFile.graph.getEdgeSource(e);
+				if (allNodes.contains(edgeNode)){
+					allNodes.remove(edgeNode);
+				}
+			}
 		}
-		return nodeList;
+		ArrayList<Node> freeNodes = null;
+		freeNodes.addAll(allNodes);
+		return freeNodes;
 	}
 
 	public boolean  isComplete(StateWeights state) {

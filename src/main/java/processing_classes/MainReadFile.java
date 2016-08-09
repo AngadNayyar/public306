@@ -67,8 +67,6 @@ public class MainReadFile {
 		    }
 		}
 		
-		Graph graph1 = new Graph(graph);
-		
 		OutputFile.fileWriter();
 		br.close(); 
 	}
