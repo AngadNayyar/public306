@@ -58,7 +58,7 @@ public class Astar {
 
 	//Expands the given stateWeight into all possible new states. Store these in OPEN. We would check if it exists already,
 	//or if it exists in CLOSE. Don't know how/the significance of it yet.
-	private StateWeights expandState(StateWeights stateWeight, int processors){
+	private void expandState(StateWeights stateWeight, int processors){
 		Path current = stateWeight.state;
 		ArrayList<Node> freeNodes = freeNodes(stateWeight);
 		
@@ -68,16 +68,23 @@ public class Astar {
 				newNode.setProc(processors);
 				setNodeTimes(current, newNode, processors); //Sets the start time, finish time, and processors for the newNode
 				Path temp = new Path(current, newNode);
+				double pathWeight = heuristicCost(temp);
+				//Would check here to see if it exists in open or closed already, but unsure how to do that yet.
+				openQueue.add(new StateWeights(temp, pathWeight));
 			}
 		}
-		
-		return stateWeight;
 	}
-	
+
 	//Function to determine the start and finish time for the node
 	private void setNodeTimes(Path current, Node newNode, int processors){
 		
 	}
+	
+	//Function to determine heuristic cost f(s) of the state.
+	private double heuristicCost(Path temp) {
+		return 0;
+	}
+
 	
 	//Function to get all the freeNodes for the expansion of the current state
 	private ArrayList<Node> freeNodes(StateWeights stateWeight){

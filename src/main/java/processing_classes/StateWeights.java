@@ -4,12 +4,12 @@ package processing_classes;
 //needs to represent a schedule AKA 
 public class StateWeights implements Comparable<StateWeights> {
 	public Path state;
-	public Double costF;
+	public Double pathWeight;
 	
 	//Constructor
 	public StateWeights(Path state, Double costF){
 		this.state = state;
-		this.costF = costF;
+		this.pathWeight = pathWeight;
 	}
 	
 	public Path getPath(){
@@ -17,6 +17,6 @@ public class StateWeights implements Comparable<StateWeights> {
 	}
 	
 	public int compareTo(StateWeights second){
-		return costF.compareTo(second.costF);
+		return pathWeight.compareTo(second.pathWeight);
 	}
 }
