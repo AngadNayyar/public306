@@ -52,7 +52,7 @@ public class MainReadFile {
 			while (nodeMatch.find()) {
 				nodeName = nodeMatch.group(1);
 				nodeWeight = Integer.parseInt(nodeMatch.group(2));
-				node = new Node(nodeName, nodeWeight, 0,0);
+				node = new Node(nodeName, nodeWeight, 0,0,0);
 				hMap.put(nodeName, node);
 				graph.addVertex(node); 				
 		    }	
