@@ -19,6 +19,18 @@ public class Node {
 		finishTime = f;
 	}
 	
+	public void setFinish(int f){
+		this.finishTime = f;
+	}
+	
+	public void setStart(int s){
+		this.startTime = s;
+	}
+	
+	public void setProc(int p){
+		this.allocProc = p;
+	}
+	
 	@Override 
 	public String toString(){
 		return name; 

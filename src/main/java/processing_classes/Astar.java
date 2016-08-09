@@ -55,30 +55,22 @@ public class Astar {
 		// 	CLOSED <- CLOSED + s; OPEN <- OPEN - s;
 	}
 	
-	//Expand the state to form new states and for each new state check whether it is present in either 
-	//the CLOSED or OPEN queue, if YES discard it otherwise insert into OPEN, as in pseudo code.
-	//NOTE not complete
-	private StateWeights expandState(StateWeights state, Path path) {
+
+	//Expands the given stateWeight into all possible new states. Store these in OPEN. We would check if it exists already,
+	//or if it exists in CLOSE. Don't know how/the significance of it yet.
+	private StateWeights expandState(StateWeights stateWeight, int processors){
+		Path current = stateWeight.state;
+		ArrayList<Node> freeNodes = freeNodes(stateWeight);
 		
-		
-		//Gets the free nodes connected to the current state
-		ArrayList<Node> freeNodes = freeNodes(state);
-		Path cPath = path;
-		Double newWeight = 0.0;
-		Path newPath = null;
-		
-		//Create a new path for each of the free nodes on each of the processors? Do we need a nested for loop for each of the 
-		//processors? This is just building a path with one processor I think.
 		for (Node n: freeNodes){
-			newPath = new Path(cPath, n); //does this work? builds on previous path, e.g previous iteration of the loop.
-			newWeight = 0.0;
-			cPath = newPath;
+			for (int i = 1; i <= processors; i++){
+				Node newNode = n;
+				newNode.setProc(processors);
+				
+			}
 		}
 		
-		//Should this be in the for loop, add it to the OPEN queue each iteration or am I dumb.
-		StateWeights newState = new StateWeights(newPath, newWeight);
-		return newState;
-		
+		return stateWeight;
 	}
 	
 	//Function to get all the freeNodes for the expansion of the current state
