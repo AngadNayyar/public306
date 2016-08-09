@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class Path {
 	
 	private ArrayList<Node> path;
-	Node currentNode;
+	private Node currentNode;
 
 	Path(Node new_state){
 		path = new ArrayList<Node>();

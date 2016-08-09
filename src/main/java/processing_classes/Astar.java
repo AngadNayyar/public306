@@ -32,7 +32,7 @@ public class Astar {
 			}
 			
 			//Expanding the state. what do with this?
-			StateWeights expandedState = expandState(state, firstPath);			
+			StateWeights expandedState = expandState(state, 2);			
 			System.out.println(expandedState.toString());
 			//Removes the state from open queue and adds to the closed queue.
 			openQueue.remove();
@@ -66,11 +66,17 @@ public class Astar {
 			for (int i = 1; i <= processors; i++){
 				Node newNode = n;
 				newNode.setProc(processors);
-				
+				setNodeTimes(current, newNode, processors); //Sets the start time, finish time, and processors for the newNode
+				Path temp = new Path(current, newNode);
 			}
 		}
 		
 		return stateWeight;
+	}
+	
+	//Function to determine the start and finish time for the node
+	private void setNodeTimes(Path current, Node newNode, int processors){
+		
 	}
 	
 	//Function to get all the freeNodes for the expansion of the current state
