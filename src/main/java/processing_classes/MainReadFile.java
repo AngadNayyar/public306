@@ -46,16 +46,17 @@ public class MainReadFile {
 		while ((line = br.readLine()) != null) {
 			//Matches a node from input file
 			//e.g. a [Weight=2]; 
-			Pattern nodePattern = Pattern.compile("^([\\w]+)[\\s]*\\[[\\s]*Weight[\\s]*=([\\d]+)\\]"); 
+			Pattern nodePattern = Pattern.compile("^[\\s]*([\\w]+)[\\s]*\\[[\\s]*Weight[\\s]*=([\\d]+)\\]"); 
 			Matcher nodeMatch = nodePattern.matcher(line); 
 			//Matches an edge from input file
 			//e.g. a -> b [Weight=1];
-			Pattern edgePattern = Pattern.compile("^([\\w]+)[\\s]*->[\\s]*([\\w]+)[\\s]*\\[[\\s]*Weight[\\s]*=([\\d]+)\\]"); 
+			Pattern edgePattern = Pattern.compile("^[\\s]*([\\w]+)[\\s]*->[\\s]*([\\w]+)[\\s]*\\[[\\s]*Weight[\\s]*=([\\d]+)\\]"); 
 			Matcher edgeMatch = edgePattern.matcher(line); 
 
 			//If input line matches regular expression of a node add to hash map and graph data structure.
 			while (nodeMatch.find()) {
 				nodeName = nodeMatch.group(1);
+				System.out.println(nodeName);
 				nodeWeight = Integer.parseInt(nodeMatch.group(2));
 				node = new Node(nodeName, nodeWeight, 0,0,0);
 				hMap.put(nodeName, node);
