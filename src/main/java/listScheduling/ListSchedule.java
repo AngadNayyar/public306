@@ -69,7 +69,7 @@ public class ListSchedule {
 		int numProc = MainReadFile.options.getNumProcessors(); 
 
 
-		for (int i=1; i<numProc; i++){
+		for (int i=1; i<numProc+1; i++){
 			Processor proc = new Processor(i); 
 			procList.add(proc); 
 		}
@@ -81,7 +81,7 @@ public class ListSchedule {
 			if (node.findParents(MainReadFile.graph).size() == 0){
 				Processor allocatedProc = getMinFinishTimeSource(); 
 				allocatedProc.addTask(node, node.weight); 
-				node.updateAllocation((allocatedProc.finTime + node.weight), allocatedProc.number);
+				node.updateAllocation(allocatedProc.finTime, allocatedProc.number);
 
 			} else {
 				ArrayList<Node> parents = node.findParents(MainReadFile.graph); 
@@ -114,16 +114,15 @@ public class ListSchedule {
 			Boolean allParentsOnProc = true; 
 			for (Node parent: parents){
 				if (parent.allocProc != proc.number) {
-					System.out.println(parent.name);
-					System.out.println(parent.allocProc);
-					
+//					System.out.println(parent.name);
+//					System.out.println(parent.allocProc);
 					allParentsOnProc = false; 
 				}
 			} 			
 			if (allParentsOnProc){
 				minFinTime = proc.finTime + node.weight;
 				allocProc = proc;
-				System.out.println("if all parents on same processor " + minFinTime);
+//				System.out.println("if all parents on same processor " + minFinTime);
 			}
 
 			// If the nodes parents are on different nodes, then calculate the max length of the parent tasks 
@@ -145,7 +144,7 @@ public class ListSchedule {
 						// and then the communication cost from that parent
 						DefaultEdge edge = MainReadFile.graph.getEdge(parent, node);
 						int communicationTime = (int) MainReadFile.graph.getEdgeWeight(edge);
-						int currentCriticalPathTime = parent.finishTime + node.weight + communicationTime;;
+						int currentCriticalPathTime = parent.finishTime + node.weight + communicationTime;
 						if (criticalPathTime < currentCriticalPathTime) {
 							criticalPathTime = currentCriticalPathTime;
 						}
@@ -153,7 +152,7 @@ public class ListSchedule {
 				}
 			}
 
-			if (criticalPathTime < minFinTime) {
+			if ((criticalPathTime < minFinTime) &&  (criticalPathTime > -1)){
 				minFinTime = criticalPathTime;
 				allocProc = proc;
 			}
@@ -164,8 +163,8 @@ public class ListSchedule {
 		// processor it has the earliest finish time  
 		allocProc.addTask(node, minFinTime);
 		System.out.println(node.name);
-		System.out.println(minFinTime);
-		System.out.println(allocProc.number);
+		System.out.println("minFinTime " + minFinTime);
+//		System.out.println(allocProc.number);
 		node.updateAllocation(minFinTime, allocProc.number);
 
 	}
