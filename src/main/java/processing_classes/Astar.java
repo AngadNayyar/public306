@@ -22,6 +22,7 @@ public class Astar {
 			StateWeights stateWeight = openQueue.poll();
 			if (isComplete(stateWeight)){
 				//Returns the optimal path
+				setScheduleOnGraph(stateWeight.getState());
 				return stateWeight.getState();
 			} else {
 			//Expanding the state. what do with this?
@@ -49,6 +50,25 @@ public class Astar {
 		// 	CLOSED <- CLOSED + s; OPEN <- OPEN - s;
 	}
 	
+	//Sets the value of the chosen path onto the nodes of the graph
+	private void setScheduleOnGraph(Path state) {
+		
+		Set<Node> graphNodes = MainReadFile.graph.vertexSet();
+		
+		//Loops through nodes of the path and then the nodes of the graph
+		//setting the values of passed Path into the graphs nodes
+		for (Node n : state.getPath() ){
+			for (Node g: graphNodes){
+				if (n.name.equals(g.name)){
+					g.allocProc = n.allocProc;
+					g.startTime = n.startTime;
+				}
+			}
+			
+		}
+		
+	}
+
 
 	//Expands the given stateWeight into all possible new states. Store these in OPEN. We would check if it exists already,
 	//or if it exists in CLOSE. Don't know how/the significance of it yet.
