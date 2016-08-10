@@ -10,6 +10,8 @@ import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import listScheduling.ListSchedule;
+
 /*
  * This class MainReadFile is the main class for the project. It processes the provided input file from command line
  * and converts it to a graph data structure.
@@ -68,6 +70,11 @@ public class MainReadFile {
 		}
 		
 		Graph graph1 = new Graph(graph);
+		
+//		TO DO 
+//		Testing the list scheduling implementation
+		ListSchedule.makepriorityList(); 
+		
 		
 		OutputFile.fileWriter();
 		br.close(); 

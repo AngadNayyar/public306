@@ -1,5 +1,10 @@
 package processing_classes;
 
+import java.util.ArrayList;
+import java.util.Set;
+
+import org.jgrapht.graph.DefaultEdge;
+
 /* 
  * Object for each node of the graph.
  */
@@ -9,6 +14,7 @@ public class Node {
 	public int startTime;
 	public int allocProc;
 	public int finishTime;
+	
 	
 	//Constructor of Node class
 	public Node(String n, int w, int s, int a, int f){
@@ -30,6 +36,16 @@ public class Node {
 	@Override 
 	public String toString(){
 		return name; 
+	}
+	
+// This method finds the parent nodes of a vertex and returns them in an ArrayList.	
+	public ArrayList<Node> findParents(Node child) {
+		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(child);
+		ArrayList<Node> parents = new ArrayList<Node>();
+		for(DefaultEdge edge : incomingEdges){
+			parents.add(MainReadFile.graph.getEdgeSource(edge));	
+		}
+		return parents;
 	}
 	
 }
