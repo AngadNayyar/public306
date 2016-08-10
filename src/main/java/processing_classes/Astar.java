@@ -65,8 +65,8 @@ public class Astar {
 		for (Node n: freeNodes){
 			for (int i = 1; i <= processors; i++){ 
 				Node newNode = n;
-				newNode.setProc(i); //TODO Shouldn't this be passing in i not processors, next line also
-				setNodeTimes(current, newNode, i); //Sets the start time, finish time, and processors for the newNode
+				newNode.setProc(i);
+				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
 				double pathWeight = heuristicCost(temp);
 				//Would check here to see if it exists in open or closed already, but unsure how to do that yet.
@@ -76,12 +76,66 @@ public class Astar {
 	}
 
 	//Function to determine the start and finish time for the node
-	private void setNodeTimes(Path current, Node newNode, int processors){
-		int currentEndTime = current.getCurrent().finishTime;
-		int currentProcessor = current.getCurrent().allocProc;
+	private void setNodeTimes(Path current, Node newNode, int processor){
 		
+		//Get the set of incoming edges of the newNode
+		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(newNode);
+		
+		//End time of the last node to run on the processor
+		double processorEndTime = latestEndTimeOnProcessor(processor);
+		double parentEndTime = 0.0;
+		int parentProcessor=processor;
+		double latestAllowedTime;
+		double t = 0.0;
+		
+		//If the set is empty, i.e no parents (dependencies) set start time to processorEndTime.
+		if (incomingEdges.isEmpty()){
+			newNode.setStart(processorEndTime);
+		//If it does have parents, calculate the latest time newNode can run on processor
+		}else for (DefaultEdge e: incomingEdges){
+			
+			double communicationTime = MainReadFile.graph.getEdgeWeight(e);
+			
+			//Gets the parent node end time and processor
+			Node parentNode = MainReadFile.graph.getEdgeSource(e);
+			ArrayList<Node> setOfNodesInPath = current.getPath();
+			
+			//Needs to search through path to find parent node
+			for (Node n: setOfNodesInPath){
+				if (n.name.equals(parentNode.name)){
+					parentEndTime = n.finishTime;
+					parentProcessor = n.allocProc;
+				}
+			}
+			//Checks to see if communication time needs to be added to the latest time allow by current parent
+			if (parentProcessor != processor){
+				latestAllowedTime = parentEndTime + communicationTime;
+			}else{
+				latestAllowedTime = parentEndTime;
+			}
+			
+			//If latestAllowed Time is the latest time found it is assigned to t 
+			if (latestAllowedTime > t){
+				t = latestAllowedTime;
+			}
+		}
+		
+		//Sets the start time of the new node to which ever is larger t or processorEndTime
+		if (t > processorEndTime){
+			newNode.setStart(t);
+		}else{
+			newNode.setStart(processorEndTime);
+		}
+		//Sets the Finish time
+		newNode.setFinish(newNode.weight + newNode.startTime);
 	}
 	
+	private double latestEndTimeOnProcessor(int processor) {
+		// TODO needs to calculate the end time of the last node (task) to run on the passed processor
+		return 0;
+	}
+
+
 	//Function to determine heuristic cost f(s) of the state.
 	private double heuristicCost(Path temp) {
 		return 0;

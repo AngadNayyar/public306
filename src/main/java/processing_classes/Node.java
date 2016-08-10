@@ -6,12 +6,12 @@ package processing_classes;
 public class Node {
 	public String name;
 	public int weight;
-	public int startTime;
+	public double startTime; //TODO should we change these to double
 	public int allocProc;
-	public int finishTime;
+	public double finishTime;
 	
 	//Constructor of Node class
-	public Node(String n, int w, int s, int a, int f){
+	public Node(String n, int w, double s, int a, double f){
 		name = n;
 		weight = w;
 		startTime = s;
@@ -19,11 +19,11 @@ public class Node {
 		finishTime = f;
 	}
 	
-	public void setFinish(int f){
+	public void setFinish(double f){
 		this.finishTime = f;
 	}
 	
-	public void setStart(int s){
+	public void setStart(double s){
 		this.startTime = s;
 	}
 	
