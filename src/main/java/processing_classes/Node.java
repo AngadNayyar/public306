@@ -3,6 +3,7 @@ package processing_classes;
 import java.util.ArrayList;
 import java.util.Set;
 
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 /* 
@@ -39,12 +40,21 @@ public class Node {
 	}
 	
 // This method finds the parent nodes of a vertex and returns them in an ArrayList.	
-	public ArrayList<Node> findParents(Node child) {
-		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(child);
+	public ArrayList<Node> findParents(DefaultDirectedWeightedGraph <Node, DefaultEdge> graph) {
+
 		ArrayList<Node> parents = new ArrayList<Node>();
-		for(DefaultEdge edge : incomingEdges){
-			parents.add(MainReadFile.graph.getEdgeSource(edge));	
-		}
+		Set<Node> vertices = graph.vertexSet(); 
+		ArrayList<Node> vertexList = new ArrayList<Node>(vertices); 
+		
+		for (Node node: vertexList){
+			if (node.name.equals(this.name)){
+				Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(node);
+				for(DefaultEdge edge : incomingEdges){
+					parents.add(graph.getEdgeSource(edge));	
+				}
+			}
+		}	
+		
 		return parents;
 	}
 	
