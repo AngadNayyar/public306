@@ -82,11 +82,11 @@ public class Astar {
 		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(newNode);
 		
 		//End time of the last node to run on the processor
-		double processorEndTime = latestEndTimeOnProcessor(current, processor);
-		double parentEndTime = 0.0;
+		int processorEndTime = latestEndTimeOnProcessor(current, processor);
+		int parentEndTime = 0;
 		int parentProcessor=processor;
-		double latestAllowedTime;
-		double t = 0.0;
+		int latestAllowedTime;
+		int t = 0;
 		
 		//If the set is empty, i.e no parents (dependencies) set start time to processorEndTime.
 		if (incomingEdges.isEmpty()){
@@ -94,7 +94,7 @@ public class Astar {
 		//If it does have parents, calculate the latest time newNode can run on processor
 		}else for (DefaultEdge e: incomingEdges){
 			
-			double communicationTime = MainReadFile.graph.getEdgeWeight(e);
+			int communicationTime = (int) MainReadFile.graph.getEdgeWeight(e);
 			
 			//Gets the parent node end time and processor
 			Node parentNode = MainReadFile.graph.getEdgeSource(e);
@@ -131,9 +131,9 @@ public class Astar {
 	}
 	
 	//Calculates the end time of the last node (task) to run on the passed processor
-	private double latestEndTimeOnProcessor(Path current, int processor) {
+	private int latestEndTimeOnProcessor(Path current, int processor) {
 		ArrayList<Node> path = current.getPath();
-		double currentFinishTime = 0.0;
+		int currentFinishTime = 0;
 		for (Node n: path){
 			if (n.allocProc == processor){
 				if (n.finishTime > currentFinishTime){
@@ -147,8 +147,17 @@ public class Astar {
 
 
 	//Function to determine heuristic cost f(s) of the state.
-	private double heuristicCost(Path temp) {
-		return 0;
+	private double heuristicCost(Path state) {
+		int maxTime = 0;
+		Node maxNode;
+		ArrayList<Node> path = state.getPath();
+		for (Node n: path){
+			if (n.finishTime >= maxTime){
+				maxTime = n.finishTime;
+				maxNode = n;
+			}
+		}
+		
 	}
 
 	
