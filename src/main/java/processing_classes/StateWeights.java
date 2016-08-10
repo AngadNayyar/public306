@@ -12,7 +12,7 @@ public class StateWeights implements Comparable<StateWeights> {
 		this.pathWeight = pathWeight;
 	}
 	
-	public Path getPath(){
+	public Path getState(){
 		return state;
 	}
 	

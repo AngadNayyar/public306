@@ -16,27 +16,21 @@ public class Astar {
 	
 	public Path solveAstar() throws InterruptedException{
 		
-		//Create the initial path and adds to the OPEN queue.
-		Set<Node> nodeSet = graph.vertexSet();
-		Node firstNode = nodeSet.iterator().next();			//Is this the first node? Its a set.
-		Path firstPath = new Path(firstNode); 				//Creates the first path
-		StateWeights state = new StateWeights(firstPath, 0.0);	//Create the state with initial path
-		openQueue.add(state);								//Puts the initial state in the OPEN list.
 		
 		while (!openQueue.isEmpty()){
 			//Gets the state with best f value, top of the queue, without removing it
-			state = openQueue.peek();
-			if (isComplete(state)){
+			StateWeights stateWeight = openQueue.poll();
+			if (isComplete(stateWeight)){
 				//Returns the optimal path
-				return state.getPath();
-			}
-			
+				return stateWeight.getState();
+			} else {
 			//Expanding the state. what do with this?
-			expandState(state, 2); //<-- shouldn't this be variable processor or similar			
+			expandState(stateWeight, 2); //<-- shouldn't this be variable processor or similar			
 //			System.out.println(expandedState.toString());
 			//Removes the state from open queue and adds to the closed queue.
 			openQueue.remove();
-			closedQueue.add(state);
+			closedQueue.add(stateWeight);
+			}
 			
 		}
 		
@@ -139,7 +133,6 @@ public class Astar {
 				if (n.finishTime > currentFinishTime){
 					currentFinishTime = n.finishTime;
 				}
-				
 			}
 		}
 		return currentFinishTime;
@@ -213,9 +206,16 @@ public class Astar {
 		return freeNodes;
 	}
 
-	public boolean  isComplete(StateWeights state) {
-		//If this state is a goal state.
-		return false;
+	//Return true if state is the goal state, and thus the optimal solution
+	public boolean  isComplete(StateWeights stateWeight) {
+		ArrayList<Node> usedNodes = stateWeight.state.getPath();
+		Set<Node> allNodes = MainReadFile.graph.vertexSet();
+		allNodes.removeAll(usedNodes);
+		if (allNodes.isEmpty()){
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	
