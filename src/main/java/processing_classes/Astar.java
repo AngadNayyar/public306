@@ -14,8 +14,14 @@ public class Astar {
 
 	
 	public Path solveAstar() throws InterruptedException{
+				
+		Node initialNode = new Node();
+		Path initialPath = new Path(initialNode);
+		StateWeights initialSW = new StateWeights(initialPath,0.0);
+		openQueue.add(initialSW);
 		
 		while (!openQueue.isEmpty()){
+			
 			//Gets the state with best f value, top of the queue, without removing it
 			StateWeights stateWeight = openQueue.poll();
 			if (isComplete(stateWeight)){
