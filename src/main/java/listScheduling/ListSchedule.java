@@ -79,9 +79,8 @@ public class ListSchedule {
 		for (Node node: nodeList){
 			// if it is a source it can be simply scheduled to any processor - this would be the processor with the earliest finish time 
 			if (node.findParents(MainReadFile.graph).size() == 0){
-				System.out.println(node.name);
 				Processor allocatedProc = getMinFinishTimeSource(); 
-				allocatedProc.addTask(node); 
+				allocatedProc.addTask(node, node.weight); 
 
 			} else {
 				ArrayList<Node> parents = node.findParents(MainReadFile.graph); 
@@ -91,8 +90,6 @@ public class ListSchedule {
 				// Try to put the task on each processor and keep track of the finish time if this task was put on that processor 
 				allocateProcessor(node, parents); 
 
-
-
 			}
 
 		}
@@ -100,13 +97,11 @@ public class ListSchedule {
 
 	}
 
-	public static Processor allocateProcessor (Node node, ArrayList<Node>parents){
+	public static void allocateProcessor (Node node, ArrayList<Node>parents){
 		Processor allocProc = procList.get(0);
-		int minFinTime = procList.get(0).FinTime ; 
-
-		// to do 
-		// find a way to store each of the mintimes for the processors? (not sure how to set an initial value?? 
-
+		//		int minFinTime = procList.get(0).FinTime ; 
+		int minFinTime = Integer.MAX_VALUE;
+		int criticalPathTime = -1;
 
 		// for each processor try to place the task node onto that processor and calculate the finish time. 
 		// the processor with the earliest finish time of that task, is the processor that the task will be allocated to.  
@@ -117,12 +112,13 @@ public class ListSchedule {
 			// and simply add to the end of the processor to calculate the start and finish time of the task. 
 			Boolean allParentsOnProc = true; 
 			for (Node parent: parents){
-				if (parent.allocProc != proc.number){
+				if (parent.allocProc != proc.number) {
 					allParentsOnProc = false; 
-				}		
+				}
 			} 			
 			if (allParentsOnProc){
-				minFinTime = proc.FinTime + node.weight; 
+				minFinTime = proc.FinTime + node.weight;
+				allocProc = proc;
 			}
 
 			// If the nodes parents are on different nodes, then calculate the max length of the parent tasks 
@@ -130,34 +126,43 @@ public class ListSchedule {
 
 			else {
 
-
+				criticalPathTime = -1;
 				for (Node parent: parents){
-
-					// for each parent that is on a different processor find the finish time of that parent 
-					// and then the communication cost from that parent
-					int parentFin = parent.finishTime; 
-					// weight of communication if parent on different processor :
-					if (parent.allocProc != proc.number){
-						DefaultEdge edge = MainReadFile.graph.getEdge(parent,
-								node);
-						int weight = (int) MainReadFile.graph
-								.getEdgeWeight(edge);
-						minFinTime = parentFin + weight + node.weight; 
+					//if one of the parents is on the same processor then the earliest time that the 
+					//task node can start is as soon as the processor becomes available
+					if (parent.allocProc == proc.number) {
+						int currentCriticalPathTime = proc.FinTime + node.weight;
+						if (criticalPathTime < currentCriticalPathTime) {
+							criticalPathTime = currentCriticalPathTime;
+						}
+					} else {
+						// for each parent that is on a different processor find the finish time of that parent 
+						// and then the communication cost from that parent
+						DefaultEdge edge = MainReadFile.graph.getEdge(parent, node);
+						int communicationTime = (int) MainReadFile.graph.getEdgeWeight(edge);
+						int currentCriticalPathTime = parent.finishTime + node.weight + communicationTime;;
+						if (criticalPathTime < currentCriticalPathTime) {
+							criticalPathTime = currentCriticalPathTime;
+						}
 					}
 				}
+			}
 
+			if (criticalPathTime < minFinTime) {
+				minFinTime = criticalPathTime;
+				allocProc = proc;
 			}
 
 		}
 
 		// the processor that is selected as the allocated processor is the processor that when the task is ran on this 
 		// processor it has the earliest finish time  
+		allocProc.addTask(node, minFinTime);
 
-		return allocProc; 
 	}
 
 
-	// find the procesor to allocate a source node by looking at only the earliest finish times 
+	// find the processor to allocate a source node by looking at only the earliest finish times 
 	public static Processor getMinFinishTimeSource(){
 
 		int minTime = procList.get(0).FinTime; 
@@ -171,8 +176,6 @@ public class ListSchedule {
 		}
 
 		return minProc; 
-
-
 
 	}
 

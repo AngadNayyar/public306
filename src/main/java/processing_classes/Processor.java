@@ -12,8 +12,9 @@ public class Processor {
 		this.number = num; 
 	}
 	
-	public void addTask(Node node){
+	public void addTask(Node node, int minTime){
 		this.schedule.add(node); 
+		this.FinTime += minTime;
 	}
 
 }
