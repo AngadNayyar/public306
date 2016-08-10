@@ -149,15 +149,45 @@ public class Astar {
 	//Function to determine heuristic cost f(s) of the state.
 	private double heuristicCost(Path state) {
 		int maxTime = 0;
-		Node maxNode;
+		int startTime = 0;
+		Node maxNode = new Node();
+		int bottomLevel = 0;
 		ArrayList<Node> path = state.getPath();
+		//Get the node with the latest finish time from the path.
 		for (Node n: path){
 			if (n.finishTime >= maxTime){
 				maxTime = n.finishTime;
 				maxNode = n;
 			}
 		}
+		//Determine bottom level cost of node
+		bottomLevel = ComputationalBottomLevel(maxNode);
 		
+		//Get start time of node
+		startTime = maxNode.startTime;
+		
+		//Return startTime + the bottomLevel of the node
+		return ((double) startTime + (double) bottomLevel);
+	}
+	
+	//Recursive function to get the bottom level of the node for heuristic calculation.
+	private int ComputationalBottomLevel(Node node){
+		int bottomLevel = 0;
+		//Get outgoing edges of node
+		Set<DefaultEdge> outgoingEdges = MainReadFile.graph.outgoingEdgesOf(node);
+		//If node is a "SINK" (no successors), then return the node weight
+		if (outgoingEdges.isEmpty()){
+			return node.weight;
+		//Otherwise call its successors, and recursively call the bottom level function.
+		} else for (DefaultEdge e: outgoingEdges){
+			Node successor = MainReadFile.graph.getEdgeSource(e);
+			int temp = ComputationalBottomLevel(successor);
+			//Choose the highest path bottomLevel and continue.
+			if (temp > bottomLevel){
+				bottomLevel = temp;
+			}
+		}
+		return (node.weight + bottomLevel);
 	}
 
 	

@@ -19,6 +19,14 @@ public class Node {
 		finishTime = f;
 	}
 	
+	public Node(){
+		name = "n";
+		weight = 0;
+		startTime = 0;
+		allocProc = 0;
+		finishTime = 0;	
+	}
+	
 	public void setFinish(int f){
 		this.finishTime = f;
 	}
