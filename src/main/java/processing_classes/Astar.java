@@ -32,8 +32,8 @@ public class Astar {
 			}
 			
 			//Expanding the state. what do with this?
-			StateWeights expandedState = expandState(state, 2);			
-			System.out.println(expandedState.toString());
+			expandState(state, 2); //<-- shouldn't this be variable processor or similar			
+//			System.out.println(expandedState.toString());
 			//Removes the state from open queue and adds to the closed queue.
 			openQueue.remove();
 			closedQueue.add(state);
@@ -63,10 +63,10 @@ public class Astar {
 		ArrayList<Node> freeNodes = freeNodes(stateWeight);
 		
 		for (Node n: freeNodes){
-			for (int i = 1; i <= processors; i++){
+			for (int i = 1; i <= processors; i++){ 
 				Node newNode = n;
-				newNode.setProc(processors);
-				setNodeTimes(current, newNode, processors); //Sets the start time, finish time, and processors for the newNode
+				newNode.setProc(i); //TODO Shouldn't this be passing in i not processors, next line also
+				setNodeTimes(current, newNode, i); //Sets the start time, finish time, and processors for the newNode
 				Path temp = new Path(current, newNode);
 				double pathWeight = heuristicCost(temp);
 				//Would check here to see if it exists in open or closed already, but unsure how to do that yet.
@@ -77,6 +77,8 @@ public class Astar {
 
 	//Function to determine the start and finish time for the node
 	private void setNodeTimes(Path current, Node newNode, int processors){
+		int currentEndTime = current.getCurrent().finishTime;
+		int currentProcessor = current.getCurrent().allocProc;
 		
 	}
 	
