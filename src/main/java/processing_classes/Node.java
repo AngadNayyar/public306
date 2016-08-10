@@ -39,6 +39,13 @@ public class Node {
 		return name; 
 	}
 	
+	public void updateAllocation(int finishTime, int allocProc){
+		this.startTime = finishTime - this.weight;
+		this.allocProc = allocProc;
+		this.finishTime = finishTime;
+		
+	}
+	
 // This method finds the parent nodes of a vertex and returns them in an ArrayList.	
 	public ArrayList<Node> findParents(DefaultDirectedWeightedGraph <Node, DefaultEdge> graph) {
 

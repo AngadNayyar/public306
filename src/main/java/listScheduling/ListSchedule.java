@@ -158,6 +158,8 @@ public class ListSchedule {
 		// the processor that is selected as the allocated processor is the processor that when the task is ran on this 
 		// processor it has the earliest finish time  
 		allocProc.addTask(node, minFinTime);
+		
+		node.updateAllocation(minFinTime, allocProc.number);
 
 	}
 
