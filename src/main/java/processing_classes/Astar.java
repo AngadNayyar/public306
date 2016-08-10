@@ -82,7 +82,7 @@ public class Astar {
 		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(newNode);
 		
 		//End time of the last node to run on the processor
-		double processorEndTime = latestEndTimeOnProcessor(processor);
+		double processorEndTime = latestEndTimeOnProcessor(current, processor);
 		double parentEndTime = 0.0;
 		int parentProcessor=processor;
 		double latestAllowedTime;
@@ -130,9 +130,19 @@ public class Astar {
 		newNode.setFinish(newNode.weight + newNode.startTime);
 	}
 	
-	private double latestEndTimeOnProcessor(int processor) {
-		// TODO needs to calculate the end time of the last node (task) to run on the passed processor
-		return 0;
+	//Calculates the end time of the last node (task) to run on the passed processor
+	private double latestEndTimeOnProcessor(Path current, int processor) {
+		ArrayList<Node> path = current.getPath();
+		double currentFinishTime = 0.0;
+		for (Node n: path){
+			if (n.allocProc == processor){
+				if (n.finishTime > currentFinishTime){
+					currentFinishTime = n.finishTime;
+				}
+				
+			}
+		}
+		return currentFinishTime;
 	}
 
 
