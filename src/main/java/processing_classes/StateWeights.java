@@ -7,9 +7,9 @@ public class StateWeights implements Comparable<StateWeights> {
 	public Double pathWeight;
 	
 	//Constructor
-	public StateWeights(Path state, Double costF){
+	public StateWeights(Path state, Double pathWeight){
 		this.state = state;
-		this.pathWeight = costF;
+		this.pathWeight = pathWeight;
 	}
 	
 	public Path getPath(){

@@ -169,7 +169,7 @@ public class Astar {
 				}
 			}
 		}
-		ArrayList<Node> freeNodes = null;
+		ArrayList<Node> freeNodes = new ArrayList<Node>();
 		freeNodes.addAll(allNodes);
 		return freeNodes;
 	}
