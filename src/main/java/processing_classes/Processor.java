@@ -6,7 +6,7 @@ public class Processor {
 	
 	public int number; 
 	public ArrayList<Node>schedule = new ArrayList<Node>(); 
-	public int FinTime = 0; 
+	public int finTime = 0; 
 	
 	public Processor(int num){
 		this.number = num; 
@@ -14,7 +14,7 @@ public class Processor {
 	
 	public void addTask(Node node, int minTime){
 		this.schedule.add(node); 
-		this.FinTime += minTime;
+		this.finTime += minTime;
 	}
 
 }
