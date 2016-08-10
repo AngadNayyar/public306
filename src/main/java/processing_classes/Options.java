@@ -56,6 +56,7 @@ private String outputFileName;
 	public void setVisualisation(boolean nP) {
 		visualisation = nP;
 	}
+	
 	//getter output file name
 	public String getOutputFileName() {
 		return outputFileName;

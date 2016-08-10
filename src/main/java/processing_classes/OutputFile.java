@@ -13,7 +13,8 @@ import org.jgrapht.graph.DefaultEdge;
 public class OutputFile {
 	
 	public static void fileWriter() throws FileNotFoundException {
-		File outFile = new File("output.dot");
+		//Create output file with correct name
+		File outFile = new File(MainReadFile.options.getOutputFileName());
 		PrintWriter writer = new PrintWriter(outFile);
 		
 		//Loops through nodes and prints to output file.

@@ -75,29 +75,27 @@ public class MainReadFile {
 		//Read in number of processors from command line
 		options.setNumProcessors(Integer.parseInt(args[1]));
 		
+		//Read in name of input file and store as default name for output file
 		options.setOutputFileName(args[0]);
 
 		//Read in optional options from command line
 		for (int i = 0; i < args.length; i++) {
-			//threads in parallel -p N
-			if (args[i] == "-p") {
-				//						if () { check that number follows (if not throw exception)
+			if (args[i] == "-p") { //threads in parallel -p N
+				//if () { check that number follows (if not throw exception)
 				options.setNumThreads(Integer.parseInt(args[i+1]));
-				//						}
-				//visualisation
-			} else if (args[i] == "-v") {
+				//}
+			} else if (args[i] == "-v") { //visualisation
 				options.setVisualisation(true);
-				//name of output file
-			} else if (args[i] == "-o") {
-				//						if () { check that name follows (if not throw exception)
+			} else if (args[i] == "-o") { //name of output file if specified
+				//if () { check that name follows (if not throw exception)
 				options.setOutputFileName(args[i + 1]);
-				//						}
+				//}
 			}
 		}
 
 		Graph graph1 = new Graph(graph);
 
-		//		TO DO 
+		//		TODO 
 		//		Testing the list scheduling implementation
 		ListSchedule.makepriorityList(); 
 
