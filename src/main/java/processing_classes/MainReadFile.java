@@ -3,6 +3,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +21,7 @@ public class MainReadFile {
 	//that will be used to execute our algorithm
 	public static DefaultDirectedWeightedGraph <Node, DefaultEdge> graph = new DefaultDirectedWeightedGraph <Node, DefaultEdge>(DefaultWeightedEdge.class);
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		String line;
 		String nodeName, edgeOne, edgeTwo; 
@@ -67,7 +68,19 @@ public class MainReadFile {
 		    }
 		}
 		
-		OutputFile.fileWriter();
+		//Just to test algorithm
+		Astar AstarSolve = new Astar();
+		Path optimalState = AstarSolve.solveAstar();
+		ArrayList<Node> nodes = optimalState.getPath();
+		int maxTime = 0;
+		for (Node n: nodes){
+			if (n.finishTime >= maxTime){
+				maxTime = n.finishTime;
+			}
+		}
+		System.out.print("Max time is..." + maxTime);
+		
+		//OutputFile.fileWriter();
 		br.close(); 
 	}
 	

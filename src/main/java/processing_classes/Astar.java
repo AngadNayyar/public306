@@ -9,13 +9,11 @@ import org.jgrapht.graph.DefaultEdge;
 
 public class Astar {
 
-	private DefaultDirectedWeightedGraph<Node, DefaultEdge> graph;
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 
 	
 	public Path solveAstar() throws InterruptedException{
-		
 		
 		while (!openQueue.isEmpty()){
 			//Gets the state with best f value, top of the queue, without removing it
@@ -26,13 +24,9 @@ public class Astar {
 				return stateWeight.getState();
 			} else {
 			//Expanding the state. what do with this?
-			expandState(stateWeight, 2); //<-- shouldn't this be variable processor or similar			
-//			System.out.println(expandedState.toString());
-			//Removes the state from open queue and adds to the closed queue.
-			openQueue.remove();
-			closedQueue.add(stateWeight);
+			expandState(stateWeight, 2); //<-- shouldn't this be variable processor or similar	
 			}
-			
+			closedQueue.add(stateWeight);
 		}
 		
 		
@@ -208,9 +202,17 @@ public class Astar {
 	private ArrayList<Node> freeNodes(StateWeights stateWeight){
 		//This gets all the used nodes in the current path, then removes these nodes from all the nodes in the graph.
 		ArrayList<Node> usedNodes = stateWeight.state.getPath();
+		ArrayList<String> used = new ArrayList<String>();
+		ArrayList<String> all = new ArrayList<String>();
+		for (Node n: usedNodes){
+			used.add(n.name);
+		}
 		Set<Node> allNodes = MainReadFile.graph.vertexSet();
-		allNodes.removeAll(usedNodes);
-		
+		for (Node n: allNodes){
+			if (used.contains(n.name)){
+				allNodes.remove(n);
+			}
+		}
 		//This loops through all the remaining nodes, and checks to see if they pass the predecessor constraint.
 		for (Node n: allNodes){
 			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(n);
@@ -229,14 +231,21 @@ public class Astar {
 	//Return true if state is the goal state, and thus the optimal solution
 	public boolean  isComplete(StateWeights stateWeight) {
 		ArrayList<Node> usedNodes = stateWeight.state.getPath();
+		ArrayList<String> used = new ArrayList<String>();
+		ArrayList<String> all = new ArrayList<String>();
+		for (Node n: usedNodes){
+			used.add(n.name);
+		}
 		Set<Node> allNodes = MainReadFile.graph.vertexSet();
-		allNodes.removeAll(usedNodes);
-		if (allNodes.isEmpty()){
+		for (Node n: allNodes){
+			all.add(n.name);
+		}
+		all.removeAll(used);
+		if (used.isEmpty()){
 			return true;
 		} else {
 			return false;
 		}
 	}
-	
 	
 }
