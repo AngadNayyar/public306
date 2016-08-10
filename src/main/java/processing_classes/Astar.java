@@ -209,7 +209,6 @@ public class Astar {
 		//This gets all the used nodes in the current path, then removes these nodes from all the nodes in the graph.
 		ArrayList<Node> usedNodes = stateWeight.state.getPath();
 		ArrayList<String> used = new ArrayList<String>();
-		ArrayList<String> all = new ArrayList<String>();
 		for (Node n: usedNodes){
 			used.add(n.name);
 		}
@@ -225,7 +224,7 @@ public class Astar {
 			for (DefaultEdge e: incomingEdges){
 				Node edgeNode = MainReadFile.graph.getEdgeSource(e);
 				if (allNodes.contains(edgeNode)){
-					allNodes.remove(edgeNode);
+					allNodes.remove(n);
 				}
 			}
 		}
