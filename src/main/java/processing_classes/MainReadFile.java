@@ -81,7 +81,7 @@ public class MainReadFile {
 		}
 		System.out.print("Max time is..." + maxTime);
 		*/
-		//OutputFile.fileWriter();
+		OutputFile.fileWriter();
 		br.close(); 
 	}
 	

@@ -51,16 +51,17 @@ public class Astar {
 	
 	//Sets the value of the chosen path onto the nodes of the graph
 	private void setScheduleOnGraph(Path state) {
-		
 		Set<Node> graphNodes = MainReadFile.graph.vertexSet();
+		
+		
 		
 		//Loops through nodes of the path and then the nodes of the graph
 		//setting the values of passed Path into the graphs nodes
 		for (Node n : state.getPath() ){
 			for (Node g: graphNodes){
 				if (n.name.equals(g.name)){
-					g.allocProc = n.allocProc;
-					g.startTime = n.startTime;
+					g.setProc(n.allocProc);
+					g.setStart(n.startTime);
 				}
 			}
 			
@@ -201,11 +202,13 @@ public class Astar {
 
 	
 	//Function to get all the freeNodes for the expansion of the current state
+	@SuppressWarnings("unchecked")
 	private ArrayList<Node> freeNodes(StateWeights stateWeight){
 		//This gets all the used nodes in the current path, then removes these nodes from all the nodes in the graph.
 		ArrayList<Node> usedNodes = stateWeight.state.getPath();
 		ArrayList<String> used = new ArrayList<String>();
 		ArrayList<String> all = new ArrayList<String>();
+		ArrayList<String> unused = new ArrayList<String>();
 		Set<Node> allNodes = MainReadFile.graph.vertexSet();
 		for (Node n: allNodes){
 			all.add(n.name);
@@ -214,13 +217,14 @@ public class Astar {
 			used.add(n.name);
 		}
 		all.removeAll(used);
+		unused = (ArrayList<String>) all.clone();
 		//This loops through all the remaining nodes, and checks to see if they pass the predecessor constraint.
 		for (Node n: allNodes){
 			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(n);
 			for (DefaultEdge e: incomingEdges){
 				Node edgeNode = MainReadFile.graph.getEdgeSource(e);
-				if (all.contains(edgeNode.name)){
-					all.remove(n.name);			
+				if (unused.contains(edgeNode.name)){
+					all.remove(n.name);	
 				}
 			}
 		}
@@ -246,7 +250,7 @@ public class Astar {
 			all.add(n.name);
 		}
 		all.removeAll(used);
-		if (used.isEmpty()){
+		if (all.isEmpty()){
 			return true;
 		} else {
 			return false;
