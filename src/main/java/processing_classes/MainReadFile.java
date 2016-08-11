@@ -67,20 +67,10 @@ public class MainReadFile {
 				graph.setEdgeWeight(e, edgeWeight);
 		    }
 		}
+		//Create instant of A* Solver. Run the solver to determine optimal schedule.
 		Astar AstarSolve = new Astar();
 		AstarSolve.solveAstar();
-		/*/Just to test algorithm
-		Astar AstarSolve = new Astar();
-		Path optimalState = AstarSolve.solveAstar();
-		ArrayList<Node> nodes = optimalState.getPath();
-		int maxTime = 0;
-		for (Node n: nodes){
-			if (n.finishTime >= maxTime){
-				maxTime = n.finishTime;
-			}
-		}
-		System.out.print("Max time is..." + maxTime);
-		*/
+		//Output the optimal schedule
 		OutputFile.fileWriter();
 		br.close(); 
 	}

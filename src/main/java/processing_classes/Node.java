@@ -1,12 +1,12 @@
 package processing_classes;
 
 /* 
- * Object for each node of the graph.
+ * Object for each node of the graph. Keeps track of the vital details for each node also.
  */
 public class Node {
 	public String name;
 	public int weight;
-	public int startTime; //TODO should we change these to double
+	public int startTime;
 	public int allocProc;
 	public int finishTime;
 	

@@ -2,10 +2,12 @@ package processing_classes;
 
 import java.util.ArrayList;
 
+//Path contains an arraylist of nodes, thus keeping track of the assignment of nodes on the schedule.
 public class Path {
 	
 	private ArrayList<Node> path;
 	private Node currentNode;
+	//currentNode is kept track of for quickly getting current node information from the Path.
 
 	Path(Node new_state){
 		path = new ArrayList<Node>();

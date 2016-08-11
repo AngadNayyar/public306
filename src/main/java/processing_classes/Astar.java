@@ -13,7 +13,8 @@ public class Astar {
 
 	
 	public Path solveAstar() throws InterruptedException{
-				
+		
+		//Set initial node for openQueue
 		Node initialNode = new Node();
 		Path initialPath = new Path(initialNode);
 		StateWeights initialSW = new StateWeights(initialPath,0.0);
@@ -21,40 +22,25 @@ public class Astar {
 		
 		while (!openQueue.isEmpty()){
 			
-			//Gets the state with best f value, top of the queue, without removing it
+			//Gets the state with best f value, remove this state from openQueue
 			StateWeights stateWeight = openQueue.poll();
 			if (isComplete(stateWeight)){
 				//Returns the optimal path
 				setScheduleOnGraph(stateWeight.getState());
 				return stateWeight.getState();
 			} else {
-			//Expanding the state. what do with this?
-			expandState(stateWeight, 2); //<-- shouldn't this be variable processor or similar
+			//Expanding the state to all possible next states
+			expandState(stateWeight, 2);
 			}
 			closedQueue.add(stateWeight);
 		}
 		
-		
 		return null;
-		//OPEN priority queue required, ordered by ascending f values
-		//OPEN <- S(init)
-		//while OPEN =/= Empty
-		// 	S <- headOf(OPEN)
-		//	if s complete state then
-		// 		return optimal solution S
-		// 	Expand S to new states NEW
-		//	for all Si (E) NEW do
-		// 	calculate F(si)
-		// 	Insert si into OPEN, unless duplicate in CLOSED or OPEN
-		// 	CLOSED <- CLOSED + s; OPEN <- OPEN - s;
 	}
 	
 	//Sets the value of the chosen path onto the nodes of the graph
 	private void setScheduleOnGraph(Path state) {
-		Set<Node> graphNodes = MainReadFile.graph.vertexSet();
-		
-		
-		
+		Set<Node> graphNodes = MainReadFile.graph.vertexSet();		
 		//Loops through nodes of the path and then the nodes of the graph
 		//setting the values of passed Path into the graphs nodes
 		for (Node n : state.getPath() ){
@@ -63,10 +49,8 @@ public class Astar {
 					g.setProc(n.allocProc);
 					g.setStart(n.startTime);
 				}
-			}
-			
-		}
-		
+			}			
+		}		
 	}
 
 
@@ -74,23 +58,25 @@ public class Astar {
 	//or if it exists in CLOSE. Don't know how/the significance of it yet.
 	private void expandState(StateWeights stateWeight, int processors){
 		Path current = stateWeight.state;
+		//Get all the freeNodes available for the path
 		ArrayList<Node> freeNodes = freeNodes(stateWeight);
+		//Determine new states from the freenodes, get their weights, and add to openQueue
 		for (Node n: freeNodes){
 			for (int i = 1; i <= processors; i++){ 
+				//Assign every free node to every available processor
 				Node newNode = n;
-				newNode.setProc(i);
+				newNode.setProc(i); //Sets the processor for the newNode
 				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
 				double pathWeight = heuristicCost(temp);
-				//Would check here to see if it exists in open or closed already, but unsure how to do that yet.
-				openQueue.add(new StateWeights(temp, pathWeight));
-			}
+				openQueue.add(new StateWeights(temp, pathWeight)); //Add new StateWeight to the openqueue.
+			} 
 		}
 	}
 
 	//Function to determine the start and finish time for the node
 	private void setNodeTimes(Path current, Node newNode, int processor){
-		
+		System.out.print("\n PROCESS" + processor);
 		//Get the set of incoming edges of the newNode
 		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(newNode);
 		//End time of the last node to run on the processor
@@ -107,13 +93,16 @@ public class Astar {
 		}else for (DefaultEdge e: incomingEdges){
 			int communicationTime = (int) MainReadFile.graph.getEdgeWeight(e);
 			
+			
 			//Gets the parent node end time and processor
 			Node parentNode = MainReadFile.graph.getEdgeSource(e);
 			ArrayList<Node> setOfNodesInPath = current.getPath();
 			
 			//Needs to search through path to find parent node
 			for (Node n: setOfNodesInPath){
+				System.out.print("\n New node");
 				if (n.name.equals(parentNode.name)){
+					System.out.print("Proc " + n.allocProc);
 					parentEndTime = n.finishTime;
 					parentProcessor = n.allocProc;
 				}
@@ -210,15 +199,19 @@ public class Astar {
 		ArrayList<String> all = new ArrayList<String>();
 		ArrayList<String> unused = new ArrayList<String>();
 		Set<Node> allNodes = MainReadFile.graph.vertexSet();
+		//Get all the nodes from graph in arraylist string format
 		for (Node n: allNodes){
 			all.add(n.name);
 		}
+		//Get all the nodes used in the path in arraylist string format
 		for (Node n: usedNodes){
 			used.add(n.name);
 		}
+		//Subtracted used from all nodes, to get the remaining nodes.
 		all.removeAll(used);
 		unused = (ArrayList<String>) all.clone();
 		//This loops through all the remaining nodes, and checks to see if they pass the predecessor constraint.
+		//Removes them if they don't.
 		for (Node n: allNodes){
 			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(n);
 			for (DefaultEdge e: incomingEdges){
@@ -228,12 +221,14 @@ public class Astar {
 				}
 			}
 		}
+		//Add the freeNodes into an Arraylist of Nodes.
 		ArrayList<Node> freeNodes = new ArrayList<Node>();
 		for (Node n: allNodes){
 			if (all.contains(n.name)){
 				freeNodes.add(n);
 			}
 		}
+		//Return the freeNodes for the path
 		return freeNodes;
 	}
 
@@ -242,13 +237,16 @@ public class Astar {
 		ArrayList<Node> usedNodes = stateWeight.state.getPath();
 		ArrayList<String> used = new ArrayList<String>();
 		ArrayList<String> all = new ArrayList<String>();
+		//Get all used nodes in the path
 		for (Node n: usedNodes){
 			used.add(n.name);
 		}
 		Set<Node> allNodes = MainReadFile.graph.vertexSet();
+		//Get all the nodes in the graph
 		for (Node n: allNodes){
 			all.add(n.name);
 		}
+		//Check if all the nodes have been used, if yes, the optimal solution has been found.
 		all.removeAll(used);
 		if (all.isEmpty()){
 			return true;

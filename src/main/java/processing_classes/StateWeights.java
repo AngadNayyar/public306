@@ -1,7 +1,6 @@
 package processing_classes;
 
-//Possible to have this as apart of the Node class
-//needs to represent a schedule AKA 
+//This class represents the state, along with the weight of the state determined by the f(s) function
 public class StateWeights implements Comparable<StateWeights> {
 	public Path state;
 	public Double pathWeight;
