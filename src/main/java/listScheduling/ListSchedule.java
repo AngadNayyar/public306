@@ -67,9 +67,9 @@ public class ListSchedule {
 			
 		}
 
-		for (Node node : nodeList){
-			System.out.println(node.toString());
-		}
+//		for (Node node : nodeList){
+//			System.out.println(node.toString());
+//		}
 
 		scheduleList(); 
 
