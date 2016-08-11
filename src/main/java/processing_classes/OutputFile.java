@@ -20,7 +20,7 @@ public class OutputFile {
 		//Loops through nodes and prints to output file.
 		Set<Node> nodes = MainReadFile.graph.vertexSet();
 		for (Node node : nodes){
-			writer.println(node.name+"\t\t[Weight ="+node.weight+",Start="+node.startTime+",Processor="+node.allocProc+"];");
+			writer.println(node.name+"\t\t[Weight ="+node.weight+",Start="+node.startTime+", Finish="+node.finishTime+", Processor="+node.allocProc+"];");
 		}
 		
 		//Loops through edges and prints to output file.

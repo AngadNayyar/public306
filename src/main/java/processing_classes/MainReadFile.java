@@ -56,7 +56,6 @@ public class MainReadFile {
 			//If input line matches regular expression of a node add to hash map and graph data structure.
 			while (nodeMatch.find()) {
 				nodeName = nodeMatch.group(1);
-				System.out.println(nodeName);
 				nodeWeight = Integer.parseInt(nodeMatch.group(2));
 				node = new Node(nodeName, nodeWeight, 0,0,0);
 				hMap.put(nodeName, node);

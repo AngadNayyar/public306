@@ -56,9 +56,9 @@ public class ListSchedule {
 			}
 		}
 
-		for (Node node : nodeList){
-			System.out.println(node.toString());
-		}
+//		for (Node node : nodeList){
+//			System.out.println(node.toString());
+//		}
 
 		scheduleList(); 
 
@@ -122,7 +122,7 @@ public class ListSchedule {
 			if (allParentsOnProc){
 				minFinTime = proc.finTime + node.weight;
 				allocProc = proc;
-				//				System.out.println("if all parents on same processor " + minFinTime);
+				System.out.println(minFinTime);
 			}
 
 			// If the nodes parents are on different nodes, then calculate the max length of the parent tasks 
@@ -162,10 +162,13 @@ public class ListSchedule {
 		// the processor that is selected as the allocated processor is the processor that when the task is ran on this 
 		// processor it has the earliest finish time  
 		allocProc.addTask(node, minFinTime);
-		System.out.println(node.name);
-		System.out.println("minFinTime " + minFinTime);
+//		System.out.println(node.name);
+//		System.out.println("2nd minFinTime " + minFinTime);
 		//		System.out.println(allocProc.number);
 		node.updateAllocation(minFinTime, allocProc.number);
+//		System.out.println("node start " + node.startTime);
+//		System.out.println("proc fin" + allocProc);
+
 
 	}
 

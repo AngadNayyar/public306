@@ -14,7 +14,7 @@ public class Processor {
 	
 	public void addTask(Node node, int minTime){
 		this.schedule.add(node); 
-		this.finTime += minTime;
+		this.finTime = minTime;
 	}
 
 }
