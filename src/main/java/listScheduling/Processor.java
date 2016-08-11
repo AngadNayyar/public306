@@ -19,4 +19,12 @@ public class Processor {
 		this.finTime = minTime;
 	}
 
+	public void setFinTime(int time){
+		this.finTime = time; 
+	}
+	
+	public int getFinTime(){
+		return this.finTime; 
+	}
+
 }

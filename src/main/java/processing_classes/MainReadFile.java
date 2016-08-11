@@ -97,7 +97,7 @@ public class MainReadFile {
 
 		//		TODO 
 		//		Testing the list scheduling implementation
-		ListSchedule.makepriorityList(); 
+		ListSchedule.runListSchedule(graph); 
 
 
 		OutputFile.fileWriter();

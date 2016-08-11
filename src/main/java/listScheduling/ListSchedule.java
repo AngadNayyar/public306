@@ -21,15 +21,27 @@ public class ListSchedule {
 	// nodeList is the array list that will contain the nodes of the graph after the topological sort 
 	// tempGraph is a copy of the graph - this is created so nodes can be deleted without deleting from the original 
 	// procList is the array list of processors that store all of the processors to be scheduled onto 
-	private static ArrayList<Node> nodeList = new ArrayList<Node>(); 
+	public static ArrayList<Node> nodeList = new ArrayList<Node>(); 
 	private static DefaultDirectedWeightedGraph <Node, DefaultEdge> tempGraph = new DefaultDirectedWeightedGraph <Node, DefaultEdge>(DefaultWeightedEdge.class); 
 	private static ArrayList<Processor> procList = new ArrayList<Processor>(); 
 
-
+	
+	// This method runs the list schedule algorithm - called from MainReadFile 
+	public static void runListSchedule(DefaultDirectedWeightedGraph <Node, DefaultEdge> graph){
+		
+		// make the priority list 
+		makepriorityList(graph); 
+		// Call the schedule list function to take the array list created and schedule each task 
+		scheduleList(); 
+		
+	}
+	
+	
+	
 	//Method to create the temporary graph object for use in the topological sort 
-	public static void createTempGraph(){
+	public static void createTempGraph(DefaultDirectedWeightedGraph <Node, DefaultEdge> graph){
 		// get the original graphs vertices, loop through all the vertices and add a copy to the temp graph  
-		Set<Node> nodes = MainReadFile.graph.vertexSet();
+		Set<Node> nodes = graph.vertexSet();
 		for (Node node: nodes){
 			tempGraph.addVertex(node); 	
 		}
@@ -43,10 +55,10 @@ public class ListSchedule {
 
 
 	// This method creates the list of the task nodes, ordering topologically, where all of the nodes are only added after their parents.  
-	public static void makepriorityList(){
+	public static void makepriorityList(DefaultDirectedWeightedGraph <Node, DefaultEdge> graph){
 
 		// Create the temporary graph 
-		createTempGraph(); 
+		createTempGraph(graph); 
 
 		// create an array list to keep track of the deleted nodes from the task graph 
 		ArrayList<Node>deletedNodes = new ArrayList<Node>(); 
@@ -69,10 +81,6 @@ public class ListSchedule {
 				}
 			}
 		}
-
-		// Call the schedule list function to take the array list created and schedule each task 
-		scheduleList(); 
-
 	}
 
 	// This method loops through each of the nodes in the priority list of task nodes, and allocates each one to a processor 
@@ -91,7 +99,7 @@ public class ListSchedule {
 			// If it is a source it can be simply scheduled to any processor - the processor with the earliest finish time 
 			if (node.findParents(MainReadFile.graph).size() == 0){
 				// call the function to find the processor to allocate the source 
-				Processor allocatedProc = getMinFinishTimeSource(); 
+				Processor allocatedProc = getMinFinishTimeSource(procList); 
 				// Add the node to the processor, to keep track of the schedule on the processor and the node information
 				allocatedProc.addTask(node, node.weight); 
 				node.updateAllocation(allocatedProc.finTime, allocatedProc.number);
@@ -171,7 +179,7 @@ public class ListSchedule {
 
 
 	// Find the processor to allocate a source node by looking at only the earliest finish times of the processor 
-	public static Processor getMinFinishTimeSource(){
+	public static Processor getMinFinishTimeSource(ArrayList<Processor> procList){
 		int minTime = procList.get(0).finTime; 
 		Processor minProc = procList.get(0); 
 
