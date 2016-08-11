@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
-import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 public class Astar {
@@ -30,7 +29,7 @@ public class Astar {
 				return stateWeight.getState();
 			} else {
 			//Expanding the state. what do with this?
-			expandState(stateWeight, 2); //<-- shouldn't this be variable processor or similar	
+			expandState(stateWeight, 2); //<-- shouldn't this be variable processor or similar
 			}
 			closedQueue.add(stateWeight);
 		}
@@ -75,7 +74,6 @@ public class Astar {
 	private void expandState(StateWeights stateWeight, int processors){
 		Path current = stateWeight.state;
 		ArrayList<Node> freeNodes = freeNodes(stateWeight);
-		
 		for (Node n: freeNodes){
 			for (int i = 1; i <= processors; i++){ 
 				Node newNode = n;
@@ -94,7 +92,6 @@ public class Astar {
 		
 		//Get the set of incoming edges of the newNode
 		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(newNode);
-		
 		//End time of the last node to run on the processor
 		int processorEndTime = latestEndTimeOnProcessor(current, processor);
 		int parentEndTime = 0;
@@ -193,7 +190,7 @@ public class Astar {
 			return node.weight;
 		//Otherwise call its successors, and recursively call the bottom level function.
 		} else for (DefaultEdge e: outgoingEdges){
-			Node successor = MainReadFile.graph.getEdgeSource(e);
+			Node successor = MainReadFile.graph.getEdgeTarget(e);
 			int temp = ComputationalBottomLevel(successor);
 			//Choose the highest path bottomLevel and continue.
 			if (temp > bottomLevel){
@@ -209,27 +206,31 @@ public class Astar {
 		//This gets all the used nodes in the current path, then removes these nodes from all the nodes in the graph.
 		ArrayList<Node> usedNodes = stateWeight.state.getPath();
 		ArrayList<String> used = new ArrayList<String>();
+		ArrayList<String> all = new ArrayList<String>();
+		Set<Node> allNodes = MainReadFile.graph.vertexSet();
+		for (Node n: allNodes){
+			all.add(n.name);
+		}
 		for (Node n: usedNodes){
 			used.add(n.name);
 		}
-		Set<Node> allNodes = MainReadFile.graph.vertexSet();
-		for (Node n: allNodes){
-			if (used.contains(n.name)){
-				allNodes.remove(n);
-			}
-		}
+		all.removeAll(used);
 		//This loops through all the remaining nodes, and checks to see if they pass the predecessor constraint.
 		for (Node n: allNodes){
 			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(n);
 			for (DefaultEdge e: incomingEdges){
 				Node edgeNode = MainReadFile.graph.getEdgeSource(e);
 				if (allNodes.contains(edgeNode)){
-					allNodes.remove(n);
+					all.remove(n.name);
 				}
 			}
 		}
 		ArrayList<Node> freeNodes = new ArrayList<Node>();
-		freeNodes.addAll(allNodes);
+		for (Node n: allNodes){
+			if (all.contains(n.name)){
+				freeNodes.add(n);
+			}
+		}
 		return freeNodes;
 	}
 

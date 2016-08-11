@@ -67,8 +67,9 @@ public class MainReadFile {
 				graph.setEdgeWeight(e, edgeWeight);
 		    }
 		}
-		
-		//Just to test algorithm
+		Astar AstarSolve = new Astar();
+		AstarSolve.solveAstar();
+		/*/Just to test algorithm
 		Astar AstarSolve = new Astar();
 		Path optimalState = AstarSolve.solveAstar();
 		ArrayList<Node> nodes = optimalState.getPath();
@@ -79,7 +80,7 @@ public class MainReadFile {
 			}
 		}
 		System.out.print("Max time is..." + maxTime);
-		
+		*/
 		//OutputFile.fileWriter();
 		br.close(); 
 	}
