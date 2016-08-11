@@ -6,7 +6,7 @@ import java.io.PrintWriter;
 import java.util.Set;
 import org.jgrapht.graph.DefaultEdge;
 
-/*
+/**
  * This class OutputFile creates the output and then processes the graph data structure and prints 
  * to the output file (.dot file format) using PrintWriter.
  */

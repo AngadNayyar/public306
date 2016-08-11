@@ -6,7 +6,7 @@ import java.util.Set;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
-/* 
+/**
  * Object for each node of the graph.
  */
 public class Node {
@@ -26,19 +26,23 @@ public class Node {
 		finishTime = f;
 	}
 	
+	//Setter for allocProc field
 	public void setProcessor(int proc){
 		this.allocProc = proc; 
 	}
 	
+	//Setter for statTime field
 	public void setStartTime(int time){
 		this.startTime = time; 
 	}
 	
+	//Overrides the toString method
 	@Override 
 	public String toString(){
 		return name; 
 	}
 	
+	//Method for updating the fields of this class
 	public void updateAllocation(int finishTime, int allocProc){
 		this.startTime = finishTime - this.weight;
 		this.allocProc = allocProc;
@@ -46,7 +50,7 @@ public class Node {
 		
 	}
 	
-// This method finds the parent nodes of a vertex and returns them in an ArrayList.	
+	//This method finds the parent nodes of a vertex and returns them in an ArrayList.	
 	public ArrayList<Node> findParents(DefaultDirectedWeightedGraph <Node, DefaultEdge> graph) {
 
 		ArrayList<Node> parents = new ArrayList<Node>();

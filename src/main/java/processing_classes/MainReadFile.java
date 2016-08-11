@@ -12,7 +12,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 import listScheduling.ListSchedule;
 
-/*
+/**
  * This class MainReadFile is the main class for the project. It processes the provided input file from command line
  * and converts it to a graph data structure.
  */

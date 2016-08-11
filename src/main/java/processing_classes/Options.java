@@ -1,5 +1,9 @@
 package processing_classes;
 
+/**
+ * This class allows us to create an object of the options that are passed 
+ * in through the command line.
+ */
 public class Options {
 
 private int numProcessors;
