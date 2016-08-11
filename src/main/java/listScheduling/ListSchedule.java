@@ -52,14 +52,7 @@ public class ListSchedule {
 			for (int i=0; i<length; i++){
 				// If it is a source node then add it to the priority array list.
 				// Then delete this node from the graph to find the children by making them sources.
-//				System.out.println(tempGraph.inDegreeOf(tempNodeList.get(i)));
-				System.out.println();
-				for (int j = 0; j < deletedNodes.size(); j++) {
-				System.out.println(deletedNodes.get(j));
-				}
-				System.out.println("node inspecting " + tempNodeList.get(i));
-				System.out.println("is node inspecting in deleted nodes? "  + deletedNodes.contains(tempNodeList.get(i)));
-
+				
 				if (false == deletedNodes.contains(tempNodeList.get(i))){
 					if (tempGraph.inDegreeOf(tempNodeList.get(i)) == 0){
 						nodeList.add(tempNodeList.get(i));
@@ -162,7 +155,7 @@ public class ListSchedule {
 						// and then the communication cost from that parent
 						DefaultEdge edge = MainReadFile.graph.getEdge(parent, node);
 						int communicationTime = (int) MainReadFile.graph.getEdgeWeight(edge);
-						int currentCriticalPathTime = parent.finishTime + node.weight + communicationTime;
+						int currentCriticalPathTime = Math.max((parent.finishTime + communicationTime), proc.finTime) + node.weight ;
 						if (criticalPathTime < currentCriticalPathTime) {
 							criticalPathTime = currentCriticalPathTime;
 						}
