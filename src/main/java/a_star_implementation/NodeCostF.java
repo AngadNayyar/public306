@@ -1,4 +1,5 @@
-package processing_classes;
+package a_star_implementation;
+
 
 //Possible to have this as apart of the Node class
 //needs to represent a schedule AKA 

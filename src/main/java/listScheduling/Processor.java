@@ -1,6 +1,8 @@
-package processing_classes;
+package listScheduling;
 
 import java.util.ArrayList;
+
+import processing_classes.Node;
 
 public class Processor {
 	

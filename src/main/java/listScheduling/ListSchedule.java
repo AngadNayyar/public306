@@ -9,7 +9,6 @@ import java.util.Set;
 
 import processing_classes.MainReadFile;
 import processing_classes.Node;
-import processing_classes.Processor;
 
 public class ListSchedule {
 

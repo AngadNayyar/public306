@@ -1,4 +1,4 @@
-package processing_classes;
+package a_star_implementation;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -6,6 +6,9 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
+
+import processing_classes.MainReadFile;
+import processing_classes.Node;
 
 public class Astar {
 

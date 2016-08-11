@@ -1,6 +1,8 @@
-package processing_classes;
+package a_star_implementation;
 
 import java.util.ArrayList;
+
+import processing_classes.Node;
 
 public class Path {
 	
