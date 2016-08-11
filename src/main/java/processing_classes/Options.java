@@ -64,7 +64,7 @@ private String outputFileName;
 	
 	//setter output file name
 	public void setOutputFileName(String oFN) {
-		outputFileName = oFN.split(".dot")[0] + "output.dot";
+		outputFileName = oFN.split(".dot")[0] + "-output.dot";
 	}
 	
 }
