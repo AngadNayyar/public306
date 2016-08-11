@@ -39,26 +39,44 @@ public class ListSchedule {
 		createTempGraph(); 
 
 		// Get the set of all the nodes in the graph and convert to an array list 
-		Set<Node> nodes = tempGraph.vertexSet();
-
-		ArrayList<Node>tempNodeList = new ArrayList<Node>(nodes); 
+//		Set<Node> nodes = tempGraph.vertexSet();
+//
+//		ArrayList<Node>tempNodeList = new ArrayList<Node>(nodes); 
+		ArrayList<Node>deletedNodes = new ArrayList<Node>(); 
 
 		// While there are still nodes in the graph, add them to the array list in order of precedence 
 		while (tempGraph.vertexSet().size() > 0){
+			Set<Node> nodes = tempGraph.vertexSet();
+			ArrayList<Node>tempNodeList = new ArrayList<Node>(nodes); 
 			int length = nodes.size(); 
 			for (int i=0; i<length; i++){
 				// If it is a source node then add it to the priority array list.
-				// Then delete this node from the graph to find the children by making them sources.  
-				if (tempGraph.inDegreeOf(tempNodeList.get(i)) == 0){
-					nodeList.add(tempNodeList.get(i));
-					tempGraph.removeVertex(tempNodeList.get(i));
+				// Then delete this node from the graph to find the children by making them sources.
+//				System.out.println(tempGraph.inDegreeOf(tempNodeList.get(i)));
+				System.out.println();
+				for (int j = 0; j < deletedNodes.size(); j++) {
+				System.out.println(deletedNodes.get(j));
+				}
+				System.out.println("node inspecting " + tempNodeList.get(i));
+				System.out.println("is node inspecting in deleted nodes? "  + deletedNodes.contains(tempNodeList.get(i)));
+
+				if (false == deletedNodes.contains(tempNodeList.get(i))){
+					if (tempGraph.inDegreeOf(tempNodeList.get(i)) == 0){
+						nodeList.add(tempNodeList.get(i));
+						//					System.out.println(tempNodeList.get(i).name);
+						tempGraph.removeVertex(tempNodeList.get(i));
+						deletedNodes.add(tempNodeList.get(i));
+
+					}
 				}
 			}
+			//			System.out.println(tempGraph.vertexSet().size());
+			
 		}
 
-//		for (Node node : nodeList){
-//			System.out.println(node.toString());
-//		}
+		for (Node node : nodeList){
+			System.out.println(node.toString());
+		}
 
 		scheduleList(); 
 
@@ -162,12 +180,12 @@ public class ListSchedule {
 		// the processor that is selected as the allocated processor is the processor that when the task is ran on this 
 		// processor it has the earliest finish time  
 		allocProc.addTask(node, minFinTime);
-//		System.out.println(node.name);
-//		System.out.println("2nd minFinTime " + minFinTime);
+		//		System.out.println(node.name);
+		//		System.out.println("2nd minFinTime " + minFinTime);
 		//		System.out.println(allocProc.number);
 		node.updateAllocation(minFinTime, allocProc.number);
-//		System.out.println("node start " + node.startTime);
-//		System.out.println("proc fin" + allocProc);
+		//		System.out.println("node start " + node.startTime);
+		//		System.out.println("proc fin" + allocProc);
 
 
 	}
