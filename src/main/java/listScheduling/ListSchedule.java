@@ -18,7 +18,7 @@ public class ListSchedule {
 	private static ArrayList<Processor> procList = new ArrayList<Processor>(); 
 
 
-
+	//Creates a temporary graph
 	public static void createTempGraph(){
 		Set<Node> nodes = MainReadFile.graph.vertexSet();
 
