@@ -20,7 +20,7 @@ public class Node {
 	}
 	
 	public Node(){
-		name = "name";
+		name = "$";
 		weight = 0;
 		startTime = 0;
 		allocProc = 0;

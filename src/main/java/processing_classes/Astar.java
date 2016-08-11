@@ -104,7 +104,6 @@ public class Astar {
 			newNode.setStart(processorEndTime);
 		//If it does have parents, calculate the latest time newNode can run on processor
 		}else for (DefaultEdge e: incomingEdges){
-			
 			int communicationTime = (int) MainReadFile.graph.getEdgeWeight(e);
 			
 			//Gets the parent node end time and processor
@@ -220,8 +219,8 @@ public class Astar {
 			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(n);
 			for (DefaultEdge e: incomingEdges){
 				Node edgeNode = MainReadFile.graph.getEdgeSource(e);
-				if (allNodes.contains(edgeNode)){
-					all.remove(n.name);
+				if (all.contains(edgeNode.name)){
+					all.remove(n.name);			
 				}
 			}
 		}
