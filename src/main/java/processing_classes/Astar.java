@@ -24,7 +24,7 @@ public class Astar {
 			
 			//Gets the state with best f value, remove this state from openQueue
 			StateWeights stateWeight = openQueue.poll();
-			if (isComplete(stateWeight)){
+			if (isComplete(stateWeight)){				
 				//Returns the optimal path
 				setScheduleOnGraph(stateWeight.getState());
 				return stateWeight.getState();
@@ -64,20 +64,43 @@ public class Astar {
 		for (Node n: freeNodes){
 			for (int i = 1; i <= processors; i++){ 
 				//Assign every free node to every available processor
-				Node newNode = n;
+				Node newNode = new Node(n);
 				newNode.setProc(i); //Sets the processor for the newNode
 				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
 				double pathWeight = heuristicCost(temp);
-				openQueue.add(new StateWeights(temp, pathWeight)); //Add new StateWeight to the openqueue.
+				System.out.print("\n PATH NOW ");
+				for (Node x: temp.getPath()){
+					System.out.print(" " + x.name);
+					System.out.print("." + x.allocProc);
+				}
+				if (!openQueue.contains(pathWeight) && !closedQueue.contains(pathWeight)){
+					openQueue.add(new StateWeights(temp, pathWeight)); //Add new StateWeight to the openQueue.
+				}
+				System.out.print("\n Heuristic " + pathWeight);
+				for (StateWeights s: openQueue){
+					System.out.print("\n Added path, weight: " + s.pathWeight + " ");
+					for (Node x: s.state.getPath()){
+						System.out.print(" " + x.name);
+						System.out.print("." + x.allocProc);
+					}
+					System.out.print("W" + s.pathWeight);
+				}
 			} 
 		}
 	}
 
 	//Function to determine the start and finish time for the node
 	public static void setNodeTimes(Path current, Node newNode, int processor){
+		Set<Node> allNodes = MainReadFile.graph.vertexSet();
+		Node graphNode = newNode;
+		for (Node n: allNodes){
+			if (n.name == newNode.name){
+				graphNode = n;
+			}
+		}
 		//Get the set of incoming edges of the newNode
-		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(newNode);
+		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(graphNode);
 		//End time of the last node to run on the processor
 		int processorEndTime = latestEndTimeOnProcessor(current, processor);
 		int parentEndTime = 0;
@@ -124,11 +147,6 @@ public class Astar {
 			newNode.setStart(processorEndTime);
 		}
 		
-		for (Node n: current.getPath()){
-			System.out.print(n.name);
-			System.out.print(" " + n.allocProc);
-		}
-		
 		//Sets the Finish time
 		newNode.setFinish(newNode.weight + newNode.startTime);
 	}
@@ -154,6 +172,7 @@ public class Astar {
 		int startTime = 0;
 		Node maxNode = new Node();
 		int bottomLevel = 0;
+		Set<Node> allNodes = MainReadFile.graph.vertexSet();
 		ArrayList<Node> path = state.getPath();
 		//Get the node with the latest finish time from the path.
 		for (Node n: path){
@@ -162,14 +181,21 @@ public class Astar {
 				maxNode = n;
 			}
 		}
+		//get graph vertex of our node
+		Node graphNode = maxNode;
+		for (Node n: allNodes){
+			if (n.name == maxNode.name){
+				graphNode = n;
+			}
+		}
 		//Determine bottom level cost of node
-		bottomLevel = ComputationalBottomLevel(maxNode);
+		bottomLevel = ComputationalBottomLevel(graphNode);
 		
 		//Get start time of node
 		startTime = maxNode.startTime;
 		
 		//Return startTime + the bottomLevel of the node, divided by the number of processors
-		return (((double) startTime + (double) bottomLevel)/2);
+		return (((double) startTime + (double) bottomLevel));
 	}
 	
 	//Recursive function to get the bottom level of the node for heuristic calculation.
@@ -253,14 +279,14 @@ public class Astar {
 		all.removeAll(used);
 		if (all.isEmpty()){
 			for (StateWeights s: closedQueue){
-				System.out.print("\n New path");
+				System.out.print("\n Closed path, weight: " + s.pathWeight + " ");
 				for (Node n: s.state.getPath()){
 					System.out.print(n.name);
 					System.out.print(" " + n.allocProc);
 				}
 			}
 			for (StateWeights s: openQueue){
-				System.out.print("\n New path");
+				System.out.print("\n Open path, weight: " + s.pathWeight + " ");
 				for (Node n: s.state.getPath()){
 					System.out.print(n.name);
 					System.out.print(" " + n.allocProc);

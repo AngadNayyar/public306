@@ -27,6 +27,14 @@ public class Node {
 		finishTime = 0;	
 	}
 	
+	public Node(Node other){
+		name = other.name;
+		weight = other.weight;
+		startTime = other.startTime;
+		allocProc = other.allocProc;
+		finishTime = other.finishTime;
+	}
+	
 	public void setFinish(int f){
 		this.finishTime = f;
 	}

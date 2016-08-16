@@ -16,6 +16,6 @@ public class StateWeights implements Comparable<StateWeights> {
 	}
 	
 	public int compareTo(StateWeights second){
-		return second.pathWeight.compareTo(pathWeight);
+		return pathWeight.compareTo(second.pathWeight);
 	}
 }
