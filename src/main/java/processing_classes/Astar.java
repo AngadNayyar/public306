@@ -75,7 +75,7 @@ public class Astar {
 	}
 
 	//Function to determine the start and finish time for the node
-	private void setNodeTimes(Path current, Node newNode, int processor){
+	public static void setNodeTimes(Path current, Node newNode, int processor){
 		//Get the set of incoming edges of the newNode
 		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(newNode);
 		//End time of the last node to run on the processor
@@ -134,7 +134,7 @@ public class Astar {
 	}
 	
 	//Calculates the end time of the last node (task) to run on the passed processor
-	private int latestEndTimeOnProcessor(Path current, int processor) {
+	private static int latestEndTimeOnProcessor(Path current, int processor) {
 		ArrayList<Node> path = current.getPath();
 		int currentFinishTime = 0;
 		for (Node n: path){
