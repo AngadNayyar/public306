@@ -149,7 +149,7 @@ public class Astar {
 
 
 	//Function to determine heuristic cost f(s) of the state.
-	private double heuristicCost(Path state) {
+	public static double heuristicCost(Path state) {
 		int maxTime = 0;
 		int startTime = 0;
 		Node maxNode = new Node();
@@ -173,7 +173,7 @@ public class Astar {
 	}
 	
 	//Recursive function to get the bottom level of the node for heuristic calculation.
-	private int ComputationalBottomLevel(Node node){
+	private static int ComputationalBottomLevel(Node node){
 		int bottomLevel = 0;
 		//Get outgoing edges of node
 		Set<DefaultEdge> outgoingEdges = MainReadFile.graph.outgoingEdgesOf(node);
