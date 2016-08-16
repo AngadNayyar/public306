@@ -9,13 +9,13 @@ public class Path {
 	private Node currentNode;
 	//currentNode is kept track of for quickly getting current node information from the Path.
 
-	Path(Node new_state){
+	public Path(Node new_state){
 		path = new ArrayList<Node>();
 		path.add(new_state);
 		currentNode = new_state;
 	}
 	
-	Path(Path existing, Node next_state){
+	public Path(Path existing, Node next_state){
 		path = new ArrayList<Node>(existing.getPath());
 		path.add(next_state);
 		currentNode = next_state;
