@@ -76,7 +76,6 @@ public class Astar {
 
 	//Function to determine the start and finish time for the node
 	private void setNodeTimes(Path current, Node newNode, int processor){
-		System.out.print("\n PROCESS" + processor);
 		//Get the set of incoming edges of the newNode
 		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(newNode);
 		//End time of the last node to run on the processor
@@ -98,13 +97,11 @@ public class Astar {
 			Node parentNode = MainReadFile.graph.getEdgeSource(e);
 			ArrayList<Node> setOfNodesInPath = current.getPath();
 			
-			//Needs to search through path to find parent node
+			//Needs to search through path to find parent node with the latest end time.
 			for (Node n: setOfNodesInPath){
-				System.out.print("\n New node");
 				if (n.name.equals(parentNode.name)){
-					System.out.print("Proc " + n.allocProc);
-					parentEndTime = n.finishTime;
-					parentProcessor = n.allocProc;
+						parentEndTime = n.finishTime;
+						parentProcessor = n.allocProc;
 				}
 			}
 			//Checks to see if communication time needs to be added to the latest time allow by current parent
@@ -126,6 +123,12 @@ public class Astar {
 		}else{
 			newNode.setStart(processorEndTime);
 		}
+		
+		for (Node n: current.getPath()){
+			System.out.print(n.name);
+			System.out.print(" " + n.allocProc);
+		}
+		
 		//Sets the Finish time
 		newNode.setFinish(newNode.weight + newNode.startTime);
 	}
@@ -165,8 +168,8 @@ public class Astar {
 		//Get start time of node
 		startTime = maxNode.startTime;
 		
-		//Return startTime + the bottomLevel of the node
-		return ((double) startTime + (double) bottomLevel);
+		//Return startTime + the bottomLevel of the node, divided by the number of processors
+		return (((double) startTime + (double) bottomLevel)/2);
 	}
 	
 	//Recursive function to get the bottom level of the node for heuristic calculation.
@@ -249,6 +252,20 @@ public class Astar {
 		//Check if all the nodes have been used, if yes, the optimal solution has been found.
 		all.removeAll(used);
 		if (all.isEmpty()){
+			for (StateWeights s: closedQueue){
+				System.out.print("\n New path");
+				for (Node n: s.state.getPath()){
+					System.out.print(n.name);
+					System.out.print(" " + n.allocProc);
+				}
+			}
+			for (StateWeights s: openQueue){
+				System.out.print("\n New path");
+				for (Node n: s.state.getPath()){
+					System.out.print(n.name);
+					System.out.print(" " + n.allocProc);
+				}
+			}
 			return true;
 		} else {
 			return false;
