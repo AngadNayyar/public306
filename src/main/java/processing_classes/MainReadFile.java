@@ -23,7 +23,7 @@ public class MainReadFile {
 	//This class holds the options given at the command line
 	public static Options options = new Options();
 
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException, InterruptedException {
 		
 		String line;
 		String nodeName, edgeOne, edgeTwo; 
@@ -55,7 +55,7 @@ public class MainReadFile {
 			while (nodeMatch.find()) {
 				nodeName = nodeMatch.group(1);
 				nodeWeight = Integer.parseInt(nodeMatch.group(2));
-				node = new Node(nodeName, nodeWeight, 0,0);
+				node = new Node(nodeName, nodeWeight, 0,0,0);
 				hMap.put(nodeName, node);
 				graph.addVertex(node); 				
 		    }	
@@ -92,7 +92,8 @@ public class MainReadFile {
 			}
 		}
 		
-		Graph graph1 = new Graph(graph);
+		Astar astarSolve = new Astar();
+		astarSolve.solveAstar();
 		
 		OutputFile.fileWriter();
 		br.close(); 
