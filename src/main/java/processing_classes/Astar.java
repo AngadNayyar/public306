@@ -68,7 +68,7 @@ public class Astar {
 				newNode.setProc(i); //Sets the processor for the newNode
 				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
-				double pathWeight = heuristicCost(temp);
+				double pathWeight = heuristicCost(temp, stateWeight.pathWeight);
 				if (!openQueue.contains(pathWeight) && !closedQueue.contains(pathWeight)){
 					openQueue.add(new StateWeights(temp, pathWeight)); //Add new StateWeight to the openQueue.
 				}
@@ -161,11 +161,12 @@ public class Astar {
 
 
 	//Function to determine heuristic cost f(s) of the state.
-	public static double heuristicCost(Path state) {
+	public static double heuristicCost(Path state, double previousPathWeight) {
 		int maxTime = 0;
 		int startTime = 0;
 		Node maxNode = new Node();
 		int bottomLevel = 0;
+		double newPathWeight = 0;
 		Set<Node> allNodes = MainReadFile.graph.vertexSet();
 		ArrayList<Node> path = state.getPath();
 		//Get the node with the latest finish time from the path.
@@ -188,8 +189,15 @@ public class Astar {
 		//Get start time of node
 		startTime = maxNode.startTime;
 		
-		//Return startTime + the bottomLevel of the node, divided by the number of processors
-		return (((double) startTime + (double) bottomLevel));
+		//New path weight is startTime + the bottomLevel of the node, divided by the number of processors
+		newPathWeight = (double) startTime + (double) bottomLevel;
+		
+		//If new path weight is bigger than previous, select it. Otherwise use the previousPathWeight.
+		if (newPathWeight > previousPathWeight){
+			return newPathWeight;
+		} else {
+			return previousPathWeight;
+		}
 	}
 	
 	//Recursive function to get the bottom level of the node for heuristic calculation.

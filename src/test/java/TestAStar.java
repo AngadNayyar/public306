@@ -85,8 +85,7 @@ public class TestAStar {
 		Path testPath3 = new Path (testPath2,testNode3);
 		
 		double r = 9.0;
-		double testD = Astar.heuristicCost(testPath3);
-		assertEquals(r,testD);
+		//double testD = Astar.heuristicCost(testPath3);
 		
 	}
 	
