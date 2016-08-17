@@ -86,6 +86,7 @@ public class TestAStar {
 		
 		double r = 9.0;
 		//double testD = Astar.heuristicCost(testPath3);
+		//assertEquals(r,testD); Commented out as heuristic now requires the previous path weight also.
 		
 	}
 	
