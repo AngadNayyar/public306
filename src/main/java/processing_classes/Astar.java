@@ -69,23 +69,17 @@ public class Astar {
 				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
 				double pathWeight = heuristicCost(temp);
-				System.out.print("\n PATH NOW ");
-				for (Node x: temp.getPath()){
-					System.out.print(" " + x.name);
-					System.out.print("." + x.allocProc);
-				}
 				if (!openQueue.contains(pathWeight) && !closedQueue.contains(pathWeight)){
 					openQueue.add(new StateWeights(temp, pathWeight)); //Add new StateWeight to the openQueue.
 				}
-				System.out.print("\n Heuristic " + pathWeight);
-				for (StateWeights s: openQueue){
+				/*for (StateWeights s: openQueue){
 					System.out.print("\n Added path, weight: " + s.pathWeight + " ");
 					for (Node x: s.state.getPath()){
 						System.out.print(" " + x.name);
 						System.out.print("." + x.allocProc);
 					}
 					System.out.print("W" + s.pathWeight);
-				}
+				}*/
 			} 
 		}
 	}
@@ -278,7 +272,7 @@ public class Astar {
 		//Check if all the nodes have been used, if yes, the optimal solution has been found.
 		all.removeAll(used);
 		if (all.isEmpty()){
-			for (StateWeights s: closedQueue){
+			/*for (StateWeights s: closedQueue){
 				System.out.print("\n Closed path, weight: " + s.pathWeight + " ");
 				for (Node n: s.state.getPath()){
 					System.out.print(n.name);
@@ -291,7 +285,7 @@ public class Astar {
 					System.out.print(n.name);
 					System.out.print(" " + n.allocProc);
 				}
-			}
+			}*/
 			return true;
 		} else {
 			return false;
