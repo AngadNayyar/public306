@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,6 +19,9 @@ public class MainReadFile {
 	//This is the graph data structure we are building from the input file,
 	//that will be used to execute our algorithm
 	public static DefaultDirectedWeightedGraph <Node, DefaultEdge> graph = new DefaultDirectedWeightedGraph <Node, DefaultEdge>(DefaultWeightedEdge.class);
+	
+	//This class holds the options given at the command line
+	public static Options options = new Options();
 
 	public static void main(String[] args) throws IOException, InterruptedException {
 		
@@ -67,10 +69,32 @@ public class MainReadFile {
 				graph.setEdgeWeight(e, edgeWeight);
 		    }
 		}
-		//Create instant of A* Solver. Run the solver to determine optimal schedule.
-		Astar AstarSolve = new Astar();
-		AstarSolve.solveAstar();
-		//Output the optimal schedule
+		
+		//Read in number of processors from command line
+		options.setNumProcessors(Integer.parseInt(args[1]));
+		options.setOutputFileName(args[0]);
+		
+		//Read in optional options from command line
+		for (int i = 2; i < args.length; i++) {
+			//threads in parallel -p N
+			if (args[i] == "-p") {
+//				if () { check that number follows (if not throw exception)
+					options.setNumThreads(Integer.parseInt(args[i+1]));
+//				}
+			//visualisation
+			} else if (args[i] == "-v") {
+				options.setVisualisation(true);
+			//name of output file
+			} else if (args[i] == "-o") {
+//				if () { check that name follows (if not throw exception)
+					options.setOutputFileName(args[i + 1]);
+//				}
+			}
+		}
+		
+		Astar astarSolve = new Astar();
+		astarSolve.solveAstar();
+		
 		OutputFile.fileWriter();
 		br.close(); 
 	}
