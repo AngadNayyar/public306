@@ -3,6 +3,8 @@ import static org.junit.Assert.*;
 import org.jgrapht.graph.DefaultEdge;
 import org.junit.Test;
 
+import a_star_implementation.Astar;
+import a_star_implementation.Path;
 import processing_classes.*;
 
 

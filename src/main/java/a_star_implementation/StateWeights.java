@@ -1,4 +1,5 @@
-package processing_classes;
+package a_star_implementation;
+
 
 //This class represents the state, along with the weight of the state determined by the f(s) function
 public class StateWeights implements Comparable<StateWeights> {

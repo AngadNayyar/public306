@@ -1,6 +1,8 @@
-package processing_classes;
+package a_star_implementation;
 
 import java.util.ArrayList;
+
+import processing_classes.Node;
 
 //Path contains an arraylist of nodes, thus keeping track of the assignment of nodes on the schedule.
 public class Path {

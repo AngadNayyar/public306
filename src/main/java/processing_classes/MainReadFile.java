@@ -6,9 +6,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
+
+import a_star_implementation.Astar;
 
 /*
  * This class MainReadFile is the main class for the project. It processes the provided input file from command line
