@@ -13,7 +13,7 @@ public class Astar {
 
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
-
+	private int numProc;
 	
 	public Path solveAstar() throws InterruptedException{
 		
@@ -33,7 +33,7 @@ public class Astar {
 				return stateWeight.getState();
 			} else {
 			//Expanding the state to all possible next states
-			expandState(stateWeight, 2);
+			expandState(stateWeight, MainReadFile.options.getNumProcessors());
 			}
 			closedQueue.add(stateWeight);
 		}
@@ -71,7 +71,7 @@ public class Astar {
 				newNode.setProc(i); //Sets the processor for the newNode
 				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
-				double pathWeight = heuristicCost(temp, stateWeight.pathWeight);
+				double pathWeight = heuristicCost(temp, stateWeight);
 				if (!openQueue.contains(pathWeight) && !closedQueue.contains(pathWeight)){
 					openQueue.add(new StateWeights(temp, pathWeight)); //Add new StateWeight to the openQueue.
 				}
@@ -164,14 +164,16 @@ public class Astar {
 
 
 	//Function to determine heuristic cost f(s) of the state.
-	public static double heuristicCost(Path state, double previousPathWeight) {
+	public static double heuristicCost(Path state, StateWeights stateWeight) {
 		int maxTime = 0;
 		int startTime = 0;
 		Node maxNode = new Node();
 		int bottomLevel = 0;
 		double newPathWeight = 0;
+		double idleTime = 0;
 		Set<Node> allNodes = MainReadFile.graph.vertexSet();
 		ArrayList<Node> path = state.getPath();
+		double previousPathWeight = stateWeight.pathWeight;
 		//Get the node with the latest finish time from the path.
 		for (Node n: path){
 			if (n.finishTime >= maxTime){
@@ -192,8 +194,11 @@ public class Astar {
 		//Get start time of node
 		startTime = maxNode.startTime;
 		
+		//Find the idle time for next node
+		idleTime = getIdleTime(state, graphNode, stateWeight);
+		
 		//New path weight is startTime + the bottomLevel of the node, divided by the number of processors
-		newPathWeight = (double) startTime + (double) bottomLevel;
+		newPathWeight = (double) startTime + (double) bottomLevel + idleTime;
 		
 		//If new path weight is bigger than previous, select it. Otherwise use the previousPathWeight.
 		if (newPathWeight > previousPathWeight){
@@ -222,11 +227,44 @@ public class Astar {
 		}
 		return (node.weight + bottomLevel);
 	}
+	
+	private static double getIdleTime(Path state, Node currentNode, StateWeights stateWeight){
+		//First we need to calculate the free nodes of the current state
+		ArrayList<Node> freeNodes = new ArrayList<Node>();
+		ArrayList<Node> parents = new ArrayList<Node>();
+		freeNodes = freeNodes(stateWeight);
+		double earliestStartTime = Double.MAX_VALUE;
+		int processor = 0;
+		int criticalParentFinTime = 0;
+		double idleTime = 0;
+		
+		//Use a for loop to go through each of the free nodes and calculate earliest possible start time
+		//for that node and which processor it would be on.
+		for (Node f : freeNodes) {
+			for(int i = 0; i < MainReadFile.options.getNumProcessors(); i++) {
+				Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(f);
+				for (DefaultEdge incomingEdge: incomingEdges){
+					 parents.add(MainReadFile.graph.getEdgeSource(incomingEdge));	
+				}
+				for (Node parent: parents){
+					if (parent.finishTime > criticalParentFinTime){
+						criticalParentFinTime = parent.finishTime;
+					}
+				}
+				if (criticalParentFinTime < earliestStartTime){
+					earliestStartTime = criticalParentFinTime;
+					processor = i;
+				}
+			}
+			idleTime = earliestStartTime - latestEndTimeOnProcessor(state, processor);
+		}
+		return idleTime;
+	}
 
 	
 	//Function to get all the freeNodes for the expansion of the current state
 	@SuppressWarnings("unchecked")
-	private ArrayList<Node> freeNodes(StateWeights stateWeight){
+	private static ArrayList<Node> freeNodes(StateWeights stateWeight){
 		//This gets all the used nodes in the current path, then removes these nodes from all the nodes in the graph.
 		ArrayList<Node> usedNodes = stateWeight.state.getPath();
 		ArrayList<String> used = new ArrayList<String>();
