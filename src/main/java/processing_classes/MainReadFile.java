@@ -13,6 +13,9 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 import a_star_implementation.Astar;
 
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.*;
+
 /*
  * This class MainReadFile is the main class for the project. It processes the provided input file from command line
  * and converts it to a graph data structure.
@@ -94,6 +97,21 @@ public class MainReadFile {
 //				}
 			}
 		}
+		
+		//graphstream testing - displaying after adding node & edge
+		SingleGraph graph = new SingleGraph("visual");
+		graph.addNode("A" );
+		graph.display();
+		graph.addNode("B" );
+		graph.addEdge("AB", "A", "B");
+		graph.display();
+		graph.addNode("C" );
+		graph.addEdge("BC", "B", "C");
+		graph.addEdge("CA", "C", "A");
+		graph.display();
+		graph.addNode("D" );
+		graph.addEdge("AD", "A", "D");
+		graph.display();
 		
 		//Create new instance of Astar solving algorithm, and then run the algorithm.
 		Astar astarSolve = new Astar();
