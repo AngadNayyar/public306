@@ -200,7 +200,7 @@ public class Astar {
 		idleTime = getIdleTime(state, graphNode, stateWeight);
 		
 		//New path weight is startTime + the bottomLevel of the node, divided by the number of processors
-		newPathWeight = (double) startTime + (double) (bottomLevel + idleTime )/ MainReadFile.options.getNumProcessors();
+		newPathWeight = (double) startTime + (double) (bottomLevel + idleTime );  /// MainReadFile.options.getNumProcessors();
 		
 		//If new path weight is bigger than previous, select it. Otherwise use the previousPathWeight.
 		if (newPathWeight > previousPathWeight){
@@ -277,7 +277,7 @@ public class Astar {
 			
 		} 
 		//System.out.println("finished idle time!");
-		return Collections.max(idleTime);
+		return (Collections.max(idleTime))/ MainReadFile.options.getNumProcessors();
 	}
 
 	
