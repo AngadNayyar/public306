@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import processing_classes.MainReadFile;
+//import processing_classes.MainReadFile;
+import processing_classes.Options;
 import processing_classes.TaskNode;
 
 public class Astar {
@@ -16,6 +18,17 @@ public class Astar {
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 	private int numProc;
+	private DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);; 
+	private Options options = new Options(); 
+	
+	public Astar(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
+		this.graph = graph;
+		this.options = options; 
+	}
+	
+	public Astar(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
+		this.graph = graph; 
+	}
 	
 	public Path solveAstar() throws InterruptedException{
 		
@@ -35,7 +48,7 @@ public class Astar {
 				return stateWeight.getState();
 			} else {
 			//Expanding the state to all possible next states
-			expandState(stateWeight, MainReadFile.options.getNumProcessors());
+			expandState(stateWeight, options.getNumProcessors());
 			}
 			closedQueue.add(stateWeight);
 		}
@@ -45,7 +58,7 @@ public class Astar {
 	
 	//Sets the value of the chosen path onto the nodes of the graph
 	private void setScheduleOnGraph(Path state) {
-		Set<TaskNode> graphNodes = MainReadFile.graph.vertexSet();		
+		Set<TaskNode> graphNodes = graph.vertexSet();		
 		//Loops through nodes of the path and then the nodes of the graph
 		//setting the values of passed Path into the graphs nodes
 		for (TaskNode n : state.getPath() ){
@@ -90,8 +103,8 @@ public class Astar {
 	}
 
 	//Function to determine the start and finish time for the node
-	public static void setNodeTimes(Path current, TaskNode newNode, int processor){
-		Set<TaskNode> allNodes = MainReadFile.graph.vertexSet();
+	public void setNodeTimes(Path current, TaskNode newNode, int processor){
+		Set<TaskNode> allNodes = graph.vertexSet();
 		TaskNode graphNode = newNode;
 		for (TaskNode n: allNodes){
 			if (n.name == newNode.name){
@@ -99,7 +112,7 @@ public class Astar {
 			}
 		}
 		//Get the set of incoming edges of the newNode
-		Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(graphNode);
+		Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(graphNode);
 		//End time of the last node to run on the processor
 		int processorEndTime = latestEndTimeOnProcessor(current, processor);
 		int parentEndTime = 0;
@@ -112,11 +125,11 @@ public class Astar {
 			newNode.setStart(processorEndTime);
 		//If it does have parents, calculate the latest time newNode can run on processor
 		}else for (DefaultEdge e: incomingEdges){
-			int communicationTime = (int) MainReadFile.graph.getEdgeWeight(e);
+			int communicationTime = (int) graph.getEdgeWeight(e);
 			
 			
 			//Gets the parent node end time and processor
-			TaskNode parentNode = MainReadFile.graph.getEdgeSource(e);
+			TaskNode parentNode = graph.getEdgeSource(e);
 			ArrayList<TaskNode> setOfNodesInPath = current.getPath();
 			
 			//Needs to search through path to find parent node with the latest end time.
@@ -166,14 +179,14 @@ public class Astar {
 
 
 	//Function to determine heuristic cost f(s) of the state.
-	public static double heuristicCost(Path state, StateWeights stateWeight) {
+	public double heuristicCost(Path state, StateWeights stateWeight) {
 		int maxTime = 0;
 		int startTime = 0;
 		TaskNode maxNode = new TaskNode();
 		int bottomLevel = 0;
 		double newPathWeight = 0;
 		double idleTime = 0;
-		Set<TaskNode> allNodes = MainReadFile.graph.vertexSet();
+		Set<TaskNode> allNodes = graph.vertexSet();
 		ArrayList<TaskNode> path = state.getPath();
 		double previousPathWeight = stateWeight.pathWeight;
 		//Get the node with the latest finish time from the path.
@@ -211,16 +224,16 @@ public class Astar {
 	}
 	
 	//Recursive function to get the bottom level of the node for heuristic calculation.
-	private static int ComputationalBottomLevel(TaskNode node){
+	private int ComputationalBottomLevel(TaskNode node){
 		int bottomLevel = 0;
 		//Get outgoing edges of node
-		Set<DefaultEdge> outgoingEdges = MainReadFile.graph.outgoingEdgesOf(node);
+		Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(node);
 		//If node is a "SINK" (no successors), then return the node weight
 		if (outgoingEdges.isEmpty()){
 			return node.weight;
 		//Otherwise call its successors, and recursively call the bottom level function.
 		} else for (DefaultEdge e: outgoingEdges){
-			TaskNode successor = MainReadFile.graph.getEdgeTarget(e);
+			TaskNode successor = graph.getEdgeTarget(e);
 			int temp = ComputationalBottomLevel(successor);
 			//Choose the highest path bottomLevel and continue.
 			if (temp > bottomLevel){
@@ -230,7 +243,7 @@ public class Astar {
 		return (node.weight + bottomLevel);
 	}
 	
-	private static double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight){
+	private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight){
 		//First we need to calculate the free nodes of the current state
 		ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();
 		ArrayList<TaskNode> parents = new ArrayList<TaskNode>();
@@ -246,11 +259,11 @@ public class Astar {
 		for (TaskNode f : freeNodes) {
 			//System.out.println("node = " + f.name);
 			parents.clear();
-			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(f);
+			Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(f);
 			for (DefaultEdge incomingEdge: incomingEdges){
-				 parents.add(MainReadFile.graph.getEdgeSource(incomingEdge));	
+				 parents.add(graph.getEdgeSource(incomingEdge));	
 			}
-			for(int i = 0; i < MainReadFile.options.getNumProcessors(); i++) {
+			for(int i = 0; i < options.getNumProcessors(); i++) {
 				
 				for (TaskNode parent: parents){
 					if (parent.allocProc == i){
@@ -258,9 +271,9 @@ public class Astar {
 					}else {
 						//System.out.println(f.name);
 						//System.out.println("parent = " + parent.name);
-						DefaultEdge edge = MainReadFile.graph.getEdge(parent, f); 
+						DefaultEdge edge = graph.getEdge(parent, f); 
 						//System.out.println(edge);
-						dataReadyTime = parent.finishTime + MainReadFile.graph.getEdgeWeight(edge); 
+						dataReadyTime = parent.finishTime + graph.getEdgeWeight(edge); 
 					}
 					if (dataReadyTime > criticalParentFinTime){
 						criticalParentFinTime = dataReadyTime;
@@ -270,26 +283,26 @@ public class Astar {
 					earliestStartTime = criticalParentFinTime;
 				}
 			}
-			for(int i = 0; i < MainReadFile.options.getNumProcessors(); i++) {
+			for(int i = 0; i < options.getNumProcessors(); i++) {
 				nodeIdleTime += earliestStartTime - latestEndTimeOnProcessor(state, i);
 			}
 			idleTime.add(nodeIdleTime); 
 			
 		} 
 		//System.out.println("finished idle time!");
-		return (Collections.max(idleTime))/ MainReadFile.options.getNumProcessors();
+		return (Collections.max(idleTime))/ options.getNumProcessors();
 	}
 
 	
 	//Function to get all the freeNodes for the expansion of the current state
 	@SuppressWarnings("unchecked")
-	private static ArrayList<TaskNode> freeNodes(StateWeights stateWeight){
+	private ArrayList<TaskNode> freeNodes(StateWeights stateWeight){
 		//This gets all the used nodes in the current path, then removes these nodes from all the nodes in the graph.
 		ArrayList<TaskNode> usedNodes = stateWeight.state.getPath();
 		ArrayList<String> used = new ArrayList<String>();
 		ArrayList<String> all = new ArrayList<String>();
 		ArrayList<String> unused = new ArrayList<String>();
-		Set<TaskNode> allNodes = MainReadFile.graph.vertexSet();
+		Set<TaskNode> allNodes = graph.vertexSet();
 		//Get all the nodes from graph in arraylist string format
 		for (TaskNode n: allNodes){
 			all.add(n.name);
@@ -304,9 +317,9 @@ public class Astar {
 		//This loops through all the remaining nodes, and checks to see if they pass the predecessor constraint.
 		//Removes them if they don't.
 		for (TaskNode n: allNodes){
-			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(n);
+			Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(n);
 			for (DefaultEdge e: incomingEdges){
-				TaskNode edgeNode = MainReadFile.graph.getEdgeSource(e);
+				TaskNode edgeNode = graph.getEdgeSource(e);
 				if (unused.contains(edgeNode.name)){
 					all.remove(n.name);	
 				}
@@ -332,7 +345,7 @@ public class Astar {
 		for (TaskNode n: usedNodes){
 			used.add(n.name);
 		}
-		Set<TaskNode> allNodes = MainReadFile.graph.vertexSet();
+		Set<TaskNode> allNodes = graph.vertexSet();
 		//Get all the nodes in the graph
 		for (TaskNode n: allNodes){
 			all.add(n.name);

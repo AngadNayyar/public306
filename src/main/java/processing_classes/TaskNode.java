@@ -52,4 +52,14 @@ public class TaskNode {
 		return name; 
 	}
 	
+	@Override
+	public boolean equals(Object obj){
+		TaskNode node = (TaskNode) obj; 
+		if (this.name == node.name && this.startTime == node.startTime && this.allocProc == node.allocProc && this.finishTime == node.finishTime && this.weight == node.weight){
+			return true; 
+		} else {
+		return false;
+		}
+	}
+	
 }
