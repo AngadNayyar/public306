@@ -13,13 +13,13 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 import a_star_implementation.Astar;
 
-
-import org.graphstream.graph.*;
+import org.graphstream.graph.Node;
+//import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 
 import java.awt.*;
 import javax.swing.*;
-import org.graphstream.ui.swingViewer.GraphRenderer;
+//import org.graphstream.ui.swingViewer.GraphRenderer;
 
 /*
  * This class MainReadFile is the main class for the project. It processes the provided input file from command line
@@ -113,11 +113,7 @@ public class MainReadFile {
 		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		
 		Node n = visualGraph.addNode("A");
-		n.addAttribute("ui.color", "red");
-//		n.setColor(Color.red);
-		
-//		Node n = visualGraph.addNode("A");
-//		n.addAttribute("ui.stylesheet", "fill-color: rgb(0,100,255);");
+		n.addAttribute("ui.style", "fill-color: rgb(255,0,0);");
 		
 		visualGraph.display();
 
