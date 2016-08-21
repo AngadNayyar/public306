@@ -1,10 +1,12 @@
 package a_star_implementation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import processing_classes.MainReadFile;
 import processing_classes.Node;
@@ -234,20 +236,34 @@ public class Astar {
 		ArrayList<Node> parents = new ArrayList<Node>();
 		freeNodes = freeNodes(stateWeight);
 		double earliestStartTime = Double.MAX_VALUE;
-		int criticalParentFinTime = 0;
-		double idleTime = 0;
+		double criticalParentFinTime = 0;
+		ArrayList <Double> idleTime =  new ArrayList<Double>();
+		double dataReadyTime = 0; 
+		double nodeIdleTime = 0; 
 		
 		//Use a for loop to go through each of the free nodes and calculate earliest possible start time
 		//for that node and which processor it would be on.
 		for (Node f : freeNodes) {
+			//System.out.println("node = " + f.name);
+			parents.clear();
+			Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(f);
+			for (DefaultEdge incomingEdge: incomingEdges){
+				 parents.add(MainReadFile.graph.getEdgeSource(incomingEdge));	
+			}
 			for(int i = 0; i < MainReadFile.options.getNumProcessors(); i++) {
-				Set<DefaultEdge> incomingEdges = MainReadFile.graph.incomingEdgesOf(f);
-				for (DefaultEdge incomingEdge: incomingEdges){
-					 parents.add(MainReadFile.graph.getEdgeSource(incomingEdge));	
-				}
+				
 				for (Node parent: parents){
-					if (parent.finishTime > criticalParentFinTime){
-						criticalParentFinTime = parent.finishTime;
+					if (parent.allocProc == i){
+						dataReadyTime = parent.finishTime; 
+					}else {
+						//System.out.println(f.name);
+						//System.out.println("parent = " + parent.name);
+						DefaultEdge edge = MainReadFile.graph.getEdge(parent, f); 
+						//System.out.println(edge);
+						dataReadyTime = parent.finishTime + MainReadFile.graph.getEdgeWeight(edge); 
+					}
+					if (dataReadyTime > criticalParentFinTime){
+						criticalParentFinTime = dataReadyTime;
 					}
 				}
 				if (criticalParentFinTime < earliestStartTime){
@@ -255,10 +271,13 @@ public class Astar {
 				}
 			}
 			for(int i = 0; i < MainReadFile.options.getNumProcessors(); i++) {
-				idleTime += earliestStartTime - latestEndTimeOnProcessor(state, i);
+				nodeIdleTime += earliestStartTime - latestEndTimeOnProcessor(state, i);
 			}
-		}
-		return idleTime;
+			idleTime.add(nodeIdleTime); 
+			
+		} 
+		//System.out.println("finished idle time!");
+		return Collections.max(idleTime);
 	}
 
 	
