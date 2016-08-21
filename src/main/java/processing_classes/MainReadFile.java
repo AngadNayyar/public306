@@ -13,8 +13,13 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 import a_star_implementation.Astar;
 
+
 import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
+
+import java.awt.*;
+import javax.swing.*;
+import org.graphstream.ui.swingViewer.GraphRenderer;
 
 /*
  * This class MainReadFile is the main class for the project. It processes the provided input file from command line
@@ -24,7 +29,8 @@ public class MainReadFile {
 	
 	//This is the graph data structure we are building from the input file,
 	//that will be used to execute our algorithm
-	public static DefaultDirectedWeightedGraph <Node, DefaultEdge> graph = new DefaultDirectedWeightedGraph <Node, DefaultEdge>(DefaultWeightedEdge.class);
+	public static DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);
+	public static SingleGraph visualGraph = new SingleGraph("visual");
 	
 	//This class holds the options given at the command line
 	public static Options options = new Options();
@@ -34,8 +40,8 @@ public class MainReadFile {
 		String line;
 		String nodeName, edgeOne, edgeTwo; 
 		int nodeWeight, edgeWeight;
-		Node node;
-		HashMap <String, Node> hMap = new HashMap<String, Node>();
+		TaskNode node;
+		HashMap <String, TaskNode> hMap = new HashMap<String, TaskNode>();
 		
 		//Reads in input file
 		File inputfile = null;
@@ -62,9 +68,10 @@ public class MainReadFile {
 			while (nodeMatch.find()) {
 				nodeName = nodeMatch.group(1);
 				nodeWeight = Integer.parseInt(nodeMatch.group(2));
-				node = new Node(nodeName, nodeWeight, 0,0,0);
+				node = new TaskNode(nodeName, nodeWeight, 0,0,0);
 				hMap.put(nodeName, node);
-				graph.addVertex(node); 				
+				graph.addVertex(node); 	
+				visualGraph.addNode(node.name);
 		    }	
 			
 			//If input line matches regular expression of an edge add to graph data structure.
@@ -74,6 +81,8 @@ public class MainReadFile {
 				edgeWeight = Integer.parseInt(edgeMatch.group(3));
 				DefaultEdge e = graph.addEdge(hMap.get(edgeOne), hMap.get(edgeTwo));
 				graph.setEdgeWeight(e, edgeWeight);
+				String edgeName = edgeOne + edgeTwo;
+				visualGraph.addEdge(edgeName, hMap.get(edgeOne).name, hMap.get(edgeTwo).name, true);
 		    }
 		}
 		
@@ -99,20 +108,21 @@ public class MainReadFile {
 			}
 		}
 		
-		//graphstream testing - displaying after adding node & edge
-		SingleGraph graph = new SingleGraph("visual");
-		graph.addNode("A" );
-		graph.display();
-		graph.addNode("B" );
-		graph.addEdge("AB", "A", "B");
-		graph.display();
-		graph.addNode("C" );
-		graph.addEdge("BC", "B", "C");
-		graph.addEdge("CA", "C", "A");
-		graph.display();
-		graph.addNode("D" );
-		graph.addEdge("AD", "A", "D");
-		graph.display();
+		
+		/* VISUALISATION */
+		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+		
+		Node n = visualGraph.addNode("A");
+		n.addAttribute("ui.color", "red");
+//		n.setColor(Color.red);
+		
+//		Node n = visualGraph.addNode("A");
+//		n.addAttribute("ui.stylesheet", "fill-color: rgb(0,100,255);");
+		
+		visualGraph.display();
+
+		
+		
 		
 		//Create new instance of Astar solving algorithm, and then run the algorithm.
 		Astar astarSolve = new Astar();

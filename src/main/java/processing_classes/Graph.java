@@ -7,9 +7,9 @@ import org.jgrapht.graph.DefaultEdge;
 
 public class Graph {
 	
-	private DefaultDirectedWeightedGraph<Node, DefaultEdge> graph;
+	private DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph;
 
-	Graph(DefaultDirectedWeightedGraph<Node, DefaultEdge> prevGraph){
+	Graph(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> prevGraph){
 		this.graph = prevGraph;
 	}
 	

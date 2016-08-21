@@ -17,8 +17,8 @@ public class OutputFile {
 		PrintWriter writer = new PrintWriter(outFile);
 		
 		//Loops through nodes and prints to output file.
-		Set<Node> nodes = MainReadFile.graph.vertexSet();
-		for (Node node : nodes){
+		Set<TaskNode> nodes = MainReadFile.graph.vertexSet();
+		for (TaskNode node : nodes){
 			writer.println(node.name+"\t\t[Weight ="+node.weight+",Start="+node.startTime+",Processor="+node.allocProc+"];");
 		}
 		

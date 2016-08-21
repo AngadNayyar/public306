@@ -3,7 +3,7 @@ package processing_classes;
 /* 
  * Object for each node of the graph. Keeps track of the vital details for each node also.
  */
-public class Node {
+public class TaskNode {
 	public String name;
 	public int weight;
 	public int startTime;
@@ -11,7 +11,7 @@ public class Node {
 	public int finishTime;
 	
 	//Constructor of Node class
-	public Node(String n, int w, int s, int a, int f){
+	public TaskNode(String n, int w, int s, int a, int f){
 		name = n;
 		weight = w;
 		startTime = s;
@@ -19,7 +19,7 @@ public class Node {
 		finishTime = f;
 	}
 	
-	public Node(){
+	public TaskNode(){
 		name = "$";
 		weight = 0;
 		startTime = 0;
@@ -27,7 +27,7 @@ public class Node {
 		finishTime = 0;	
 	}
 	
-	public Node(Node other){
+	public TaskNode(TaskNode other){
 		name = other.name;
 		weight = other.weight;
 		startTime = other.startTime;
