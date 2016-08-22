@@ -285,13 +285,13 @@ public class Astar {
 				
 				for (TaskNode parent: parents){
 					if (parent.allocProc == i){
-						dataReadyTime = parent.finishTime; 
+						dataReadyTime = latestEndTimeOnProcessor(state, i); 
 					}else {
 						//System.out.println(f.name);
 						//System.out.println("parent = " + parent.name);
 						DefaultEdge edge = graph.getEdge(parent, f); 
 						//System.out.println(edge);
-						dataReadyTime = parent.finishTime + graph.getEdgeWeight(edge); 
+						dataReadyTime = Math.max((parent.finishTime + graph.getEdgeWeight(edge)), latestEndTimeOnProcessor(state, i)) ; 
 					}
 					if (dataReadyTime > criticalParentFinTime){
 						criticalParentFinTime = dataReadyTime;
@@ -302,13 +302,16 @@ public class Astar {
 				}
 			}
 			for(int i = 0; i < options.getNumProcessors(); i++) {
-				nodeIdleTime += earliestStartTime - latestEndTimeOnProcessor(state, i);
+				double temp = earliestStartTime - latestEndTimeOnProcessor(state, i);
+				if (temp > 0){
+					nodeIdleTime += temp;
+				}
 			}
 			idleTime.add(nodeIdleTime); 
 			
 		} 
 		//System.out.println("finished idle time!");
-		return (Collections.max(idleTime))/ options.getNumProcessors();
+		return (Collections.min(idleTime))/ options.getNumProcessors();
 	}
 
 	
