@@ -5,6 +5,9 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import org.graphstream.graph.Node;
+import org.graphstream.graph.implementations.AbstractElement;
+import org.graphstream.graph.implementations.SingleGraph;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -19,11 +22,13 @@ public class Astar {
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 	private int numProc;
 	private DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);; 
-	private Options options = new Options(); 
+	private Options options = new Options();
+	private SingleGraph visualGraph = new SingleGraph("visual");
 	
-	public Astar(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
+	public Astar(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options, SingleGraph visualGraph){
 		this.graph = graph;
 		this.options = options; 
+		this.visualGraph = visualGraph;
 	}
 	
 	public Astar(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
@@ -31,6 +36,10 @@ public class Astar {
 	}
 	
 	public Path solveAstar() throws InterruptedException{
+		
+		//Property is set for rendering the visual graph
+		System.setProperty("org.graphstream.ui.renderer",
+				"org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 		
 		//Set initial node for openQueue
 		TaskNode initialNode = new TaskNode();
@@ -49,6 +58,15 @@ public class Astar {
 			} else {
 			//Expanding the state to all possible next states
 			expandState(stateWeight, options.getNumProcessors());
+			if (options.getVisualisation() == true){
+				Path current = stateWeight.state;
+				ArrayList<TaskNode> nodePath = current.getPath();
+				for (TaskNode node : nodePath) {
+					Node n = visualGraph.getNode(node.name);
+					n.addAttribute("ui.style", "fill-color: rgb(255,0,0);");
+					visualGraph.display();
+				}
+			}
 			}
 			closedQueue.add(stateWeight);
 		}

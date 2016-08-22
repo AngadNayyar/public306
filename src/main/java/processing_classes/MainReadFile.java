@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,6 +14,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import a_star_implementation.Astar;
+import a_star_implementation.Path;
 
 import org.graphstream.graph.Node;
 //import org.graphstream.graph.*;
@@ -71,23 +73,24 @@ public class MainReadFile {
 				options.setOutputFileName(args[i + 1]);
 				// }
 			}
-		}
-
-		/* VISUALISATION */
-		System.setProperty("org.graphstream.ui.renderer",
-				"org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-
-		//Node n = visualGraph.addNode("A");
-		//n.addAttribute("ui.style", "fill-color: rgb(255,0,0);");
-
-		visualGraph.display();
+		}	
 
 		// Create new instance of Astar solving algorithm, and then run the
 		// algorithm.
-		Astar astarSolve = new Astar(graph, options);
+		Astar astarSolve = new Astar(graph, options, visualGraph);
 		astarSolve.solveAstar();
+		
+		/* VISUALISATION */
+//		System.setProperty("org.graphstream.ui.renderer",
+//				"org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+			
+		//Node n = visualGraph.addNode("A");
 
+//		visualGraph.display();
+		
+		//Write the output graph to the output file
 		OutputFile.fileWriter();
+		
 
 	}
 
