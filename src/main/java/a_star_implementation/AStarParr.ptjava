@@ -49,8 +49,9 @@ public class AStarParr{
 		StateWeights initialSW = new StateWeights(initialPath,0.0);
 		openQueue.add(initialSW);
 		
-		options.setNumThreads(4); //TODO this will be passed in as an option currently setting.
-		TaskIDGroup taskGroup = new TaskIDGroup(1);
+		//TODO this will be passed in as an option currently setting.
+		TaskIDGroup taskGroup = new TaskIDGroup(options.getNumThreads());
+		System.out.println(options.getNumThreads());
 		for (int i = 0; i < options.getNumThreads(); i++){
 			TaskID id = parallelSearch();
 			taskGroup.add(id);
