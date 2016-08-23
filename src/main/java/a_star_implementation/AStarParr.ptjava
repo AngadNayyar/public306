@@ -1,18 +1,20 @@
 package a_star_implementation;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
-
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+
+
 //import processing_classes.MainReadFile;
 import processing_classes.Options;
 import processing_classes.TaskNode;
-
 import pt.runtime.TaskID;
 import pt.runtime.TaskIDGroup;
 
@@ -22,7 +24,9 @@ public class AstarParr{
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 	private int numProc;
 	private DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);; 
-	private Options options = new Options(); 
+	private Options options;
+	private CopyOnWriteArrayList<Path> threadPathList = new CompyOnWriteArrayList<Path>();
+	
 	
 	public AstarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
 		this.graph = graph;
@@ -52,7 +56,21 @@ public class AstarParr{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+		
+		//Gets the optimal path from the threadPathList (threads add to this list)
+		int smallestFinPath = Integer.MAX_VALUE;
+		Path optimalPath;
+		for (Path p : threadPathList){
+			for (TaskNode n: p){
+				if (n.finishTime < smallestFinNode){
+					smallestFinPath = n.finishTime; //Gets the smallest finish time on the path
+					optimalPath = p; //Sets optimal path to this path
+				}
+			}
+		}
+		//TODO get best path from threadPathList
+		setScheduleOnGraph(optimalPath);
+		//Set that path on the graph
 	}
 	
 	TASK(*) void parallelSearch(){
@@ -62,7 +80,7 @@ public class AstarParr{
 			StateWeights stateWeight = openQueue.poll();
 			if (isComplete(stateWeight)){				
 				//Returns the optimal path
-				setScheduleOnGraph(stateWeight.getState());
+				threadPathList.add(stateWeight.getState());
 				break;
 			} else {
 			//Expanding the state to all possible next states
