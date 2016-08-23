@@ -47,14 +47,15 @@ public class AStarParr{
 		StateWeights initialSW = new StateWeights(initialPath,0.0);
 		openQueue.add(initialSW);
 		
-		//At the moment the parallelSearch method is not being executed <-----------------------------------------------------
-//		TaskIDGroup taskGroup = new TaskIDGroup(options.getNumThreads());
-//		for (int i = 0; i < options.getNumThreads(); i++){
-//			TaskID id = parallelSearch();
-//			taskGroup.add(id);
-//		}
+		options.setNumThreads(4); //TODO this will be passed in as an option currently setting.
+		TaskIDGroup taskGroup = new TaskIDGroup(options.getNumThreads());
+		System.out.println(options.getNumThreads());
+		for (int i = 0; i < options.getNumThreads(); i++){
+			TaskID id = parallelSearch();
+			taskGroup.add(id);
+		}
 		
-		TaskIDGroup taskGroup = parallelSearch();
+//		TaskIDGroup taskGroup = parallelSearch();
 		
 		try {
 			System.out.println("Waiting on threads....");
@@ -63,7 +64,8 @@ public class AStarParr{
 			e.printStackTrace();
 		}
 		
-		Thread.sleep(3000);
+		System.out.println("NothingPastHereM8y");
+		//Thread.sleep(3000);
 		
 		Path optimalPath = getSmallestPathFromList();
 		setScheduleOnGraph(optimalPath);
@@ -71,16 +73,14 @@ public class AStarParr{
 	}
 	
 	TASK(*) void parallelSearch(){
-		System.out.println("=================== If you got here you fixed something ================");
 		while (!openQueue.isEmpty()){
 			
 			//Gets the state with best f value, remove this state from openQueue
 			StateWeights stateWeight = openQueue.poll();
 			if (isComplete(stateWeight)){				
 				//Returns the optimal path
-				System.out.println("gets to here or not?");
 				threadPathList.add(stateWeight.getState());
-				System.out.println("gets to here?");
+				System.out.println("cheeky");
 				break;
 			} else {
 			//Expanding the state to all possible next states
@@ -103,7 +103,6 @@ public class AStarParr{
 			finishTimeOfPath = 0;
 			//Gets the largest finish time on the path
 			for (TaskNode n: p.getPath()){
-				System.out.println("Node finish time: " + n.finishTime);
 				if (n.finishTime > finishTimeOfPath){
 					finishTimeOfPath = n.finishTime; 
 				}
