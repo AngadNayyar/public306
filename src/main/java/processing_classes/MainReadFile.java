@@ -52,6 +52,7 @@ public class MainReadFile {
 		}
 
 		graph = createGraph(inputfile); 
+		VisualisationGraph visualGraphObj = new VisualisationGraph(visualGraph);
 		
 		// Read in number of processors from command line
 		options.setNumProcessors(Integer.parseInt(args[1]));
@@ -78,9 +79,9 @@ public class MainReadFile {
 		// Create new instance of Astar solving algorithm, and then run the
 		// algorithm.
 		if (options.getVisualisation()) {
-		visualGraph.display();
+		visualGraphObj.display();
 		}
-		Astar astarSolve = new Astar(graph, options, visualGraph);
+		Astar astarSolve = new Astar(graph, options, visualGraphObj);
 		astarSolve.solveAstar();
 		
 		/* VISUALISATION */
