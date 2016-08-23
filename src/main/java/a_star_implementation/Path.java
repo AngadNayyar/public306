@@ -29,6 +29,10 @@ public class Path {
 		currentNode = next_state;
 	}
 	
+	public Path(ArrayList<TaskNode> path2) {
+		this.path = path2;
+	}
+
 	public ArrayList<TaskNode> getPath(){
 		return path;
 	}

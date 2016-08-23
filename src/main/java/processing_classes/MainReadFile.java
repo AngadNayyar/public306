@@ -94,6 +94,7 @@ public class MainReadFile {
 		
 		//Write the output graph to the output file
 		OutputFile.fileWriter();
+		Thread.sleep(1000); //TODO
 		System.exit(0);
 
 	}
