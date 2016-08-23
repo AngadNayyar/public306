@@ -16,7 +16,7 @@ import processing_classes.TaskNode;
 import pt.runtime.TaskID;
 import pt.runtime.TaskIDGroup;
 
-public class AstarPar implements AstarInterface {
+public class AstarParr implements AstarInterface {
 
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
@@ -24,12 +24,12 @@ public class AstarPar implements AstarInterface {
 	private DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);; 
 	private Options options = new Options(); 
 	
-	public AstarPar(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
+	public AstarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
 		this.graph = graph;
 		this.options = options; 
 	}
 	
-	public AstarPar(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
+	public AstarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
 		this.graph = graph; 
 	}
 	
@@ -55,7 +55,7 @@ public class AstarPar implements AstarInterface {
 
 	}
 	
-	TASK(*) void parallelSearch(StateWeights){
+	TASK(*) void parallelSearch(){
 		while (!openQueue.isEmpty()){
 			
 			//Gets the state with best f value, remove this state from openQueue
