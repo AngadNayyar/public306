@@ -14,9 +14,11 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 
 
+
 //import processing_classes.MainReadFile;
 import processing_classes.Options;
 import processing_classes.TaskNode;
+import pt.runtime.CurrentTask;
 import pt.runtime.TaskID;
 import pt.runtime.TaskIDGroup;
 
@@ -48,32 +50,23 @@ public class AStarParr{
 		openQueue.add(initialSW);
 		
 		options.setNumThreads(4); //TODO this will be passed in as an option currently setting.
-		TaskIDGroup taskGroup = new TaskIDGroup(options.getNumThreads());
-		System.out.println(options.getNumThreads());
+		TaskIDGroup taskGroup = new TaskIDGroup(1);
 		for (int i = 0; i < options.getNumThreads(); i++){
 			TaskID id = parallelSearch();
 			taskGroup.add(id);
 		}
 		
-//		TaskIDGroup taskGroup = parallelSearch();
-		
 		try {
-			System.out.println("Waiting on threads....");
 			taskGroup.waitTillFinished();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		System.out.println("NothingPastHereM8y");
-		//Thread.sleep(3000);
-		
 		Path optimalPath = getSmallestPathFromList();
 		setScheduleOnGraph(optimalPath);
-		System.out.println("got to here");
 	}
 	
 	TASK(*) void parallelSearch(){
-		System.out.println("hello");
 		while (!openQueue.isEmpty()){
 			
 			//Gets the state with best f value, remove this state from openQueue
@@ -86,7 +79,6 @@ public class AStarParr{
 			if (isComplete(stateWeight)){				
 				//Returns the optimal path
 				threadPathList.add(stateWeight.getState());
-				System.out.println("cheeky");
 				break;
 			} else {
 			//Expanding the state to all possible next states
@@ -101,8 +93,6 @@ public class AStarParr{
 		//Gets the optimal path from the threadPathList (threads add to this list)
 		int smallestFinPath = Integer.MAX_VALUE;
 		int finishTimeOfPath = 0;
-		System.out.println("Max Value: " + smallestFinPath);
-		System.out.println("Size of the list: " + threadPathList.size());
 		Path optimalPath = null;
 		//Gets the smallest path
 		for (Path p : threadPathList){
@@ -157,14 +147,6 @@ public class AStarParr{
 				if (!openQueue.contains(pathWeight) && !closedQueue.contains(pathWeight)){
 					openQueue.add(new StateWeights(temp, pathWeight)); //Add new StateWeight to the openQueue.
 				}
-				/*for (StateWeights s: openQueue){
-					System.out.print("\n Added path, weight: " + s.pathWeight + " ");
-					for (Node x: s.state.getPath()){
-						System.out.print(" " + x.name);
-						System.out.print("." + x.allocProc);
-					}
-					System.out.print("W" + s.pathWeight);
-				}*/
 			} 
 		}
 	}
@@ -330,7 +312,6 @@ public class AStarParr{
 		// earliest possible start time
 		// for that node and which processor it would be on.
 		for (TaskNode f : freeNodes) {
-			// System.out.println("node = " + f.name);
 			parents.clear();
 			Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(f);
 			for (DefaultEdge incomingEdge : incomingEdges) {
@@ -342,10 +323,7 @@ public class AStarParr{
 					if (parent.allocProc == i) {
 						dataReadyTime = latestEndTimeOnProcessor(state, i);
 					} else {
-						// System.out.println(f.name);
-						// System.out.println("parent = " + parent.name);
 						DefaultEdge edge = graph.getEdge(parent, f);
-						// System.out.println(edge);
 						dataReadyTime = Math.max((parent.finishTime + graph.getEdgeWeight(edge)),
 								latestEndTimeOnProcessor(state, i));
 					}
@@ -366,7 +344,6 @@ public class AStarParr{
 			idleTime.add(nodeIdleTime);
 
 		}
-		// System.out.println("finished idle time!");
 		return (Collections.min(idleTime)) / options.getNumProcessors();
 	}
 
@@ -429,20 +406,6 @@ public class AStarParr{
 		//Check if all the nodes have been used, if yes, the optimal solution has been found.
 		all.removeAll(used);
 		if (all.isEmpty()){
-			/*for (StateWeights s: closedQueue){
-				System.out.print("\n Closed path, weight: " + s.pathWeight + " ");
-				for (Node n: s.state.getPath()){
-					System.out.print(n.name);
-					System.out.print(" " + n.allocProc);
-				}
-			}
-			for (StateWeights s: openQueue){
-				System.out.print("\n Open path, weight: " + s.pathWeight + " ");
-				for (Node n: s.state.getPath()){
-					System.out.print(n.name);
-					System.out.print(" " + n.allocProc);
-				}
-			}*/
 			return true;
 		} else {
 			return false;
