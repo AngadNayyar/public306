@@ -91,7 +91,6 @@ public class MainReadFile {
 		if (options.getVisualisation()){
 			if (options.getParallel()){
 				//Run Parallel with visualization class file
-				System.out.println("pwithv");
 				AStarParrVis astarSolve = new AStarParrVis(graph, options, visualGraphObj);
 				astarSolve.solveAstar();
 			}else{
