@@ -22,6 +22,7 @@ import processing_classes.VisualisationGraph;
 public class Astar {
 
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
+	private PriorityBlockingQueue<StateWeights> newStates = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 	private int numProc;
 	private DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph<TaskNode, DefaultEdge>(
@@ -100,38 +101,51 @@ public class Astar {
 			// Expands the given stateWeight into all possible new states. Store these
 			// in OPEN. We would check if it exists already,
 			// or if it exists in CLOSE. Don't know how/the significance of it yet.
-			private void expandState(StateWeights stateWeight, int processors) {
+			private void expandState(StateWeights stateWeight, int processors){
 				Path current = stateWeight.state;
-				// Get all the freeNodes available for the path
+				//Get all the freeNodes available for the path
 				ArrayList<TaskNode> freeNodes = freeNodes(stateWeight);
-				// Determine new states from the freenodes, get their weights, and add
-				// to openQueue
-				for (TaskNode n : freeNodes) {
-					for (int i = 1; i <= processors; i++) {
-						// Assign every free node to every available processor
+				//Determine new states from the freenodes, get their weights, and add to openQueue
+				for (TaskNode n: freeNodes){
+					for (int i = 1; i <= processors; i++){ 
+						//Assign every free node to every available processor
 						TaskNode newNode = new TaskNode(n);
-						newNode.setProc(i); // Sets the processor for the newNode
-						setNodeTimes(current, newNode, i); // Sets the start time,
-						// finish time for the
-						// newNode
+						newNode.setProc(i); //Sets the processor for the newNode
+						setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 						Path temp = new Path(current, newNode);
 						double pathWeight = heuristicCost(temp, stateWeight);
-						// if (!openQueue.contains(pathWeight) &&
-						// !closedQueue.contains(pathWeight)) {
-						if (function(temp, pathWeight)) {
-
-							// Add new StateWeight to the openQueue.
+						if (removeDuplicates(new StateWeights(temp, pathWeight))){
 							openQueue.add(new StateWeights(temp, pathWeight));
 						}
-						/*
-						 * for (StateWeights s: openQueue){ System.out.print(
-						 * "\n Added path, weight: " + s.pathWeight + " "); for (Node x:
-						 * s.state.getPath()){ System.out.print(" " + x.name);
-						 * System.out.print("." + x.allocProc); } System.out.print("W" +
-						 * s.pathWeight); }
-						 */
+						/*for (StateWeights s: openQueue){
+							System.out.print("\n Added path, weight: " + s.pathWeight + " ");
+							for (Node x: s.state.getPath()){
+								System.out.print(" " + x.name);
+								System.out.print("." + x.allocProc);
+							}
+							System.out.print("W" + s.pathWeight);
+						}*/
+					} 
+				}
+				newStates.clear();
+			}
+			
+			public boolean removeDuplicates(StateWeights newState){
+				Iterator<StateWeights> itr = newStates.iterator();
+				TaskNode newNode = newState.state.getCurrent();
+				
+				while (itr.hasNext()){
+					StateWeights temp = itr.next();
+					TaskNode tempNode = temp.state.getCurrent();
+					if ((newNode.startTime == tempNode.startTime) && (newNode.name == tempNode.name)){
+						System.out.print("Name" + newNode.name + newNode.startTime + tempNode.name + tempNode.startTime);
+						return false;
 					}
 				}
+				
+				newStates.add(newState);
+				return true;
+				
 			}
 
 			// if schedule doesn't exist, returns true

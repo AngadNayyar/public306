@@ -5,6 +5,8 @@ package a_star_implementation;
 public class StateWeights implements Comparable<StateWeights> {
 	public Path state;
 	public Double pathWeight;
+	public double bottomLevel;
+	public double idleTime;
 	
 	//Constructor
 	public StateWeights(Path state, Double pathWeight){

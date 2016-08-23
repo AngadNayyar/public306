@@ -9,6 +9,8 @@ public class Path {
 	
 	private ArrayList<TaskNode> path;
 	private TaskNode currentNode;
+	private double bottomLevel;
+	private double idleTime;
 	//currentNode is kept track of for quickly getting current node information from the Path.
 
 	public Path(TaskNode new_state){

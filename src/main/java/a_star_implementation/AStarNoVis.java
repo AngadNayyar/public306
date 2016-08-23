@@ -2,6 +2,7 @@ package a_star_implementation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -16,6 +17,7 @@ import processing_classes.TaskNode;
 public class AStarNoVis {
 
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
+	private PriorityBlockingQueue<StateWeights> newStates = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 	private int numProc;
 	private DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);; 
@@ -87,21 +89,58 @@ public class AStarNoVis {
 				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
 				double pathWeight = heuristicCost(temp, stateWeight);
-				if (!openQueue.contains(pathWeight) && !closedQueue.contains(pathWeight)){
-					openQueue.add(new StateWeights(temp, pathWeight)); //Add new StateWeight to the openQueue.
+				if (removePathDuplicates(new StateWeights(temp, pathWeight))){
+					openQueue.add(new StateWeights(temp, pathWeight));
 				}
-				/*for (StateWeights s: openQueue){
-					System.out.print("\n Added path, weight: " + s.pathWeight + " ");
-					for (Node x: s.state.getPath()){
-						System.out.print(" " + x.name);
-						System.out.print("." + x.allocProc);
-					}
-					System.out.print("W" + s.pathWeight);
-				}*/
 			} 
+			newStates.clear();
 		}
 	}
-
+	
+	public boolean removePathDuplicates(StateWeights newState){
+		Iterator<StateWeights> itrO = openQueue.iterator();
+		Iterator<StateWeights> itrC = closedQueue.iterator();
+		ArrayList<TaskNode> newPath = newState.state.getPath();
+		
+		while(itrO.hasNext()){
+			StateWeights temp = itrO.next();
+			ArrayList<TaskNode> path = temp.state.getPath();
+			if (path.containsAll(newPath)){
+				return false;
+			}
+		}
+		
+		/*while(itrC.hasNext()){
+			StateWeights temp = itrC.next();
+			ArrayList<TaskNode> path = temp.state.getPath();
+			if (path.containsAll(newPath)){
+				return false;
+			}
+		}*/
+		
+		return true;
+		
+	}
+	
+	public boolean removeCurrentNodeDuplicates(StateWeights newState){
+		Iterator<StateWeights> itr = newStates.iterator();
+		TaskNode newNode = newState.state.getCurrent();
+		
+		while (itr.hasNext()){
+			StateWeights temp = itr.next();
+			TaskNode tempNode = temp.state.getCurrent();
+			if (newNode.startTime == tempNode.startTime){
+				if (newNode.name == tempNode.name){
+					return false;
+				}
+			}
+		}
+		
+		newStates.add(newState);
+		return true;
+		
+	}
+	
 	//Function to determine the start and finish time for the node
 	public void setNodeTimes(Path current, TaskNode newNode, int processor){
 		Set<TaskNode> allNodes = graph.vertexSet();
@@ -242,51 +281,56 @@ public class AStarNoVis {
 			}
 		return (node.weight + bottomLevel);
 	}
-		private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight) {
-		// First we need to calculate the free nodes of the current state
-		ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();
-		ArrayList<TaskNode> parents = new ArrayList<TaskNode>();
-		freeNodes = freeNodes(stateWeight);
-		double earliestStartTime = Double.MAX_VALUE;
-		double criticalParentFinTime = 0;
-		ArrayList<Double> idleTime = new ArrayList<Double>();
-		double dataReadyTime = 0;
-		double nodeIdleTime = 0;
-		// Use a for loop to go through each of the free nodes and calculate
-		// earliest possible start time
-		// for that node and which processor it would be on.
-		for (TaskNode f : freeNodes) {
-			parents.clear();
-			Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(f);
-			for (DefaultEdge incomingEdge : incomingEdges) {
-				parents.add(graph.getEdgeSource(incomingEdge));
-			}
-			for (int i = 0; i < options.getNumProcessors(); i++) {
-					for (TaskNode parent : parents) {
-					if (parent.allocProc == i) {
-						dataReadyTime = latestEndTimeOnProcessor(state, i);
-					} else {
-						DefaultEdge edge = graph.getEdge(parent, f);
-						dataReadyTime = Math.max((parent.finishTime + graph.getEdgeWeight(edge)),
-								latestEndTimeOnProcessor(state, i));
-					}
-					if (dataReadyTime > criticalParentFinTime) {
-						criticalParentFinTime = dataReadyTime;
-					}
+	
+	/*private double IdleTime(Path state){
+		//This needs to compute idle time.
+	}*/
+	
+	private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight) {
+	// First we need to calculate the free nodes of the current state
+	ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();
+	ArrayList<TaskNode> parents = new ArrayList<TaskNode>();
+	freeNodes = freeNodes(stateWeight);
+	double earliestStartTime = Double.MAX_VALUE;
+	double criticalParentFinTime = 0;
+	ArrayList<Double> idleTime = new ArrayList<Double>();
+	double dataReadyTime = 0;
+	double nodeIdleTime = 0;
+	// Use a for loop to go through each of the free nodes and calculate
+	// earliest possible start time
+	// for that node and which processor it would be on.
+	for (TaskNode f : freeNodes) {
+		parents.clear();
+		Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(f);
+		for (DefaultEdge incomingEdge : incomingEdges) {
+			parents.add(graph.getEdgeSource(incomingEdge));
+		}
+		for (int i = 0; i < options.getNumProcessors(); i++) {
+				for (TaskNode parent : parents) {
+				if (parent.allocProc == i) {
+					dataReadyTime = latestEndTimeOnProcessor(state, i);
+				} else {
+					DefaultEdge edge = graph.getEdge(parent, f);
+					dataReadyTime = Math.max((parent.finishTime + graph.getEdgeWeight(edge)),
+							latestEndTimeOnProcessor(state, i));
 				}
-				if (criticalParentFinTime < earliestStartTime) {
-					earliestStartTime = criticalParentFinTime;
-				}
-			}
-			for (int i = 0; i < options.getNumProcessors(); i++) {
-				double temp = earliestStartTime - latestEndTimeOnProcessor(state, i);
-				if (temp > 0) {
-					nodeIdleTime += temp;
+				if (dataReadyTime > criticalParentFinTime) {
+					criticalParentFinTime = dataReadyTime;
 				}
 			}
-			idleTime.add(nodeIdleTime);
+			if (criticalParentFinTime < earliestStartTime) {
+				earliestStartTime = criticalParentFinTime;
 			}
-		return (Collections.min(idleTime)) / options.getNumProcessors();
+		}
+		for (int i = 0; i < options.getNumProcessors(); i++) {
+			double temp = earliestStartTime - latestEndTimeOnProcessor(state, i);
+			if (temp > 0) {
+				nodeIdleTime += temp;
+			}
+		}
+		idleTime.add(nodeIdleTime);
+		}
+	return (Collections.min(idleTime)) / options.getNumProcessors();
 	}
 	
 	//Function to get all the freeNodes for the expansion of the current state
