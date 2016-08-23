@@ -13,6 +13,7 @@ import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import a_star_implementation.AStarParr;
 import a_star_implementation.Astar;
 import a_star_implementation.Path;
 
@@ -21,6 +22,7 @@ import org.graphstream.graph.Node;
 import org.graphstream.graph.implementations.*;
 
 import java.awt.*;
+
 import javax.swing.*;
 
 //import org.graphstream.ui.swingViewer.GraphRenderer;
@@ -64,6 +66,7 @@ public class MainReadFile {
 			if (args[i].equals("-p")) {
 				// if () { check that number follows (if not throw exception)
 				options.setNumThreads(Integer.parseInt(args[i + 1]));
+				options.setParallel(true);
 				// }
 				// visualisation
 			} else if (args[i].equals("-v")) {
@@ -81,8 +84,27 @@ public class MainReadFile {
 		if (options.getVisualisation()) {
 		visualGraphObj.display();
 		}
-		Astar astarSolve = new Astar(graph, options, visualGraphObj);
-		astarSolve.solveAstar();
+		
+		//If statements to decide which class file to run.
+		if (options.getVisualisation()){
+			if (options.getParallel()){
+				//Run Parallel with visualization class file
+			}else{
+				//Run Sequential with visualization class file
+				Astar astarSolve = new Astar(graph, options, visualGraphObj);
+				astarSolve.solveAstar();
+			}
+		}else{
+			if (options.getParallel()){
+				//Run parallel without visual 
+				AStarParr astarSolve = new AStarParr(graph, options);
+				astarSolve.solveAstar();
+			}else {
+				//Run Sequential without visual class file
+			}
+		}
+		
+		
 		
 		/* VISUALISATION */
 //		System.setProperty("org.graphstream.ui.renderer",
