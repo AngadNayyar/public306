@@ -1,1 +1,6 @@
 /target/
+.classpath
+7.dot
+.settings/org.eclipse.jdt.core.prefs
+.project
+.classpath
