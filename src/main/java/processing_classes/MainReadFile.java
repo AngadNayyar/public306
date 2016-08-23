@@ -88,7 +88,6 @@ public class MainReadFile {
 		// algorithm.
 		AStarParr astarSolve = new AStarParr(graph, options);
 		astarSolve.solveAstar();
-
 		OutputFile.fileWriter();
 
 	}

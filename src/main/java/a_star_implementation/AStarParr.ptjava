@@ -73,10 +73,16 @@ public class AStarParr{
 	}
 	
 	TASK(*) void parallelSearch(){
+		System.out.println("hello");
 		while (!openQueue.isEmpty()){
 			
 			//Gets the state with best f value, remove this state from openQueue
 			StateWeights stateWeight = openQueue.poll();
+			if (stateWeight==null){
+				TaskNode initialNode = new TaskNode();
+				Path initialPath = new Path(initialNode);
+				stateWeight = new StateWeights(initialPath,0.0);
+			}
 			if (isComplete(stateWeight)){				
 				//Returns the optimal path
 				threadPathList.add(stateWeight.getState());
@@ -239,7 +245,7 @@ public class AStarParr{
 	}
 
 
-	//Function to determine heuristic cost f(s) of the state.
+	// Function to determine heuristic cost f(s) of the state.
 	public double heuristicCost(Path state, StateWeights stateWeight) {
 		int maxTime = 0;
 		int startTime = 0;
@@ -250,111 +256,120 @@ public class AStarParr{
 		Set<TaskNode> allNodes = graph.vertexSet();
 		ArrayList<TaskNode> path = state.getPath();
 		double previousPathWeight = stateWeight.pathWeight;
-		//Get the node with the latest finish time from the path.
-		for (TaskNode n: path){
-			if (n.finishTime >= maxTime){
+		// Get the node with the latest finish time from the path.
+		for (TaskNode n : path) {
+			if (n.finishTime >= maxTime) {
 				maxTime = n.finishTime;
 				maxNode = n;
 			}
 		}
-		//get graph vertex of our node
+		// get graph vertex of our node
 		TaskNode graphNode = maxNode;
-		for (TaskNode n: allNodes){
-			if (n.name == maxNode.name){
+		for (TaskNode n : allNodes) {
+			if (n.name == maxNode.name) {
 				graphNode = n;
 			}
 		}
-		//Determine bottom level cost of node
+		// Determine bottom level cost of node
 		bottomLevel = ComputationalBottomLevel(graphNode);
-		
-		//Get start time of node
+
+		// Get start time of node
 		startTime = maxNode.startTime;
-		
-		//Find the idle time for next node
+
+		// Find the idle time for next node
 		idleTime = getIdleTime(state, graphNode, stateWeight);
-		
-		//New path weight is startTime + the bottomLevel of the node, divided by the number of processors
-		newPathWeight = (double) startTime + (double) (bottomLevel + idleTime );  /// MainReadFile.options.getNumProcessors();
-		
-		//If new path weight is bigger than previous, select it. Otherwise use the previousPathWeight.
-		if (newPathWeight > previousPathWeight){
+
+		// New path weight is startTime + the bottomLevel of the node, divided
+		// by the number of processors
+		newPathWeight = (double) startTime + (double) (bottomLevel + idleTime); /// MainReadFile.options.getNumProcessors();
+
+		// If new path weight is bigger than previous, select it. Otherwise use
+		// the previousPathWeight.
+		if (newPathWeight > previousPathWeight) {
 			return newPathWeight;
 		} else {
 			return previousPathWeight;
 		}
 	}
-	
-	//Recursive function to get the bottom level of the node for heuristic calculation.
-	private int ComputationalBottomLevel(TaskNode node){
+
+	// Recursive function to get the bottom level of the node for heuristic
+	// calculation.
+	private int ComputationalBottomLevel(TaskNode node) {
 		int bottomLevel = 0;
-		//Get outgoing edges of node
+		// Get outgoing edges of node
 		Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(node);
-		//If node is a "SINK" (no successors), then return the node weight
-		if (outgoingEdges.isEmpty()){
+		// If node is a "SINK" (no successors), then return the node weight
+		if (outgoingEdges.isEmpty()) {
 			return node.weight;
-		//Otherwise call its successors, and recursively call the bottom level function.
-		} else for (DefaultEdge e: outgoingEdges){
-			TaskNode successor = graph.getEdgeTarget(e);
-			int temp = ComputationalBottomLevel(successor);
-			//Choose the highest path bottomLevel and continue.
-			if (temp > bottomLevel){
-				bottomLevel = temp;
+			// Otherwise call its successors, and recursively call the bottom
+			// level function.
+		} else
+			for (DefaultEdge e : outgoingEdges) {
+				TaskNode successor = graph.getEdgeTarget(e);
+				int temp = ComputationalBottomLevel(successor);
+				// Choose the highest path bottomLevel and continue.
+				if (temp > bottomLevel) {
+					bottomLevel = temp;
+				}
 			}
-		}
 		return (node.weight + bottomLevel);
 	}
-	
-	private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight){
-		//First we need to calculate the free nodes of the current state
+
+	private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight) {
+		// First we need to calculate the free nodes of the current state
 		ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();
 		ArrayList<TaskNode> parents = new ArrayList<TaskNode>();
 		freeNodes = freeNodes(stateWeight);
 		double earliestStartTime = Double.MAX_VALUE;
 		double criticalParentFinTime = 0;
-		ArrayList <Double> idleTime =  new ArrayList<Double>();
-		double dataReadyTime = 0; 
-		double nodeIdleTime = 0; 
-		
-		//Use a for loop to go through each of the free nodes and calculate earliest possible start time
-		//for that node and which processor it would be on.
+		ArrayList<Double> idleTime = new ArrayList<Double>();
+		double dataReadyTime = 0;
+		double nodeIdleTime = 0;
+
+		// Use a for loop to go through each of the free nodes and calculate
+		// earliest possible start time
+		// for that node and which processor it would be on.
 		for (TaskNode f : freeNodes) {
-			//System.out.println("node = " + f.name);
+			// System.out.println("node = " + f.name);
 			parents.clear();
 			Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(f);
-			for (DefaultEdge incomingEdge: incomingEdges){
-				 parents.add(graph.getEdgeSource(incomingEdge));	
+			for (DefaultEdge incomingEdge : incomingEdges) {
+				parents.add(graph.getEdgeSource(incomingEdge));
 			}
-			for(int i = 0; i < options.getNumProcessors(); i++) {
-				
-				for (TaskNode parent: parents){
-					if (parent.allocProc == i){
-						dataReadyTime = parent.finishTime; 
-					}else {
-						//System.out.println(f.name);
-						//System.out.println("parent = " + parent.name);
-						DefaultEdge edge = graph.getEdge(parent, f); 
-						//System.out.println(edge);
-						dataReadyTime = parent.finishTime + graph.getEdgeWeight(edge); 
+			for (int i = 0; i < options.getNumProcessors(); i++) {
+
+				for (TaskNode parent : parents) {
+					if (parent.allocProc == i) {
+						dataReadyTime = latestEndTimeOnProcessor(state, i);
+					} else {
+						// System.out.println(f.name);
+						// System.out.println("parent = " + parent.name);
+						DefaultEdge edge = graph.getEdge(parent, f);
+						// System.out.println(edge);
+						dataReadyTime = Math.max((parent.finishTime + graph.getEdgeWeight(edge)),
+								latestEndTimeOnProcessor(state, i));
 					}
-					if (dataReadyTime > criticalParentFinTime){
+					if (dataReadyTime > criticalParentFinTime) {
 						criticalParentFinTime = dataReadyTime;
 					}
 				}
-				if (criticalParentFinTime < earliestStartTime){
+				if (criticalParentFinTime < earliestStartTime) {
 					earliestStartTime = criticalParentFinTime;
 				}
 			}
-			for(int i = 0; i < options.getNumProcessors(); i++) {
-				nodeIdleTime += earliestStartTime - latestEndTimeOnProcessor(state, i);
+			for (int i = 0; i < options.getNumProcessors(); i++) {
+				double temp = earliestStartTime - latestEndTimeOnProcessor(state, i);
+				if (temp > 0) {
+					nodeIdleTime += temp;
+				}
 			}
-			idleTime.add(nodeIdleTime); 
-			
-		} 
-		//System.out.println("finished idle time!");
-		return (Collections.max(idleTime))/ options.getNumProcessors();
+			idleTime.add(nodeIdleTime);
+
+		}
+		// System.out.println("finished idle time!");
+		return (Collections.min(idleTime)) / options.getNumProcessors();
 	}
 
-	
 	//Function to get all the freeNodes for the expansion of the current state
 	@SuppressWarnings("unchecked")
 	private ArrayList<TaskNode> freeNodes(StateWeights stateWeight){
