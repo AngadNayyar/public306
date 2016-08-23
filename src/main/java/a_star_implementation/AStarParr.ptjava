@@ -16,7 +16,7 @@ import processing_classes.TaskNode;
 import pt.runtime.TaskID;
 import pt.runtime.TaskIDGroup;
 
-public class AstarParr implements AstarInterface {
+public class AstarParr{
 
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
@@ -33,7 +33,7 @@ public class AstarParr implements AstarInterface {
 		this.graph = graph; 
 	}
 	
-	public Path solveAstar() throws InterruptedException{
+	public void solveAstar() throws InterruptedException{
 		
 		//Set initial node for openQueue
 		TaskNode initialNode = new TaskNode();
@@ -42,7 +42,7 @@ public class AstarParr implements AstarInterface {
 		openQueue.add(initialSW);
 		
 		TaskIDGroup<Void> taskGroup = new TaskIDGroup(options.getNumThreads());
-		for (int i: options.getNumThreads()){
+		for (int i = 0; i < options.getNumThreads(); i++){
 			TaskID id = parallelSearch();
 			taskGroup.add(id);
 		}
@@ -63,7 +63,7 @@ public class AstarParr implements AstarInterface {
 			if (isComplete(stateWeight)){				
 				//Returns the optimal path
 				setScheduleOnGraph(stateWeight.getState());
-				return stateWeight.getState();
+				break;
 			} else {
 			//Expanding the state to all possible next states
 			expandState(stateWeight, options.getNumProcessors());
