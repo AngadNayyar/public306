@@ -1,94 +1,94 @@
 package a_star_implementation;//####[1]####
 //####[1]####
-import java.nio.file.Path;//####[3]####
-import java.util.ArrayList;//####[4]####
-import java.util.Collections;//####[5]####
-import java.util.Set;//####[6]####
-import java.util.concurrent.CopyOnWriteArrayList;//####[7]####
-import java.util.concurrent.PriorityBlockingQueue;//####[8]####
-import org.jgrapht.graph.DefaultDirectedWeightedGraph;//####[9]####
-import org.jgrapht.graph.DefaultEdge;//####[10]####
-import org.jgrapht.graph.DefaultWeightedEdge;//####[11]####
-import processing_classes.Options;//####[16]####
-import processing_classes.TaskNode;//####[17]####
-import pt.runtime.TaskID;//####[18]####
-import pt.runtime.TaskIDGroup;//####[19]####
-//####[19]####
-//-- ParaTask related imports//####[19]####
-import pt.runtime.*;//####[19]####
-import java.util.concurrent.ExecutionException;//####[19]####
-import java.util.concurrent.locks.*;//####[19]####
-import java.lang.reflect.*;//####[19]####
-import pt.runtime.GuiThread;//####[19]####
-import java.util.concurrent.BlockingQueue;//####[19]####
-import java.util.ArrayList;//####[19]####
-import java.util.List;//####[19]####
-//####[19]####
-public class AstarParr {//####[21]####
-    static{ParaTask.init();}//####[21]####
-    /*  ParaTask helper method to access private/protected slots *///####[21]####
-    public void __pt__accessPrivateSlot(Method m, Object instance, TaskID arg, Object interResult ) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {//####[21]####
-        if (m.getParameterTypes().length == 0)//####[21]####
-            m.invoke(instance);//####[21]####
-        else if ((m.getParameterTypes().length == 1))//####[21]####
-            m.invoke(instance, arg);//####[21]####
-        else //####[21]####
-            m.invoke(instance, arg, interResult);//####[21]####
-    }//####[21]####
+import java.util.ArrayList;//####[3]####
+import java.util.Collections;//####[4]####
+import java.util.Set;//####[5]####
+import java.util.concurrent.CopyOnWriteArrayList;//####[6]####
+import java.util.concurrent.PriorityBlockingQueue;//####[7]####
+import org.jgrapht.graph.DefaultDirectedWeightedGraph;//####[8]####
+import org.jgrapht.graph.DefaultEdge;//####[9]####
+import org.jgrapht.graph.DefaultWeightedEdge;//####[10]####
+import processing_classes.Options;//####[15]####
+import processing_classes.TaskNode;//####[16]####
+import pt.runtime.TaskID;//####[17]####
+import pt.runtime.TaskIDGroup;//####[18]####
+//####[18]####
+//-- ParaTask related imports//####[18]####
+import pt.runtime.*;//####[18]####
+import java.util.concurrent.ExecutionException;//####[18]####
+import java.util.concurrent.locks.*;//####[18]####
+import java.lang.reflect.*;//####[18]####
+import pt.runtime.GuiThread;//####[18]####
+import java.util.concurrent.BlockingQueue;//####[18]####
+import java.util.ArrayList;//####[18]####
+import java.util.List;//####[18]####
+//####[18]####
+public class AstarParr {//####[20]####
+    static{ParaTask.init();}//####[20]####
+    /*  ParaTask helper method to access private/protected slots *///####[20]####
+    public void __pt__accessPrivateSlot(Method m, Object instance, TaskID arg, Object interResult ) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {//####[20]####
+        if (m.getParameterTypes().length == 0)//####[20]####
+            m.invoke(instance);//####[20]####
+        else if ((m.getParameterTypes().length == 1))//####[20]####
+            m.invoke(instance, arg);//####[20]####
+        else //####[20]####
+            m.invoke(instance, arg, interResult);//####[20]####
+    }//####[20]####
+//####[22]####
+    private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();//####[22]####
 //####[23]####
-    private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();//####[23]####
+    private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();//####[23]####
 //####[24]####
-    private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();//####[24]####
+    private int numProc;//####[24]####
 //####[25]####
-    private int numProc;//####[25]####
+    private DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph<TaskNode, DefaultEdge>(DefaultWeightedEdge.class);//####[25]####
+//####[25]####
+    ;//####[25]####
 //####[26]####
-    private DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph<TaskNode, DefaultEdge>(DefaultWeightedEdge.class);//####[26]####
-//####[26]####
-    ;//####[26]####
+    private Options options;//####[26]####
 //####[27]####
-    private Options options;//####[27]####
-//####[28]####
-    private CopyOnWriteArrayList<Path> threadPathList = new CompyOnWriteArrayList<Path>();//####[28]####
-//####[31]####
-    public AstarParr(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph, Options options) {//####[31]####
-        this.graph = graph;//####[32]####
-        this.options = options;//####[33]####
-    }//####[34]####
-//####[36]####
-    public AstarParr(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph) {//####[36]####
-        this.graph = graph;//####[37]####
-    }//####[38]####
-//####[40]####
-    public void solveAstar() throws InterruptedException {//####[40]####
-        TaskNode initialNode = new TaskNode();//####[43]####
-        Path initialPath = new Path(initialNode);//####[44]####
-        StateWeights initialSW = new StateWeights(initialPath, 0.0);//####[45]####
-        openQueue.add(initialSW);//####[46]####
-        TaskIDGroup<Void> taskGroup = new TaskIDGroup(options.getNumThreads());//####[48]####
-        for (int i = 0; i < options.getNumThreads(); i++) //####[49]####
-        {//####[49]####
-            TaskID id = parallelSearch();//####[50]####
-            taskGroup.add(id);//####[51]####
-        }//####[52]####
-        try {//####[54]####
-            taskGroup.waitTillFinished();//####[55]####
-        } catch (Exception e) {//####[56]####
-            e.printStackTrace();//####[57]####
-        }//####[58]####
-        int smallestFinPath = Integer.MAX_VALUE;//####[61]####
-        Path optimalPath;//####[62]####
-        for (Path p : threadPathList) //####[63]####
-        {//####[63]####
-            for (TaskNode n : p) //####[64]####
-            {//####[64]####
-                if (n.finishTime < smallestFinNode) //####[65]####
-                {//####[65]####
-                    smallestFinPath = n.finishTime;//####[66]####
-                    optimalPath = p;//####[67]####
-                }//####[68]####
-            }//####[69]####
-        }//####[70]####
-        setScheduleOnGraph(optimalPath);//####[72]####
+    private CopyOnWriteArrayList<Path> threadPathList = new CopyOnWriteArrayList<Path>();//####[27]####
+//####[30]####
+    public AstarParr(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph, Options options) {//####[30]####
+        this.graph = graph;//####[31]####
+        this.options = options;//####[32]####
+    }//####[33]####
+//####[35]####
+    public AstarParr(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph) {//####[35]####
+        this.graph = graph;//####[36]####
+    }//####[37]####
+//####[39]####
+    public void solveAstar() throws InterruptedException {//####[39]####
+        TaskNode initialNode = new TaskNode();//####[42]####
+        Path initialPath = new Path(initialNode);//####[43]####
+        StateWeights initialSW = new StateWeights(initialPath, 0.0);//####[44]####
+        openQueue.add(initialSW);//####[45]####
+        TaskIDGroup<Void> taskGroup = new TaskIDGroup(options.getNumThreads());//####[47]####
+        for (int i = 0; i < options.getNumThreads(); i++) //####[48]####
+        {//####[48]####
+            TaskID id = parallelSearch();//####[49]####
+            taskGroup.add(id);//####[50]####
+        }//####[51]####
+        try {//####[53]####
+            taskGroup.waitTillFinished();//####[54]####
+        } catch (Exception e) {//####[55]####
+            e.printStackTrace();//####[56]####
+        }//####[57]####
+        int smallestFinPath = Integer.MAX_VALUE;//####[60]####
+        Path optimalPath = null;//####[61]####
+        for (Path p : threadPathList) //####[62]####
+        {//####[62]####
+            for (TaskNode n : p.getPath()) //####[63]####
+            {//####[63]####
+                if (n.finishTime < smallestFinPath) //####[64]####
+                {//####[64]####
+                    smallestFinPath = n.finishTime;//####[65]####
+                    optimalPath = p;//####[66]####
+                }//####[67]####
+            }//####[68]####
+        }//####[69]####
+        setScheduleOnGraph(optimalPath);//####[71]####
+        System.out.println("got to here");//####[72]####
     }//####[74]####
 //####[76]####
     private static volatile Method __pt__parallelSearch__method = null;//####[76]####
