@@ -12,6 +12,7 @@ import processing_classes.*;
 
 public class TestAStar {
 
+	//TODO commenting
 	@Test
 	public void settingNodeTimeTest(){	
 		DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);
@@ -40,6 +41,7 @@ public class TestAStar {
 		assertEquals(expected3.startTime,testNode3.startTime);
 	}
 	
+	//TODO commenting
 	@Test
 	public void settingNodeTimeTest2(){
 		TaskNode testNode = new TaskNode("a",2,0,2,2);
@@ -68,6 +70,7 @@ public class TestAStar {
 		
 	}
 	
+	//TODO commenting
 	@Test
 	public void heuristicTest(){
 		TaskNode testNode = new TaskNode("a",2,0,1,2);
@@ -102,5 +105,19 @@ public class TestAStar {
 		//assertEquals(r,testD); Commented out as heuristic now requires the previous path weight also.
 		
 	}
+	
+	//test idle time TODO
+	
+	
+	//test constructor for path TODO
+	
+	
+	//test constructor for StateWeigths TODO
+	
+	
+	//test methods for path and stateweights TODO
+	
+	
+	//heuristiiiiic
 	
 }

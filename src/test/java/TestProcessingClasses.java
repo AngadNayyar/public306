@@ -33,7 +33,7 @@ public class TestProcessingClasses {
 		
 	}
 	
-	// Test to check the outpul file name split works and file name correctly created 
+	// Test to check the output file name split works and file name correctly created 
 	@Test
 	public void testOutputFileNameCreatedCorrectly(){
 		String inputFileName = "testfilename.dot"; 
@@ -71,5 +71,18 @@ public class TestProcessingClasses {
 	}
 	
 	
+	//test for checking getting options correctly and creating object correctly TODO
 
+
+	//test for correct writing of output file TODO
+	
+	
+	//test for checking visual graph being created correctly (from task graph) TODO
+	
+	
+	//test constructors of each class files? TODO
+	
+	
+	//
+	
 }
