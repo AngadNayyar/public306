@@ -5,9 +5,12 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
+
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
+
+
 
 
 
@@ -44,6 +47,7 @@ public class AStarParr{
 		StateWeights initialSW = new StateWeights(initialPath,0.0);
 		openQueue.add(initialSW);
 		
+		//At the moment the parallelSearch method is not being executed <-----------------------------------------------------
 		TaskIDGroup<Void> taskGroup = new TaskIDGroup(options.getNumThreads());
 		for (int i = 0; i < options.getNumThreads(); i++){
 			TaskID id = parallelSearch();
@@ -51,6 +55,7 @@ public class AStarParr{
 		}
 		
 		try {
+			System.out.println("Waiting on threads....");
 			taskGroup.waitTillFinished();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -58,10 +63,14 @@ public class AStarParr{
 		
 		//Gets the optimal path from the threadPathList (threads add to this list)
 		int smallestFinPath = Integer.MAX_VALUE;
+		System.out.println("Max Value: " + smallestFinPath);
+		System.out.println("Size of the list: " + threadPathList.size());
 		Path optimalPath = null;
 		for (Path p : threadPathList){
 			for (TaskNode n: p.getPath()){
+				System.out.println("Node finish time: " + n.finishTime);
 				if (n.finishTime < smallestFinPath){
+					System.out.println("Hello");
 					smallestFinPath = n.finishTime; //Gets the smallest finish time on the path
 					optimalPath = p; //Sets optimal path to this path
 				}
@@ -74,13 +83,16 @@ public class AStarParr{
 	}
 	
 	TASK(*) void parallelSearch(){
+		System.out.println("Harry bro");
 		while (!openQueue.isEmpty()){
 			
 			//Gets the state with best f value, remove this state from openQueue
 			StateWeights stateWeight = openQueue.poll();
 			if (isComplete(stateWeight)){				
 				//Returns the optimal path
+				System.out.println("gets to here or not?");
 				threadPathList.add(stateWeight.getState());
+				System.out.println("gets to here?");
 				break;
 			} else {
 			//Expanding the state to all possible next states

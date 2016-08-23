@@ -82,7 +82,7 @@ public class MainReadFile {
 		//Node n = visualGraph.addNode("A");
 		//n.addAttribute("ui.style", "fill-color: rgb(255,0,0);");
 
-		visualGraph.display();
+		//visualGraph.display();
 
 		// Create new instance of Astar solving algorithm, and then run the
 		// algorithm.
