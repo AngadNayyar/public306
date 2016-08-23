@@ -14,6 +14,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import a_star_implementation.AStarParr;
+import a_star_implementation.AStarParrVis;
 import a_star_implementation.Astar;
 import a_star_implementation.Path;
 
@@ -89,6 +90,9 @@ public class MainReadFile {
 		if (options.getVisualisation()){
 			if (options.getParallel()){
 				//Run Parallel with visualization class file
+				System.out.println("pwithv");
+				AStarParrVis astarSolve = new AStarParrVis(graph, options, visualGraphObj);
+				astarSolve.solveAstar();
 			}else{
 				//Run Sequential with visualization class file
 				Astar astarSolve = new Astar(graph, options, visualGraphObj);
