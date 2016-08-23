@@ -13,6 +13,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import a_star_implementation.Astar;
+import a_star_implementation.AstarInterface;
 
 import org.graphstream.graph.Node;
 //import org.graphstream.graph.*;
@@ -84,7 +85,7 @@ public class MainReadFile {
 
 		// Create new instance of Astar solving algorithm, and then run the
 		// algorithm.
-		Astar astarSolve = new Astar(graph, options);
+		AstarInterface astarSolve = new AstarPar(graph, options);
 		astarSolve.solveAstar();
 
 		OutputFile.fileWriter();
