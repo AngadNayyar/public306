@@ -77,7 +77,9 @@ public class MainReadFile {
 
 		// Create new instance of Astar solving algorithm, and then run the
 		// algorithm.
+		if (options.getVisualisation()) {
 		visualGraph.display();
+		}
 		Astar astarSolve = new Astar(graph, options, visualGraph);
 		astarSolve.solveAstar();
 		

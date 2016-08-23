@@ -37,6 +37,8 @@ public class Astar {
 	}
 
 	public Path solveAstar() throws InterruptedException {
+		
+		long startTime = System.currentTimeMillis();
 
 		// Property is set for rendering the visual graph
 		System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
@@ -55,11 +57,10 @@ public class Astar {
 			if (isComplete(stateWeight)) {
 				// Returns the optimal path
 				setScheduleOnGraph(stateWeight.getState());
-				return stateWeight.getState();
-			} else {
-				// Expanding the state to all possible next states
-				expandState(stateWeight, options.getNumProcessors());
-				Thread.sleep(500);
+				
+				long currentTime = System.currentTimeMillis();
+				long sleepTime = (500/(currentTime - startTime));
+				Thread.sleep(sleepTime);
 				if (options.getVisualisation()) {
 					Path current = stateWeight.state;
 					ArrayList<TaskNode> nodePath = current.getPath();
@@ -67,12 +68,36 @@ public class Astar {
 						if (!node.name.equals("$")) {
 							Node n = visualGraph.getNode(node.name);
 							n.addAttribute("ui.style", "fill-color: rgb(255,0,0);");
+							n.addAttribute("ui.label", node.allocProc);
+						}
+					}
+				}
+				return stateWeight.getState();
+				
+				
+			} else {
+				// Expanding the state to all possible next states
+				expandState(stateWeight, options.getNumProcessors());
+				long currentTime = System.currentTimeMillis();
+				long sleepTime = (500/(currentTime - startTime));
+				Thread.sleep(sleepTime);
+				if (options.getVisualisation()) {
+					Path current = stateWeight.state;
+					ArrayList<TaskNode> nodePath = current.getPath();
+					for (TaskNode node : nodePath) {
+						if (!node.name.equals("$")) {
+							Node n = visualGraph.getNode(node.name);
+							n.addAttribute("ui.style", "fill-color: rgb(255,0,0);");
+							n.addAttribute("ui.label", node.allocProc);
 						}
 					}
 				}
 			}
 			closedQueue.add(stateWeight);
 		}
+		
+		
+		
 
 		return null;
 	}
