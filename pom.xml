@@ -38,6 +38,18 @@
 			<version>1.3</version>
 			<optional>false</optional>
 		</dependency>
+		<dependency>
+    		<groupId>parallel.auckland.ac.nz</groupId>
+    		<artifactId>PTCompiler</artifactId>
+    		<version>0.9.4</version>
+    		<scope>system</scope>
+    		<systemPath>${basedir}/PTCompiler-0.9.4.jar</systemPath>
+		</dependency>
+		<dependency>
+    		<groupId>parallel.auckland.ac.nz</groupId>
+    		<artifactId>PTRuntime</artifactId>
+    		<scope>system</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
