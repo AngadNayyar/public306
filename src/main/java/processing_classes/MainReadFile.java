@@ -60,15 +60,15 @@ public class MainReadFile {
 		// Read in optional options from command line
 		for (int i = 2; i < args.length; i++) {
 			// threads in parallel -p N
-			if (args[i] == "-p") {
+			if (args[i].equals("-p")) {
 				// if () { check that number follows (if not throw exception)
 				options.setNumThreads(Integer.parseInt(args[i + 1]));
 				// }
 				// visualisation
-			} else if (args[i] == "-v") {
+			} else if (args[i].equals("-v")) {
 				options.setVisualisation(true);
 				// name of output file
-			} else if (args[i] == "-o") {
+			} else if (args[i].equals("-o")) {
 				// if () { check that name follows (if not throw exception)
 				options.setOutputFileName(args[i + 1]);
 				// }
@@ -77,6 +77,7 @@ public class MainReadFile {
 
 		// Create new instance of Astar solving algorithm, and then run the
 		// algorithm.
+		visualGraph.display();
 		Astar astarSolve = new Astar(graph, options, visualGraph);
 		astarSolve.solveAstar();
 		
