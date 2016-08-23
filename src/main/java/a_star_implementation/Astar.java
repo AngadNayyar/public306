@@ -68,6 +68,7 @@ public class Astar {
 				
 			} else {
 				// Expanding the state to all possible next states
+				visualGraphObj.updateNode(stateWeight.state.getCurrent());
 				expandState(stateWeight, options.getNumProcessors());
 //				long currentTime = System.currentTimeMillis();
 //				long sleepTime = 100;
