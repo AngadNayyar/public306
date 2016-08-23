@@ -1,6 +1,5 @@
 package a_star_implementation;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Set;
@@ -25,7 +24,7 @@ public class AstarParr{
 	private int numProc;
 	private DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);; 
 	private Options options;
-	private CopyOnWriteArrayList<Path> threadPathList = new CompyOnWriteArrayList<Path>();
+	private CopyOnWriteArrayList<Path> threadPathList = new CopyOnWriteArrayList<Path>();
 	
 	
 	public AstarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
@@ -59,10 +58,10 @@ public class AstarParr{
 		
 		//Gets the optimal path from the threadPathList (threads add to this list)
 		int smallestFinPath = Integer.MAX_VALUE;
-		Path optimalPath;
+		Path optimalPath = null;
 		for (Path p : threadPathList){
-			for (TaskNode n: p){
-				if (n.finishTime < smallestFinNode){
+			for (TaskNode n: p.getPath()){
+				if (n.finishTime < smallestFinPath){
 					smallestFinPath = n.finishTime; //Gets the smallest finish time on the path
 					optimalPath = p; //Sets optimal path to this path
 				}
@@ -70,6 +69,7 @@ public class AstarParr{
 		}
 		//TODO get best path from threadPathList
 		setScheduleOnGraph(optimalPath);
+		System.out.println("got to here");
 		//Set that path on the graph
 	}
 	
