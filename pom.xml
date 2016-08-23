@@ -48,7 +48,9 @@
 		<dependency>
     		<groupId>parallel.auckland.ac.nz</groupId>
     		<artifactId>PTRuntime</artifactId>
+    		<version>0.9.4</version>
     		<scope>system</scope>
+    		<systemPath>${basedir}/PTRuntime-0.9.4.jar</systemPath>
 		</dependency>
 	</dependencies>
 
