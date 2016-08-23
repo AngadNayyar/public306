@@ -48,11 +48,13 @@ public class AStarParr{
 		openQueue.add(initialSW);
 		
 		//At the moment the parallelSearch method is not being executed <-----------------------------------------------------
-		TaskIDGroup<Void> taskGroup = new TaskIDGroup(options.getNumThreads());
-		for (int i = 0; i < options.getNumThreads(); i++){
-			TaskID id = parallelSearch();
-			taskGroup.add(id);
-		}
+//		TaskIDGroup taskGroup = new TaskIDGroup(options.getNumThreads());
+//		for (int i = 0; i < options.getNumThreads(); i++){
+//			TaskID id = parallelSearch();
+//			taskGroup.add(id);
+//		}
+		
+		TaskIDGroup taskGroup = parallelSearch();
 		
 		try {
 			System.out.println("Waiting on threads....");
@@ -61,29 +63,15 @@ public class AStarParr{
 			e.printStackTrace();
 		}
 		
-		//Gets the optimal path from the threadPathList (threads add to this list)
-		int smallestFinPath = Integer.MAX_VALUE;
-		System.out.println("Max Value: " + smallestFinPath);
-		System.out.println("Size of the list: " + threadPathList.size());
-		Path optimalPath = null;
-		for (Path p : threadPathList){
-			for (TaskNode n: p.getPath()){
-				System.out.println("Node finish time: " + n.finishTime);
-				if (n.finishTime < smallestFinPath){
-					System.out.println("Hello");
-					smallestFinPath = n.finishTime; //Gets the smallest finish time on the path
-					optimalPath = p; //Sets optimal path to this path
-				}
-			}
-		}
-		//TODO get best path from threadPathList
+		Thread.sleep(3000);
+		
+		Path optimalPath = getSmallestPathFromList();
 		setScheduleOnGraph(optimalPath);
 		System.out.println("got to here");
-		//Set that path on the graph
 	}
 	
 	TASK(*) void parallelSearch(){
-		System.out.println("Harry bro");
+		System.out.println("=================== If you got here you fixed something ================");
 		while (!openQueue.isEmpty()){
 			
 			//Gets the state with best f value, remove this state from openQueue
@@ -100,6 +88,34 @@ public class AStarParr{
 			}
 			closedQueue.add(stateWeight);
 		}
+	}
+	
+	//Gets the smallest path from list produced by the threads
+	private Path getSmallestPathFromList(){
+		//Gets the optimal path from the threadPathList (threads add to this list)
+		int smallestFinPath = Integer.MAX_VALUE;
+		int finishTimeOfPath = 0;
+		System.out.println("Max Value: " + smallestFinPath);
+		System.out.println("Size of the list: " + threadPathList.size());
+		Path optimalPath = null;
+		//Gets the smallest path
+		for (Path p : threadPathList){
+			finishTimeOfPath = 0;
+			//Gets the largest finish time on the path
+			for (TaskNode n: p.getPath()){
+				System.out.println("Node finish time: " + n.finishTime);
+				if (n.finishTime > finishTimeOfPath){
+					finishTimeOfPath = n.finishTime; 
+				}
+			}
+			//Checks if found finish time of the path is the smallest and then updates the smallest to that if true
+			if (finishTimeOfPath < smallestFinPath) {
+				smallestFinPath = finishTimeOfPath;
+				optimalPath = p;
+			}
+		
+		}
+		return optimalPath;
 	}
 	
 	//Sets the value of the chosen path onto the nodes of the graph
