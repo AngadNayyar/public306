@@ -17,7 +17,7 @@ import processing_classes.TaskNode;
 import pt.runtime.TaskID;
 import pt.runtime.TaskIDGroup;
 
-public class AstarParr{
+public class AStarParr{
 
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
@@ -27,12 +27,12 @@ public class AstarParr{
 	private CopyOnWriteArrayList<Path> threadPathList = new CopyOnWriteArrayList<Path>();
 	
 	
-	public AstarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
+	public AStarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
 		this.graph = graph;
 		this.options = options; 
 	}
 	
-	public AstarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
+	public AStarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
 		this.graph = graph; 
 	}
 	

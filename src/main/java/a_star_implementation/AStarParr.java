@@ -23,7 +23,7 @@ import java.util.concurrent.BlockingQueue;//####[18]####
 import java.util.ArrayList;//####[18]####
 import java.util.List;//####[18]####
 //####[18]####
-public class AstarParr {//####[20]####
+public class AStarParr {//####[20]####
     static{ParaTask.init();}//####[20]####
     /*  ParaTask helper method to access private/protected slots *///####[20]####
     public void __pt__accessPrivateSlot(Method m, Object instance, TaskID arg, Object interResult ) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {//####[20]####
@@ -49,12 +49,12 @@ public class AstarParr {//####[20]####
 //####[27]####
     private CopyOnWriteArrayList<Path> threadPathList = new CopyOnWriteArrayList<Path>();//####[27]####
 //####[30]####
-    public AstarParr(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph, Options options) {//####[30]####
+    public AStarParr(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph, Options options) {//####[30]####
         this.graph = graph;//####[31]####
         this.options = options;//####[32]####
     }//####[33]####
 //####[35]####
-    public AstarParr(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph) {//####[35]####
+    public AStarParr(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph) {//####[35]####
         this.graph = graph;//####[36]####
     }//####[37]####
 //####[39]####
