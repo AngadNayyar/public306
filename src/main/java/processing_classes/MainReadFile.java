@@ -13,6 +13,7 @@ import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+import a_star_implementation.AStarNoVis;
 import a_star_implementation.AStarParr;
 import a_star_implementation.AStarParrVis;
 import a_star_implementation.Astar;
@@ -105,7 +106,7 @@ public class MainReadFile {
 				astarSolve.solveAstar();
 			}else {
 				//Run Sequential without visual class file
-				Astar astarSolve = new Astar(graph, options, visualGraphObj);
+				AStarNoVis astarSolve = new AStarNoVis(graph, options);
 				astarSolve.solveAstar();
 			}
 		}

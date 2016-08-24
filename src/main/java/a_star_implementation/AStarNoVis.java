@@ -2,6 +2,7 @@ package a_star_implementation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.concurrent.PriorityBlockingQueue;
@@ -9,6 +10,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
+
 
 //import processing_classes.MainReadFile;
 import processing_classes.Options;
@@ -89,12 +91,108 @@ public class AStarNoVis {
 				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
 				double pathWeight = heuristicCost(temp, stateWeight);
-				if (removePathDuplicates(new StateWeights(temp, pathWeight))){
+				boolean add = checkIfPathExists(temp, pathWeight);
+//				if (removePathDuplicates(new StateWeights(temp, pathWeight)) && add){
+				if (add){
 					openQueue.add(new StateWeights(temp, pathWeight));
 				}
 			} 
 			newStates.clear();
 		}
+	}
+	
+	// if another schedule that is the same doesn't exist, returns true -- then
+	// add to queue
+	public boolean checkIfPathExists(Path temp, double pathWeight) {
+
+		if (openQueue.isEmpty()) {
+			return true;
+		}
+
+		ArrayList<StateWeights> similarSchedules = new ArrayList<StateWeights>();
+		Set<Set> tempProcSet = new HashSet<Set>();
+		boolean remove = true;
+
+		// Create the sets for the schedule we want to add to the queue
+		for (int j = 0; j < options.getNumProcessors(); j++) {
+			Set<TaskNode> nodes = new HashSet<TaskNode>();
+			Path tempPath = new Path(temp.getPath());
+			for (TaskNode tempNode : tempPath.getPath()) {
+				if (tempNode.allocProc == j) {
+					TaskNode copyNode = new TaskNode(tempNode);
+					copyNode.setProc(1);
+					nodes.add(copyNode);
+				}
+			}
+			tempProcSet.add(nodes);
+		}
+
+		Iterator<StateWeights> itr = openQueue.iterator();
+		while (itr.hasNext()) {
+			StateWeights schedule = (StateWeights) itr.next();
+			if (schedule.pathWeight == pathWeight
+					&& (schedule.state.getPath().size() == temp.getPath()
+							.size())) {
+				similarSchedules.add(schedule);
+			}
+		}
+
+		for (int k = 0; k < similarSchedules.size(); k++) {
+			Set<Set> currentSet = new HashSet<Set>();
+			for (int j = 0; j < options.getNumProcessors(); j++) {
+				Set<TaskNode> nodes = new HashSet<TaskNode>();
+				Path tempPath = new Path(
+						similarSchedules.get(k).state.getPath());
+				for (TaskNode tempNode : tempPath.getPath()) {
+					if (tempNode.allocProc == j) {
+						TaskNode copyNode = new TaskNode(tempNode);
+						copyNode.setProc(1);
+						nodes.add(copyNode);
+					}
+				}
+				currentSet.add(nodes);
+			}
+
+			// if (currentSet.equals(tempProcSet)) {
+			// System.out.println("They are equal omg");
+			// }
+
+			// remove = true;
+			//
+			// System.out.println("equals = "+tempProcSet.equals(currentSet));
+			// Iterator<Set> tpsi = tempProcSet.iterator();
+			// while (tpsi.hasNext()) {
+			// Set<TaskNode> tempSet = tpsi.next();
+			// Iterator<Set> currentitr = currentSet.iterator();
+			// while (currentitr.hasNext()) {
+			// Set curSet = currentitr.next();
+			// // System.out.println("kjbrg" + curSet);
+			// // System.out.println("t " + tempSet);
+			// //
+			// System.out.println(tempSet.iterator().next().equals(curSet.iterator().next()));
+			//
+			// if (!tempSet.containsAll(curSet)) {
+			// // System.out.println("i am a diff schedule");
+			// // System.out.println("t " + tempProcSet);
+			// // System.out.println("k " + currentSet);
+			// // System.out.println("remove");
+			// remove = false;
+			// }
+			// }
+			// }
+			//
+			// if (remove) {
+			// System.out.println("remove");
+			// return false;
+			// }
+
+			if (tempProcSet.containsAll(currentSet)
+					&& currentSet.containsAll(tempProcSet)) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 	
 	public boolean removePathDuplicates(StateWeights newState){
