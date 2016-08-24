@@ -29,9 +29,6 @@ public class AStarNoVis extends AStarParent{
 	}
 	
 	public Path solveAstar() throws InterruptedException{
-		
-		System.out.println("this is seq no vis");
-		
 		//Set initial node for openQueue
 		TaskNode initialNode = new TaskNode();
 		Path initialPath = new Path(initialNode);
