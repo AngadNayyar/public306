@@ -102,7 +102,7 @@ public class AStarParrVis extends AStarParent {//####[21]####
     }//####[68]####
     public void __pt__parallelSearch() throws InterruptedException {//####[68]####
         long startTime = System.currentTimeMillis();//####[69]####
-        long counter = 500;//####[70]####
+        long counter = 50;//####[70]####
         while (!openQueue.isEmpty()) //####[71]####
         {//####[71]####
             StateWeights stateWeight = openQueue.poll();//####[74]####
@@ -117,12 +117,14 @@ public class AStarParrVis extends AStarParent {//####[21]####
             {//####[81]####
                 threadPathList.add(stateWeight.getState());//####[83]####
                 Thread.sleep(Math.max(counter, 0));//####[84]####
-                counter -= 10;//####[85]####
+                counter -= 1;//####[85]####
                 visualGraphObj.update(stateWeight, options);//####[86]####
                 break;//####[87]####
             } else {//####[88]####
                 visualGraphObj.updateNode(stateWeight.state.getCurrent());//####[90]####
                 expandState(stateWeight, options.getNumProcessors());//####[91]####
+                Thread.sleep(Math.max(counter, 0));//####[92]####
+                counter -= 1;//####[93]####
                 visualGraphObj.update(stateWeight, options);//####[94]####
             }//####[95]####
             closedQueue.add(stateWeight);//####[96]####

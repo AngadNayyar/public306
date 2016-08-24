@@ -67,7 +67,7 @@ public class AStarParrVis extends AStarParent{
 	
 	TASK(*) void parallelSearch() throws InterruptedException{
 		long startTime = System.currentTimeMillis();
-		long counter = 500;
+		long counter = 50;
 		while (!openQueue.isEmpty()){
 			
 			//Gets the state with best f value, remove this state from openQueue
@@ -82,15 +82,15 @@ public class AStarParrVis extends AStarParent{
 				//Returns the optimal path
 				threadPathList.add(stateWeight.getState());
 				Thread.sleep(Math.max(counter, 0));
-				counter -= 10;
+				counter -= 1;
 				visualGraphObj.update(stateWeight, options);
 				break;
 			} else {
 			//Expanding the state to all possible next states
 			visualGraphObj.updateNode(stateWeight.state.getCurrent());
 			expandState(stateWeight, options.getNumProcessors());
-//			Thread.sleep(Math.max(counter, 0));
-//			counter -= 10;
+			Thread.sleep(Math.max(counter, 0));
+			counter -= 1;
 			visualGraphObj.update(stateWeight, options);
 			}
 			closedQueue.add(stateWeight);
