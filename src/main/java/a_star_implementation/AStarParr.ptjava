@@ -15,10 +15,12 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 
 
+
 //import processing_classes.MainReadFile;
 import processing_classes.Options;
 import processing_classes.TaskNode;
 import pt.runtime.CurrentTask;
+import pt.runtime.ParaTask;
 import pt.runtime.TaskID;
 import pt.runtime.TaskIDGroup;
 
@@ -34,7 +36,7 @@ public class AStarParr extends AStarParent{
 	}
 	
 	public void solveAstar() throws InterruptedException{
-		
+		long begin = System.currentTimeMillis();
 		//Set initial node for openQueue
 		TaskNode initialNode = new TaskNode();
 		Path initialPath = new Path(initialNode);
@@ -56,28 +58,39 @@ public class AStarParr extends AStarParent{
 		
 		Path optimalPath = getSmallestPathFromList();
 		setScheduleOnGraph(optimalPath);
+		long end = System.currentTimeMillis();
+		
+		System.out.println("Time: " + (end - begin) + "ms");
 	}
 	
 	TASK(*) void parallelSearch(){
 		while (!openQueue.isEmpty()){
-			
-			//Gets the state with best f value, remove this state from openQueue
-			StateWeights stateWeight = openQueue.poll();
-			if (stateWeight==null){
-				TaskNode initialNode = new TaskNode();
-				Path initialPath = new Path(initialNode);
-				stateWeight = new StateWeights(initialPath,0.0);
-			}
-			if (isComplete(stateWeight)){				
-				//Returns the optimal path
-				threadPathList.add(stateWeight.getState());
+			if (threadPathList.size() > 0) {
+				astarAlgo();
 				break;
-			} else {
-			//Expanding the state to all possible next states
-			expandState(stateWeight, options.getNumProcessors());
 			}
-			closedQueue.add(stateWeight);
+			astarAlgo();
+			
 		}
+	}
+	
+	private void astarAlgo(){
+		//Gets the state with best f value, remove this state from openQueue
+		StateWeights stateWeight = openQueue.poll();
+		if (stateWeight==null){
+			TaskNode initialNode = new TaskNode();
+			Path initialPath = new Path(initialNode);
+			stateWeight = new StateWeights(initialPath,0.0);
+		}
+		if (isComplete(stateWeight)){				
+			//Returns the optimal path
+			threadPathList.add(stateWeight.getState());
+			return;
+		} else {
+		//Expanding the state to all possible next states
+		expandState(stateWeight, options.getNumProcessors());
+		}
+		closedQueue.add(stateWeight);
 	}
 	
 	//Gets the smallest path from list produced by the threads
