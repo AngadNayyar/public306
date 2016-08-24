@@ -14,6 +14,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import a_star_implementation.AStarNoVis;
+import a_star_implementation.AStarParent;
 import a_star_implementation.AStarParr;
 import a_star_implementation.AStarParrVis;
 import a_star_implementation.Astar;

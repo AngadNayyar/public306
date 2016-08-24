@@ -13,62 +13,62 @@ import processing_classes.*;
 public class TestAStar {
 
 	//TODO commenting
-	@Test
-	public void settingNodeTimeTest(){	
-		DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);
-		TaskNode testNode = new TaskNode("a",2,0,1,2);
-		TaskNode expected2 = new TaskNode("b",1,3,2,4);
-		TaskNode testNode2 = new TaskNode("b",1,0,0,0);
-		TaskNode expected3 = new TaskNode ("c",3,5,2,8);
-		TaskNode testNode3 = new TaskNode ("c",3,0,0,0);
-		
-		graph.addVertex(testNode);
-		graph.addVertex(testNode2);
-		graph.addVertex(testNode3);
-		
-		DefaultEdge e = graph.addEdge(testNode, testNode2);
-		graph.setEdgeWeight(e, 1);
-		DefaultEdge e2 = graph.addEdge(testNode, testNode3);
-		graph.setEdgeWeight(e2, 3);
-		
-		Astar testAstar = new Astar(graph); 
-		Path testPath = new Path(testNode);
-		testAstar.setNodeTimes(testPath,testNode2,2);
-		assertEquals(expected2.startTime,testNode2.startTime);
-		
-		Path testPath2 = new Path(testPath, expected2);
-		testAstar.setNodeTimes(testPath2, testNode3,2);
-		assertEquals(expected3.startTime,testNode3.startTime);
-	}
-	
-	//TODO commenting
-	@Test
-	public void settingNodeTimeTest2(){
-		TaskNode testNode = new TaskNode("a",2,0,2,2);
-		TaskNode expected2 = new TaskNode("b",1,5,2,6);
-		TaskNode testNode2 = new TaskNode("b",1,0,0,0);
-		TaskNode testNode3 = new TaskNode ("c",3,2,2,5);
-		
-		DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);
-		
-		graph.addVertex(testNode);
-		graph.addVertex(testNode2);
-		graph.addVertex(testNode3);
-		
-		DefaultEdge e = graph.addEdge(testNode, testNode2);
-		graph.setEdgeWeight(e, 1);
-		DefaultEdge e2 = graph.addEdge(testNode, testNode3);
-		graph.setEdgeWeight(e2, 3);
-		
-		Astar testAstar = new Astar(graph); 
-		
-		Path testPath = new Path(testNode);
-		Path testPath2 = new Path(testPath,testNode3);
-		testAstar.setNodeTimes(testPath2,testNode2,2);
-		assertEquals(expected2.startTime,testNode2.startTime);
-		
-		
-	}
+//	@Test
+//	public void settingNodeTimeTest(){	
+//		DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);
+//		TaskNode testNode = new TaskNode("a",2,0,1,2);
+//		TaskNode expected2 = new TaskNode("b",1,3,2,4);
+//		TaskNode testNode2 = new TaskNode("b",1,0,0,0);
+//		TaskNode expected3 = new TaskNode ("c",3,5,2,8);
+//		TaskNode testNode3 = new TaskNode ("c",3,0,0,0);
+//		
+//		graph.addVertex(testNode);
+//		graph.addVertex(testNode2);
+//		graph.addVertex(testNode3);
+//		
+//		DefaultEdge e = graph.addEdge(testNode, testNode2);
+//		graph.setEdgeWeight(e, 1);
+//		DefaultEdge e2 = graph.addEdge(testNode, testNode3);
+//		graph.setEdgeWeight(e2, 3);
+//		
+//		Astar testAstar = new Astar(graph); 
+//		Path testPath = new Path(testNode);
+//		testAstar.setNodeTimes(testPath,testNode2,2);
+//		assertEquals(expected2.startTime,testNode2.startTime);
+//		
+//		Path testPath2 = new Path(testPath, expected2);
+//		testAstar.setNodeTimes(testPath2, testNode3,2);
+//		assertEquals(expected3.startTime,testNode3.startTime);
+//	}
+//	
+//	//TODO commenting
+//	@Test
+//	public void settingNodeTimeTest2(){
+//		TaskNode testNode = new TaskNode("a",2,0,2,2);
+//		TaskNode expected2 = new TaskNode("b",1,5,2,6);
+//		TaskNode testNode2 = new TaskNode("b",1,0,0,0);
+//		TaskNode testNode3 = new TaskNode ("c",3,2,2,5);
+//		
+//		DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);
+//		
+//		graph.addVertex(testNode);
+//		graph.addVertex(testNode2);
+//		graph.addVertex(testNode3);
+//		
+//		DefaultEdge e = graph.addEdge(testNode, testNode2);
+//		graph.setEdgeWeight(e, 1);
+//		DefaultEdge e2 = graph.addEdge(testNode, testNode3);
+//		graph.setEdgeWeight(e2, 3);
+//		
+//		Astar testAstar = new Astar(graph); 
+//		
+//		Path testPath = new Path(testNode);
+//		Path testPath2 = new Path(testPath,testNode3);
+//		testAstar.setNodeTimes(testPath2,testNode2,2);
+//		assertEquals(expected2.startTime,testNode2.startTime);
+//		
+//		
+//	}
 	
 	//TODO commenting
 	@Test
