@@ -55,11 +55,18 @@ public class TaskNode {
 	@Override
 	public boolean equals(Object obj){
 		TaskNode node = (TaskNode) obj; 
-		if (this.name == node.name && this.startTime == node.startTime && this.allocProc == node.allocProc && this.finishTime == node.finishTime && this.weight == node.weight){
+//		return true; 
+//		if ((this.name.equals(node.name)) && this.startTime == node.startTime && this.allocProc == node.allocProc && this.finishTime == node.finishTime && this.weight == node.weight){
+		if (this.name.equals(node.name)){	
 			return true; 
 		} else {
 		return false;
 		}
+	}
+	
+	@Override
+	public int hashCode(){
+		return 1; 
 	}
 	
 }

@@ -105,6 +105,8 @@ public class MainReadFile {
 				astarSolve.solveAstar();
 			}else {
 				//Run Sequential without visual class file
+				Astar astarSolve = new Astar(graph, options, visualGraphObj);
+				astarSolve.solveAstar();
 			}
 		}
 		
