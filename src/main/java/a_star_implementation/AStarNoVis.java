@@ -2,8 +2,9 @@ package a_star_implementation;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.PriorityBlockingQueue;
 
 import org.jgrapht.graph.DefaultDirectedWeightedGraph;
@@ -11,37 +12,29 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 
-
-
-
-
 //import processing_classes.MainReadFile;
 import processing_classes.Options;
 import processing_classes.TaskNode;
-import pt.runtime.CurrentTask;
-import pt.runtime.TaskID;
-import pt.runtime.TaskIDGroup;
 
-public class AStarParr{
+public class AStarNoVis {
 
 	private PriorityBlockingQueue<StateWeights> openQueue = new PriorityBlockingQueue<StateWeights>();
+	private PriorityBlockingQueue<StateWeights> newStates = new PriorityBlockingQueue<StateWeights>();
 	private PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 	private int numProc;
 	private DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph <TaskNode, DefaultEdge>(DefaultWeightedEdge.class);; 
-	private Options options;
-	private CopyOnWriteArrayList<Path> threadPathList = new CopyOnWriteArrayList<Path>();
+	private Options options = new Options(); 
 	
-	
-	public AStarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
+	public AStarNoVis(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
 		this.graph = graph;
 		this.options = options; 
 	}
 	
-	public AStarParr(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
+	public AStarNoVis(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
 		this.graph = graph; 
 	}
 	
-	public void solveAstar() throws InterruptedException{
+	public Path solveAstar() throws InterruptedException{
 		
 		//Set initial node for openQueue
 		TaskNode initialNode = new TaskNode();
@@ -49,68 +42,22 @@ public class AStarParr{
 		StateWeights initialSW = new StateWeights(initialPath,0.0);
 		openQueue.add(initialSW);
 		
-		//TODO this will be passed in as an option currently setting.
-		TaskIDGroup taskGroup = new TaskIDGroup(options.getNumThreads());
-		for (int i = 0; i < options.getNumThreads(); i++){
-			TaskID id = parallelSearch();
-			taskGroup.add(id);
-		}
-		
-		try {
-			taskGroup.waitTillFinished();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		Path optimalPath = getSmallestPathFromList();
-		setScheduleOnGraph(optimalPath);
-	}
-	
-	TASK(*) void parallelSearch(){
 		while (!openQueue.isEmpty()){
 			
 			//Gets the state with best f value, remove this state from openQueue
 			StateWeights stateWeight = openQueue.poll();
-			if (stateWeight==null){
-				TaskNode initialNode = new TaskNode();
-				Path initialPath = new Path(initialNode);
-				stateWeight = new StateWeights(initialPath,0.0);
-			}
 			if (isComplete(stateWeight)){				
 				//Returns the optimal path
-				threadPathList.add(stateWeight.getState());
-				break;
+				setScheduleOnGraph(stateWeight.getState());
+				return stateWeight.getState();
 			} else {
 			//Expanding the state to all possible next states
 			expandState(stateWeight, options.getNumProcessors());
 			}
 			closedQueue.add(stateWeight);
 		}
-	}
-	
-	//Gets the smallest path from list produced by the threads
-	private Path getSmallestPathFromList(){
-		//Gets the optimal path from the threadPathList (threads add to this list)
-		int smallestFinPath = Integer.MAX_VALUE;
-		int finishTimeOfPath = 0;
-		Path optimalPath = null;
-		//Gets the smallest path
-		for (Path p : threadPathList){
-			finishTimeOfPath = 0;
-			//Gets the largest finish time on the path
-			for (TaskNode n: p.getPath()){
-				if (n.finishTime > finishTimeOfPath){
-					finishTimeOfPath = n.finishTime; 
-				}
-			}
-			//Checks if found finish time of the path is the smallest and then updates the smallest to that if true
-			if (finishTimeOfPath < smallestFinPath) {
-				smallestFinPath = finishTimeOfPath;
-				optimalPath = p;
-			}
 		
-		}
-		return optimalPath;
+		return null;
 	}
 	
 	//Sets the value of the chosen path onto the nodes of the graph

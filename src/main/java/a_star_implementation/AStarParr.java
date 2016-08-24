@@ -177,248 +177,349 @@ public class AStarParr {//####[25]####
                 setNodeTimes(current, newNode, i);//####[144]####
                 Path temp = new Path(current, newNode);//####[145]####
                 double pathWeight = heuristicCost(temp, stateWeight);//####[146]####
-                if (!openQueue.contains(pathWeight) && !closedQueue.contains(pathWeight)) //####[147]####
-                {//####[147]####
-                    openQueue.add(new StateWeights(temp, pathWeight));//####[148]####
-                }//####[149]####
-            }//####[150]####
-        }//####[151]####
-    }//####[152]####
-//####[155]####
-    public void setNodeTimes(Path current, TaskNode newNode, int processor) {//####[155]####
-        Set<TaskNode> allNodes = graph.vertexSet();//####[156]####
-        TaskNode graphNode = newNode;//####[157]####
-        for (TaskNode n : allNodes) //####[158]####
-        {//####[158]####
-            if (n.name == newNode.name) //####[159]####
-            {//####[159]####
-                graphNode = n;//####[160]####
-            }//####[161]####
-        }//####[162]####
-        Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(graphNode);//####[164]####
-        int processorEndTime = latestEndTimeOnProcessor(current, processor);//####[166]####
-        int parentEndTime = 0;//####[167]####
-        int parentProcessor = processor;//####[168]####
-        int latestAllowedTime;//####[169]####
-        int t = 0;//####[170]####
-        if (incomingEdges.isEmpty()) //####[173]####
-        {//####[173]####
-            newNode.setStart(processorEndTime);//####[174]####
-        } else for (DefaultEdge e : incomingEdges) //####[176]####
-        {//####[176]####
-            int communicationTime = (int) graph.getEdgeWeight(e);//####[177]####
-            TaskNode parentNode = graph.getEdgeSource(e);//####[181]####
-            ArrayList<TaskNode> setOfNodesInPath = current.getPath();//####[182]####
-            for (TaskNode n : setOfNodesInPath) //####[185]####
-            {//####[185]####
-                if (n.name.equals(parentNode.name)) //####[186]####
-                {//####[186]####
-                    parentEndTime = n.finishTime;//####[187]####
-                    parentProcessor = n.allocProc;//####[188]####
-                }//####[189]####
+                boolean add = checkIfPathExists(temp, pathWeight);//####[147]####
+                if (add) //####[149]####
+                {//####[149]####
+                    openQueue.add(new StateWeights(temp, pathWeight));//####[150]####
+                }//####[151]####
+            }//####[152]####
+            newStates.clear();//####[153]####
+        }//####[154]####
+    }//####[155]####
+//####[159]####
+    public boolean checkIfPathExists(Path temp, double pathWeight) {//####[159]####
+        if (openQueue.isEmpty()) //####[161]####
+        {//####[161]####
+            return true;//####[162]####
+        }//####[163]####
+        ArrayList<StateWeights> similarSchedules = new ArrayList<StateWeights>();//####[165]####
+        Set<Set> tempProcSet = new HashSet<Set>();//####[166]####
+        boolean remove = true;//####[167]####
+        for (int j = 0; j < options.getNumProcessors(); j++) //####[170]####
+        {//####[170]####
+            Set<TaskNode> nodes = new HashSet<TaskNode>();//####[171]####
+            Path tempPath = new Path(temp.getPath());//####[172]####
+            for (TaskNode tempNode : tempPath.getPath()) //####[173]####
+            {//####[173]####
+                if (tempNode.allocProc == j) //####[174]####
+                {//####[174]####
+                    TaskNode copyNode = new TaskNode(tempNode);//####[175]####
+                    copyNode.setProc(1);//####[176]####
+                    nodes.add(copyNode);//####[177]####
+                }//####[178]####
+            }//####[179]####
+            tempProcSet.add(nodes);//####[180]####
+        }//####[181]####
+        Iterator<StateWeights> itr = openQueue.iterator();//####[183]####
+        while (itr.hasNext()) //####[184]####
+        {//####[184]####
+            StateWeights schedule = (StateWeights) itr.next();//####[185]####
+            if (schedule.pathWeight == pathWeight && (schedule.state.getPath().size() == temp.getPath().size())) //####[186]####
+            {//####[188]####
+                similarSchedules.add(schedule);//####[189]####
             }//####[190]####
-            if (parentProcessor != processor) //####[192]####
-            {//####[192]####
-                latestAllowedTime = parentEndTime + communicationTime;//####[193]####
-            } else {//####[194]####
-                latestAllowedTime = parentEndTime;//####[195]####
-            }//####[196]####
-            if (latestAllowedTime > t) //####[199]####
-            {//####[199]####
-                t = latestAllowedTime;//####[200]####
-            }//####[201]####
-        }//####[202]####
-        if (t > processorEndTime) //####[205]####
-        {//####[205]####
-            newNode.setStart(t);//####[206]####
-        } else {//####[207]####
-            newNode.setStart(processorEndTime);//####[208]####
-        }//####[209]####
-        newNode.setFinish(newNode.weight + newNode.startTime);//####[212]####
-    }//####[213]####
-//####[216]####
-    private static int latestEndTimeOnProcessor(Path current, int processor) {//####[216]####
-        ArrayList<TaskNode> path = current.getPath();//####[217]####
-        int currentFinishTime = 0;//####[218]####
-        for (TaskNode n : path) //####[219]####
-        {//####[219]####
-            if (n.allocProc == processor) //####[220]####
-            {//####[220]####
-                if (n.finishTime > currentFinishTime) //####[221]####
-                {//####[221]####
-                    currentFinishTime = n.finishTime;//####[222]####
-                }//####[223]####
-            }//####[224]####
-        }//####[225]####
-        return currentFinishTime;//####[226]####
-    }//####[227]####
-//####[231]####
-    public double heuristicCost(Path state, StateWeights stateWeight) {//####[231]####
-        int maxTime = 0;//####[232]####
-        int startTime = 0;//####[233]####
-        TaskNode maxNode = new TaskNode();//####[234]####
-        int bottomLevel = 0;//####[235]####
-        double newPathWeight = 0;//####[236]####
-        double idleTime = 0;//####[237]####
-        Set<TaskNode> allNodes = graph.vertexSet();//####[238]####
-        ArrayList<TaskNode> path = state.getPath();//####[239]####
-        double previousPathWeight = stateWeight.pathWeight;//####[240]####
-        for (TaskNode n : path) //####[242]####
-        {//####[242]####
-            if (n.finishTime >= maxTime) //####[243]####
+        }//####[191]####
+        for (int k = 0; k < similarSchedules.size(); k++) //####[193]####
+        {//####[193]####
+            Set<Set> currentSet = new HashSet<Set>();//####[194]####
+            for (int j = 0; j < options.getNumProcessors(); j++) //####[195]####
+            {//####[195]####
+                Set<TaskNode> nodes = new HashSet<TaskNode>();//####[196]####
+                Path tempPath = new Path(similarSchedules.get(k).state.getPath());//####[197]####
+                for (TaskNode tempNode : tempPath.getPath()) //####[199]####
+                {//####[199]####
+                    if (tempNode.allocProc == j) //####[200]####
+                    {//####[200]####
+                        TaskNode copyNode = new TaskNode(tempNode);//####[201]####
+                        copyNode.setProc(1);//####[202]####
+                        nodes.add(copyNode);//####[203]####
+                    }//####[204]####
+                }//####[205]####
+                currentSet.add(nodes);//####[206]####
+            }//####[207]####
+            if (tempProcSet.containsAll(currentSet) && currentSet.containsAll(tempProcSet)) //####[242]####
             {//####[243]####
-                maxTime = n.finishTime;//####[244]####
-                maxNode = n;//####[245]####
-            }//####[246]####
-        }//####[247]####
-        TaskNode graphNode = maxNode;//####[249]####
-        for (TaskNode n : allNodes) //####[250]####
-        {//####[250]####
-            if (n.name == maxNode.name) //####[251]####
-            {//####[251]####
-                graphNode = n;//####[252]####
-            }//####[253]####
-        }//####[254]####
-        bottomLevel = ComputationalBottomLevel(graphNode);//####[256]####
-        startTime = maxNode.startTime;//####[259]####
-        idleTime = getIdleTime(state, graphNode, stateWeight);//####[262]####
-        newPathWeight = (double) startTime + (double) (bottomLevel + idleTime);//####[266]####
-        if (newPathWeight > previousPathWeight) //####[270]####
-        {//####[270]####
-            return newPathWeight;//####[271]####
-        } else {//####[272]####
-            return previousPathWeight;//####[273]####
-        }//####[274]####
-    }//####[275]####
-//####[279]####
-    private int ComputationalBottomLevel(TaskNode node) {//####[279]####
-        int bottomLevel = 0;//####[280]####
-        Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(node);//####[282]####
-        if (outgoingEdges.isEmpty()) //####[284]####
-        {//####[284]####
-            return node.weight;//####[285]####
-        } else for (DefaultEdge e : outgoingEdges) //####[289]####
-        {//####[289]####
-            TaskNode successor = graph.getEdgeTarget(e);//####[290]####
-            int temp = ComputationalBottomLevel(successor);//####[291]####
-            if (temp > bottomLevel) //####[293]####
-            {//####[293]####
-                bottomLevel = temp;//####[294]####
-            }//####[295]####
-        }//####[296]####
-        return (node.weight + bottomLevel);//####[297]####
-    }//####[298]####
-//####[300]####
-    private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight) {//####[300]####
-        ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();//####[302]####
-        ArrayList<TaskNode> parents = new ArrayList<TaskNode>();//####[303]####
-        freeNodes = freeNodes(stateWeight);//####[304]####
-        double earliestStartTime = Double.MAX_VALUE;//####[305]####
-        double criticalParentFinTime = 0;//####[306]####
-        ArrayList<Double> idleTime = new ArrayList<Double>();//####[307]####
-        double dataReadyTime = 0;//####[308]####
-        double nodeIdleTime = 0;//####[309]####
-        for (TaskNode f : freeNodes) //####[314]####
+                return false;//####[244]####
+            }//####[245]####
+        }//####[246]####
+        return true;//####[248]####
+    }//####[249]####
+//####[251]####
+    public boolean removePathDuplicates(StateWeights newState) {//####[251]####
+        Iterator<StateWeights> itrO = openQueue.iterator();//####[252]####
+        Iterator<StateWeights> itrC = closedQueue.iterator();//####[253]####
+        ArrayList<TaskNode> newPath = newState.state.getPath();//####[254]####
+        while (itrO.hasNext()) //####[256]####
+        {//####[256]####
+            StateWeights temp = itrO.next();//####[257]####
+            ArrayList<TaskNode> path = temp.state.getPath();//####[258]####
+            if (path.containsAll(newPath)) //####[259]####
+            {//####[259]####
+                return false;//####[260]####
+            }//####[261]####
+        }//####[262]####
+        return true;//####[272]####
+    }//####[274]####
+//####[276]####
+    public boolean removeCurrentNodeDuplicates(StateWeights newState) {//####[276]####
+        Iterator<StateWeights> itr = newStates.iterator();//####[277]####
+        TaskNode newNode = newState.state.getCurrent();//####[278]####
+        while (itr.hasNext()) //####[280]####
+        {//####[280]####
+            StateWeights temp = itr.next();//####[281]####
+            TaskNode tempNode = temp.state.getCurrent();//####[282]####
+            if (newNode.startTime == tempNode.startTime) //####[283]####
+            {//####[283]####
+                if (newNode.name == tempNode.name) //####[284]####
+                {//####[284]####
+                    return false;//####[285]####
+                }//####[286]####
+            }//####[287]####
+        }//####[288]####
+        newStates.add(newState);//####[290]####
+        return true;//####[291]####
+    }//####[293]####
+//####[296]####
+    public void setNodeTimes(Path current, TaskNode newNode, int processor) {//####[296]####
+        Set<TaskNode> allNodes = graph.vertexSet();//####[297]####
+        TaskNode graphNode = newNode;//####[298]####
+        for (TaskNode n : allNodes) //####[299]####
+        {//####[299]####
+            if (n.name == newNode.name) //####[300]####
+            {//####[300]####
+                graphNode = n;//####[301]####
+            }//####[302]####
+        }//####[303]####
+        Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(graphNode);//####[305]####
+        int processorEndTime = latestEndTimeOnProcessor(current, processor);//####[307]####
+        int parentEndTime = 0;//####[308]####
+        int parentProcessor = processor;//####[309]####
+        int latestAllowedTime;//####[310]####
+        int t = 0;//####[311]####
+        if (incomingEdges.isEmpty()) //####[314]####
         {//####[314]####
-            parents.clear();//####[315]####
-            Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(f);//####[316]####
-            for (DefaultEdge incomingEdge : incomingEdges) //####[317]####
-            {//####[317]####
-                parents.add(graph.getEdgeSource(incomingEdge));//####[318]####
-            }//####[319]####
-            for (int i = 0; i < options.getNumProcessors(); i++) //####[320]####
-            {//####[320]####
-                for (TaskNode parent : parents) //####[322]####
-                {//####[322]####
-                    if (parent.allocProc == i) //####[323]####
-                    {//####[323]####
-                        dataReadyTime = latestEndTimeOnProcessor(state, i);//####[324]####
-                    } else {//####[325]####
-                        DefaultEdge edge = graph.getEdge(parent, f);//####[326]####
-                        dataReadyTime = Math.max((parent.finishTime + graph.getEdgeWeight(edge)), latestEndTimeOnProcessor(state, i));//####[327]####
-                    }//####[329]####
-                    if (dataReadyTime > criticalParentFinTime) //####[330]####
-                    {//####[330]####
-                        criticalParentFinTime = dataReadyTime;//####[331]####
-                    }//####[332]####
-                }//####[333]####
-                if (criticalParentFinTime < earliestStartTime) //####[334]####
-                {//####[334]####
-                    earliestStartTime = criticalParentFinTime;//####[335]####
-                }//####[336]####
+            newNode.setStart(processorEndTime);//####[315]####
+        } else for (DefaultEdge e : incomingEdges) //####[317]####
+        {//####[317]####
+            int communicationTime = (int) graph.getEdgeWeight(e);//####[318]####
+            TaskNode parentNode = graph.getEdgeSource(e);//####[322]####
+            ArrayList<TaskNode> setOfNodesInPath = current.getPath();//####[323]####
+            for (TaskNode n : setOfNodesInPath) //####[326]####
+            {//####[326]####
+                if (n.name.equals(parentNode.name)) //####[327]####
+                {//####[327]####
+                    parentEndTime = n.finishTime;//####[328]####
+                    parentProcessor = n.allocProc;//####[329]####
+                }//####[330]####
+            }//####[331]####
+            if (parentProcessor != processor) //####[333]####
+            {//####[333]####
+                latestAllowedTime = parentEndTime + communicationTime;//####[334]####
+            } else {//####[335]####
+                latestAllowedTime = parentEndTime;//####[336]####
             }//####[337]####
-            for (int i = 0; i < options.getNumProcessors(); i++) //####[338]####
-            {//####[338]####
-                double temp = earliestStartTime - latestEndTimeOnProcessor(state, i);//####[339]####
-                if (temp > 0) //####[340]####
-                {//####[340]####
-                    nodeIdleTime += temp;//####[341]####
-                }//####[342]####
-            }//####[343]####
-            idleTime.add(nodeIdleTime);//####[344]####
-        }//####[346]####
-        return (Collections.min(idleTime)) / options.getNumProcessors();//####[347]####
-    }//####[348]####
-//####[352]####
-    @SuppressWarnings("unchecked")//####[352]####
-    private ArrayList<TaskNode> freeNodes(StateWeights stateWeight) {//####[352]####
-        ArrayList<TaskNode> usedNodes = stateWeight.state.getPath();//####[354]####
-        ArrayList<String> used = new ArrayList<String>();//####[355]####
-        ArrayList<String> all = new ArrayList<String>();//####[356]####
-        ArrayList<String> unused = new ArrayList<String>();//####[357]####
-        Set<TaskNode> allNodes = graph.vertexSet();//####[358]####
-        for (TaskNode n : allNodes) //####[360]####
+            if (latestAllowedTime > t) //####[340]####
+            {//####[340]####
+                t = latestAllowedTime;//####[341]####
+            }//####[342]####
+        }//####[343]####
+        if (t > processorEndTime) //####[346]####
+        {//####[346]####
+            newNode.setStart(t);//####[347]####
+        } else {//####[348]####
+            newNode.setStart(processorEndTime);//####[349]####
+        }//####[350]####
+        newNode.setFinish(newNode.weight + newNode.startTime);//####[353]####
+    }//####[354]####
+//####[357]####
+    private static int latestEndTimeOnProcessor(Path current, int processor) {//####[357]####
+        ArrayList<TaskNode> path = current.getPath();//####[358]####
+        int currentFinishTime = 0;//####[359]####
+        for (TaskNode n : path) //####[360]####
         {//####[360]####
-            all.add(n.name);//####[361]####
-        }//####[362]####
-        for (TaskNode n : usedNodes) //####[364]####
-        {//####[364]####
-            used.add(n.name);//####[365]####
+            if (n.allocProc == processor) //####[361]####
+            {//####[361]####
+                if (n.finishTime > currentFinishTime) //####[362]####
+                {//####[362]####
+                    currentFinishTime = n.finishTime;//####[363]####
+                }//####[364]####
+            }//####[365]####
         }//####[366]####
-        all.removeAll(used);//####[368]####
-        unused = (ArrayList<String>) all.clone();//####[369]####
-        for (TaskNode n : allNodes) //####[372]####
-        {//####[372]####
-            Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(n);//####[373]####
-            for (DefaultEdge e : incomingEdges) //####[374]####
-            {//####[374]####
-                TaskNode edgeNode = graph.getEdgeSource(e);//####[375]####
-                if (unused.contains(edgeNode.name)) //####[376]####
-                {//####[376]####
-                    all.remove(n.name);//####[377]####
-                }//####[378]####
-            }//####[379]####
-        }//####[380]####
-        ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();//####[382]####
-        for (TaskNode n : allNodes) //####[383]####
+        return currentFinishTime;//####[367]####
+    }//####[368]####
+//####[372]####
+    public double heuristicCost(Path state, StateWeights stateWeight) {//####[372]####
+        int maxTime = 0;//####[373]####
+        int startTime = 0;//####[374]####
+        TaskNode maxNode = new TaskNode();//####[375]####
+        int bottomLevel = 0;//####[376]####
+        double newPathWeight = 0;//####[377]####
+        double idleTime = 0;//####[378]####
+        Set<TaskNode> allNodes = graph.vertexSet();//####[379]####
+        ArrayList<TaskNode> path = state.getPath();//####[380]####
+        double previousPathWeight = stateWeight.pathWeight;//####[381]####
+        for (TaskNode n : path) //####[383]####
         {//####[383]####
-            if (all.contains(n.name)) //####[384]####
+            if (n.finishTime >= maxTime) //####[384]####
             {//####[384]####
-                freeNodes.add(n);//####[385]####
-            }//####[386]####
-        }//####[387]####
-        return freeNodes;//####[389]####
-    }//####[390]####
-//####[393]####
-    public boolean isComplete(StateWeights stateWeight) {//####[393]####
-        ArrayList<TaskNode> usedNodes = stateWeight.state.getPath();//####[394]####
-        ArrayList<String> used = new ArrayList<String>();//####[395]####
-        ArrayList<String> all = new ArrayList<String>();//####[396]####
-        for (TaskNode n : usedNodes) //####[398]####
-        {//####[398]####
-            used.add(n.name);//####[399]####
-        }//####[400]####
-        Set<TaskNode> allNodes = graph.vertexSet();//####[401]####
-        for (TaskNode n : allNodes) //####[403]####
-        {//####[403]####
-            all.add(n.name);//####[404]####
-        }//####[405]####
-        all.removeAll(used);//####[407]####
-        if (all.isEmpty()) //####[408]####
-        {//####[408]####
-            return true;//####[409]####
-        } else {//####[410]####
-            return false;//####[411]####
-        }//####[412]####
-    }//####[413]####
-}//####[413]####
+                maxTime = n.finishTime;//####[385]####
+                maxNode = n;//####[386]####
+            }//####[387]####
+        }//####[388]####
+        TaskNode graphNode = maxNode;//####[390]####
+        for (TaskNode n : allNodes) //####[391]####
+        {//####[391]####
+            if (n.name == maxNode.name) //####[392]####
+            {//####[392]####
+                graphNode = n;//####[393]####
+            }//####[394]####
+        }//####[395]####
+        bottomLevel = ComputationalBottomLevel(graphNode);//####[397]####
+        startTime = maxNode.startTime;//####[399]####
+        idleTime = getIdleTime(state, graphNode, stateWeight);//####[401]####
+        newPathWeight = (double) startTime + (double) (bottomLevel + idleTime);//####[404]####
+        if (newPathWeight > previousPathWeight) //####[407]####
+        {//####[407]####
+            return newPathWeight;//####[408]####
+        } else {//####[409]####
+            return previousPathWeight;//####[410]####
+        }//####[411]####
+    }//####[412]####
+//####[415]####
+    private int ComputationalBottomLevel(TaskNode node) {//####[415]####
+        int bottomLevel = 0;//####[416]####
+        Set<DefaultEdge> outgoingEdges = graph.outgoingEdgesOf(node);//####[418]####
+        if (outgoingEdges.isEmpty()) //####[420]####
+        {//####[420]####
+            return node.weight;//####[421]####
+        } else for (DefaultEdge e : outgoingEdges) //####[425]####
+        {//####[425]####
+            TaskNode successor = graph.getEdgeTarget(e);//####[426]####
+            int temp = ComputationalBottomLevel(successor);//####[427]####
+            if (temp > bottomLevel) //####[429]####
+            {//####[429]####
+                bottomLevel = temp;//####[430]####
+            }//####[431]####
+        }//####[432]####
+        return (node.weight + bottomLevel);//####[433]####
+    }//####[434]####
+//####[437]####
+    private double addToIdleTime(Path state, TaskNode nodeAdded) {//####[437]####
+        int lastTimeOnProc = latestEndTimeOnProcessor(state, nodeAdded.allocProc);//####[438]####
+        int idleTimeToAdd = nodeAdded.startTime - lastTimeOnProc;//####[439]####
+        return idleTimeToAdd;//####[440]####
+    }//####[441]####
+//####[443]####
+    private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight) {//####[443]####
+        ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();//####[445]####
+        ArrayList<TaskNode> parents = new ArrayList<TaskNode>();//####[446]####
+        freeNodes = freeNodes(stateWeight);//####[447]####
+        double earliestStartTime = Double.MAX_VALUE;//####[448]####
+        double criticalParentFinTime = 0;//####[449]####
+        ArrayList<Double> idleTime = new ArrayList<Double>();//####[450]####
+        double dataReadyTime = 0;//####[451]####
+        double nodeIdleTime = 0;//####[452]####
+        for (TaskNode f : freeNodes) //####[456]####
+        {//####[456]####
+            parents.clear();//####[457]####
+            Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(f);//####[458]####
+            for (DefaultEdge incomingEdge : incomingEdges) //####[459]####
+            {//####[459]####
+                parents.add(graph.getEdgeSource(incomingEdge));//####[460]####
+            }//####[461]####
+            for (int i = 0; i < options.getNumProcessors(); i++) //####[462]####
+            {//####[462]####
+                for (TaskNode parent : parents) //####[463]####
+                {//####[463]####
+                    if (parent.allocProc == i) //####[464]####
+                    {//####[464]####
+                        dataReadyTime = latestEndTimeOnProcessor(state, i);//####[465]####
+                    } else {//####[466]####
+                        DefaultEdge edge = graph.getEdge(parent, f);//####[467]####
+                        dataReadyTime = Math.max((parent.finishTime + graph.getEdgeWeight(edge)), latestEndTimeOnProcessor(state, i));//####[468]####
+                    }//####[470]####
+                    if (dataReadyTime > criticalParentFinTime) //####[471]####
+                    {//####[471]####
+                        criticalParentFinTime = dataReadyTime;//####[472]####
+                    }//####[473]####
+                }//####[474]####
+                if (criticalParentFinTime < earliestStartTime) //####[475]####
+                {//####[475]####
+                    earliestStartTime = criticalParentFinTime;//####[476]####
+                }//####[477]####
+            }//####[478]####
+            for (int i = 0; i < options.getNumProcessors(); i++) //####[479]####
+            {//####[479]####
+                double temp = earliestStartTime - latestEndTimeOnProcessor(state, i);//####[480]####
+                if (temp > 0) //####[481]####
+                {//####[481]####
+                    nodeIdleTime += temp;//####[482]####
+                }//####[483]####
+            }//####[484]####
+            idleTime.add(nodeIdleTime);//####[485]####
+        }//####[486]####
+        return (Collections.min(idleTime)) / options.getNumProcessors();//####[487]####
+    }//####[488]####
+//####[492]####
+    @SuppressWarnings("unchecked")//####[492]####
+    private ArrayList<TaskNode> freeNodes(StateWeights stateWeight) {//####[492]####
+        ArrayList<TaskNode> usedNodes = stateWeight.state.getPath();//####[494]####
+        ArrayList<String> used = new ArrayList<String>();//####[495]####
+        ArrayList<String> all = new ArrayList<String>();//####[496]####
+        ArrayList<String> unused = new ArrayList<String>();//####[497]####
+        Set<TaskNode> allNodes = graph.vertexSet();//####[498]####
+        for (TaskNode n : allNodes) //####[500]####
+        {//####[500]####
+            all.add(n.name);//####[501]####
+        }//####[502]####
+        for (TaskNode n : usedNodes) //####[504]####
+        {//####[504]####
+            used.add(n.name);//####[505]####
+        }//####[506]####
+        all.removeAll(used);//####[508]####
+        unused = (ArrayList<String>) all.clone();//####[509]####
+        for (TaskNode n : allNodes) //####[512]####
+        {//####[512]####
+            Set<DefaultEdge> incomingEdges = graph.incomingEdgesOf(n);//####[513]####
+            for (DefaultEdge e : incomingEdges) //####[514]####
+            {//####[514]####
+                TaskNode edgeNode = graph.getEdgeSource(e);//####[515]####
+                if (unused.contains(edgeNode.name)) //####[516]####
+                {//####[516]####
+                    all.remove(n.name);//####[517]####
+                }//####[518]####
+            }//####[519]####
+        }//####[520]####
+        ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();//####[522]####
+        for (TaskNode n : allNodes) //####[523]####
+        {//####[523]####
+            if (all.contains(n.name)) //####[524]####
+            {//####[524]####
+                freeNodes.add(n);//####[525]####
+            }//####[526]####
+        }//####[527]####
+        return freeNodes;//####[529]####
+    }//####[530]####
+//####[533]####
+    public boolean isComplete(StateWeights stateWeight) {//####[533]####
+        ArrayList<TaskNode> usedNodes = stateWeight.state.getPath();//####[534]####
+        ArrayList<String> used = new ArrayList<String>();//####[535]####
+        ArrayList<String> all = new ArrayList<String>();//####[536]####
+        for (TaskNode n : usedNodes) //####[538]####
+        {//####[538]####
+            used.add(n.name);//####[539]####
+        }//####[540]####
+        Set<TaskNode> allNodes = graph.vertexSet();//####[541]####
+        for (TaskNode n : allNodes) //####[543]####
+        {//####[543]####
+            all.add(n.name);//####[544]####
+        }//####[545]####
+        all.removeAll(used);//####[547]####
+        if (all.isEmpty()) //####[548]####
+        {//####[548]####
+            return true;//####[563]####
+        } else {//####[564]####
+            return false;//####[565]####
+        }//####[566]####
+    }//####[567]####
+}//####[567]####
