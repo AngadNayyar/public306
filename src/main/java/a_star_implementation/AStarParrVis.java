@@ -112,42 +112,44 @@ public class AStarParrVis extends AStarParent {//####[21]####
                 Path initialPath = new Path(initialNode);//####[77]####
                 stateWeight = new StateWeights(initialPath, 0.0);//####[78]####
             }//####[79]####
-            if (isComplete(stateWeight)) //####[80]####
-            {//####[80]####
-                threadPathList.add(stateWeight.getState());//####[82]####
-                break;//####[83]####
-            } else {//####[84]####
-                visualGraphObj.updateNode(stateWeight.state.getCurrent());//####[86]####
-                expandState(stateWeight, options.getNumProcessors());//####[87]####
-                Thread.sleep(Math.max(counter, 0));//####[88]####
-                counter -= 10;//####[89]####
-                visualGraphObj.update(stateWeight, options);//####[90]####
-            }//####[91]####
-            closedQueue.add(stateWeight);//####[92]####
-        }//####[93]####
-    }//####[94]####
-//####[94]####
-//####[97]####
-    private Path getSmallestPathFromList() {//####[97]####
-        int smallestFinPath = Integer.MAX_VALUE;//####[99]####
-        int finishTimeOfPath = 0;//####[100]####
-        Path optimalPath = null;//####[101]####
-        for (Path p : threadPathList) //####[103]####
-        {//####[103]####
-            finishTimeOfPath = 0;//####[104]####
-            for (TaskNode n : p.getPath()) //####[106]####
-            {//####[106]####
-                if (n.finishTime > finishTimeOfPath) //####[107]####
-                {//####[107]####
-                    finishTimeOfPath = n.finishTime;//####[108]####
-                }//####[109]####
-            }//####[110]####
-            if (finishTimeOfPath < smallestFinPath) //####[112]####
-            {//####[112]####
-                smallestFinPath = finishTimeOfPath;//####[113]####
-                optimalPath = p;//####[114]####
-            }//####[115]####
-        }//####[117]####
-        return optimalPath;//####[118]####
-    }//####[119]####
-}//####[119]####
+            visualGraphObj.update(stateWeight, options);//####[80]####
+            if (isComplete(stateWeight)) //####[81]####
+            {//####[81]####
+                threadPathList.add(stateWeight.getState());//####[83]####
+                Thread.sleep(Math.max(counter, 0));//####[84]####
+                counter -= 10;//####[85]####
+                visualGraphObj.update(stateWeight, options);//####[86]####
+                break;//####[87]####
+            } else {//####[88]####
+                visualGraphObj.updateNode(stateWeight.state.getCurrent());//####[90]####
+                expandState(stateWeight, options.getNumProcessors());//####[91]####
+                visualGraphObj.update(stateWeight, options);//####[94]####
+            }//####[95]####
+            closedQueue.add(stateWeight);//####[96]####
+        }//####[97]####
+    }//####[98]####
+//####[98]####
+//####[101]####
+    private Path getSmallestPathFromList() {//####[101]####
+        int smallestFinPath = Integer.MAX_VALUE;//####[103]####
+        int finishTimeOfPath = 0;//####[104]####
+        Path optimalPath = null;//####[105]####
+        for (Path p : threadPathList) //####[107]####
+        {//####[107]####
+            finishTimeOfPath = 0;//####[108]####
+            for (TaskNode n : p.getPath()) //####[110]####
+            {//####[110]####
+                if (n.finishTime > finishTimeOfPath) //####[111]####
+                {//####[111]####
+                    finishTimeOfPath = n.finishTime;//####[112]####
+                }//####[113]####
+            }//####[114]####
+            if (finishTimeOfPath < smallestFinPath) //####[116]####
+            {//####[116]####
+                smallestFinPath = finishTimeOfPath;//####[117]####
+                optimalPath = p;//####[118]####
+            }//####[119]####
+        }//####[121]####
+        return optimalPath;//####[122]####
+    }//####[123]####
+}//####[123]####

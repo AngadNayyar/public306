@@ -77,16 +77,20 @@ public class AStarParrVis extends AStarParent{
 				Path initialPath = new Path(initialNode);
 				stateWeight = new StateWeights(initialPath,0.0);
 			}
+			visualGraphObj.update(stateWeight, options);
 			if (isComplete(stateWeight)){				
 				//Returns the optimal path
 				threadPathList.add(stateWeight.getState());
+				Thread.sleep(Math.max(counter, 0));
+				counter -= 10;
+				visualGraphObj.update(stateWeight, options);
 				break;
 			} else {
 			//Expanding the state to all possible next states
 			visualGraphObj.updateNode(stateWeight.state.getCurrent());
 			expandState(stateWeight, options.getNumProcessors());
-			Thread.sleep(Math.max(counter, 0));
-			counter -= 10;
+//			Thread.sleep(Math.max(counter, 0));
+//			counter -= 10;
 			visualGraphObj.update(stateWeight, options);
 			}
 			closedQueue.add(stateWeight);

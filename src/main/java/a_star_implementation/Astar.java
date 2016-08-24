@@ -46,26 +46,26 @@ public class Astar extends AStarParent{
 		Path initialPath = new Path(initialNode);
 		StateWeights initialSW = new StateWeights(initialPath, 0.0);
 		openQueue.add(initialSW);
-
 		while (!openQueue.isEmpty()) {
 			// Gets the state with best f value, remove this state from
 			// openQueue
 			StateWeights stateWeight = openQueue.poll();
+			visualGraphObj.update(stateWeight, options);
 			if (isComplete(stateWeight)) {
 				// Returns the optimal path
 				setScheduleOnGraph(stateWeight.getState());
-				// Thread.sleep(Math.max(counter, 0));
-				// counter -= 10;
-				// visualGraphObj.update(stateWeight, options);
+				Thread.sleep(Math.max(counter, 0));
+				counter -= 10;
+				visualGraphObj.update(stateWeight, options);
 				return stateWeight.getState();
 
 			} else {
 				// Expanding the state to all possible next states
-				// visualGraphObj.updateNode(stateWeight.state.getCurrent());
+				visualGraphObj.updateNode(stateWeight.state.getCurrent());
 				expandState(stateWeight, options.getNumProcessors());
-				// Thread.sleep(Math.max(counter, 0));
-				// counter -= 10;
-				// visualGraphObj.update(stateWeight, options);
+				Thread.sleep(Math.max(counter, 0));
+				counter -= 10;
+				visualGraphObj.update(stateWeight, options);
 			}
 
 			closedQueue.add(stateWeight);

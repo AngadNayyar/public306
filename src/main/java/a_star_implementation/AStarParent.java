@@ -30,7 +30,6 @@ public class AStarParent {
 	
 	//Sets the value of the chosen path onto the nodes of the graph
 	protected void setScheduleOnGraph(Path state) {
-		System.out.println("got to parent setschedl");
 		Set<TaskNode> graphNodes = graph.vertexSet();		
 		//Loops through nodes of the path and then the nodes of the graph
 		//setting the values of passed Path into the graphs nodes
