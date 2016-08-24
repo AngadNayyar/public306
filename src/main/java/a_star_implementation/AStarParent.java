@@ -44,32 +44,29 @@ public class AStarParent {
 		}
 	}
 
-	// Expands the given stateWeight into all possible new states. Store these
-	// in OPEN. We would check if it exists already,
-	// or if it exists in CLOSE. Don't know how/the significance of it yet.
-	protected void expandState(StateWeights stateWeight, int processors) {
+	//Expands the given stateWeight into all possible new states. Store these in OPEN. We would check if it exists already,
+	//or if it exists in CLOSE. Don't know how/the significance of it yet.
+	protected void expandState(StateWeights stateWeight, int processors){
 		Path current = stateWeight.state;
-		// Get all the freeNodes available for the path
+		//Get all the freeNodes available for the path
 		ArrayList<TaskNode> freeNodes = freeNodes(stateWeight);
-		// Determine new states from the freenodes, get their weights, and add
-		// to openQueue
-		for (TaskNode n : freeNodes) {
-			for (int i = 1; i <= processors; i++) {
-				// Assign every free node to every available processor
+		//Determine new states from the freenodes, get their weights, and add to openQueue
+		for (TaskNode n: freeNodes){
+			for (int i = 1; i <= processors; i++){ 
+				//Assign every free node to every available processor
 				TaskNode newNode = new TaskNode(n);
-				newNode.setProc(i); // Sets the processor for the newNode
-				setNodeTimes(current, newNode, i); // Sets the start time,
-													// finish time for the
-													// newNode
+				newNode.setProc(i); //Sets the processor for the newNode
+				setNodeTimes(current, newNode, i); //Sets the start time, finish time for the newNode
 				Path temp = new Path(current, newNode);
-				double pathWeight = heuristicCost(temp, stateWeight);
-				boolean add = checkIfPathExists(temp, pathWeight);
-				// if (removePathDuplicates(new StateWeights(temp, pathWeight))
-				// && add){
-				if (add) {
-					openQueue.add(new StateWeights(temp, pathWeight));
+				StateWeights newState = new StateWeights(temp, 0.0);
+				double pathWeight = heuristicCost(newState, stateWeight);
+				boolean add = checkIfPathExists(newState.state, pathWeight);
+				if (add){
+					if (removeCurrentNodeDuplicates(newState)){
+							openQueue.add(newState);
+					}
 				}
-			}
+			} 
 			newStates.clear();
 		}
 	}
@@ -152,47 +149,48 @@ public class AStarParent {
 
 		return true;
 	}
-
-	public boolean removePathDuplicates(StateWeights newState) {
+	public boolean removePathDuplicates(StateWeights newState){
 		Iterator<StateWeights> itrO = openQueue.iterator();
 		Iterator<StateWeights> itrC = closedQueue.iterator();
 		ArrayList<TaskNode> newPath = newState.state.getPath();
-
-		while (itrO.hasNext()) {
+		
+		while(itrO.hasNext()){
 			StateWeights temp = itrO.next();
 			ArrayList<TaskNode> path = temp.state.getPath();
-			if (path.containsAll(newPath)) {
+			if (path.containsAll(newPath)){
 				return false;
 			}
 		}
-
-		/*
-		 * while(itrC.hasNext()){ StateWeights temp = itrC.next();
-		 * ArrayList<TaskNode> path = temp.state.getPath(); if
-		 * (path.containsAll(newPath)){ return false; } }
-		 */
-
+		
+		/*while(itrC.hasNext()){
+			StateWeights temp = itrC.next();
+			ArrayList<TaskNode> path = temp.state.getPath();
+			if (path.containsAll(newPath)){
+				return false;
+			}
+		}*/
+		
 		return true;
-
+		
 	}
-
-	public boolean removeCurrentNodeDuplicates(StateWeights newState) {
+	
+	public boolean removeCurrentNodeDuplicates(StateWeights newState){
 		Iterator<StateWeights> itr = newStates.iterator();
 		TaskNode newNode = newState.state.getCurrent();
-
-		while (itr.hasNext()) {
+		
+		while (itr.hasNext()){
 			StateWeights temp = itr.next();
 			TaskNode tempNode = temp.state.getCurrent();
-			if (newNode.startTime == tempNode.startTime) {
-				if (newNode.name == tempNode.name) {
+			if (newNode.startTime == tempNode.startTime){
+				if (newNode.name == tempNode.name){
 					return false;
 				}
 			}
 		}
-
+		
 		newStates.add(newState);
 		return true;
-
+		
 	}
 
 	// Function to determine the start and finish time for the node
@@ -278,16 +276,15 @@ public class AStarParent {
 	}
 
 	// Function to determine heuristic cost f(s) of the state.
-	public double heuristicCost(Path state, StateWeights stateWeight) {
+	public double heuristicCost(StateWeights newState, StateWeights oldState) {
 		int maxTime = 0;
 		int startTime = 0;
 		TaskNode maxNode = new TaskNode();
-		int bottomLevel = 0;
-		double newPathWeight = 0;
+		double nodeBottomLevel = 0;
+		double bottomLevel = 0;
 		double idleTime = 0;
 		Set<TaskNode> allNodes = graph.vertexSet();
-		ArrayList<TaskNode> path = state.getPath();
-		double previousPathWeight = stateWeight.pathWeight;
+		ArrayList<TaskNode> path = newState.state.getPath();
 		// Get the node with the latest finish time from the path.
 		for (TaskNode n : path) {
 			if (n.finishTime >= maxTime) {
@@ -303,23 +300,38 @@ public class AStarParent {
 			}
 		}
 		// Determine bottom level cost of node
-		bottomLevel = ComputationalBottomLevel(graphNode);
+		nodeBottomLevel = ComputationalBottomLevel(graphNode);
 		// Get start time of node
 		startTime = maxNode.startTime;
-		// Find the idle time for next node
-		idleTime = getIdleTime(state, graphNode, stateWeight);
-		// New path weight is startTime + the bottomLevel of the node, divided
-		// by the number of processors
-		newPathWeight = (double) startTime + (double) (bottomLevel + idleTime); // /
-																				// MainReadFile.options.getNumProcessors();
-		// If new path weight is bigger than previous, select it. Otherwise use
-		// the previousPathWeight.
-		if (newPathWeight > previousPathWeight) {
-			return newPathWeight;
+		bottomLevel = (double) (nodeBottomLevel + startTime);
+		
+		idleTime = addToIdleTime(oldState, newState.state.getCurrent());
+		
+		newState.idleTime = oldState.idleTime + idleTime;
+		
+		if (bottomLevel > oldState.bottomLevel){
+			newState.bottomLevel = bottomLevel;
 		} else {
-			return previousPathWeight;
+			newState.bottomLevel = oldState.bottomLevel;
+		}
+		
+		if (newState.idleTime > newState.bottomLevel){
+			newState.pathWeight = newState.idleTime;
+			return newState.idleTime;
+		} else {
+			newState.pathWeight = newState.bottomLevel;
+			return newState.bottomLevel;
 		}
 	}
+		
+//Returns the idle time to be added to the expanded state
+	private double addToIdleTime(StateWeights state, TaskNode nodeAdded){
+		Path path = state.getState();
+		int lastTimeOnProc = latestEndTimeOnProcessor(path, nodeAdded.allocProc);
+		int idleTimeToAdd = nodeAdded.startTime - lastTimeOnProc;
+		double idleTimeOnProc = (idleTimeToAdd + nodeAdded.weight) / options.getNumProcessors();
+		return idleTimeOnProc;
+	}	
 
 	// Recursive function to get the bottom level of the node for heuristic
 	// calculation.
@@ -343,17 +355,8 @@ public class AStarParent {
 			}
 		return (node.weight + bottomLevel);
 	}
-
-	// Returns the idle time to be added to the expanded state
-	private double addToIdleTime(Path state, TaskNode nodeAdded) {
-		int lastTimeOnProc = latestEndTimeOnProcessor(state,
-				nodeAdded.allocProc);
-		int idleTimeToAdd = nodeAdded.startTime - lastTimeOnProc;
-		return idleTimeToAdd;
-	}
-
-	private double getIdleTime(Path state, TaskNode currentNode,
-			StateWeights stateWeight) {
+	
+	private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight) {
 		// First we need to calculate the free nodes of the current state
 		ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();
 		ArrayList<TaskNode> parents = new ArrayList<TaskNode>();
