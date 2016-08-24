@@ -79,6 +79,7 @@ public class AStarParent {
 	// Returns true if should add, false if already exists and dont add
 	public boolean checkIfPathExists(Path temp, double pathWeight) {
 
+		// if there are no states in the open queue, just add it 
 		if (openQueue.isEmpty()) {
 			return true;
 		}
@@ -88,6 +89,7 @@ public class AStarParent {
 		boolean remove = true;
 
 		// Create the sets for the schedule we want to add to the queue
+		// One set is created per processor 
 		for (int j = 0; j < options.getNumProcessors(); j++) {
 			Set<TaskNode> nodes = new HashSet<TaskNode>();
 			Path tempPath = new Path(temp.getPath());
@@ -101,6 +103,8 @@ public class AStarParent {
 			tempProcSet.add(nodes);
 		}
 
+		//Loop through the open queue and add any schedules that are of the same time length
+		// Add them to similar schedules to inspect further
 		Iterator<StateWeights> itr = openQueue.iterator();
 		while (itr.hasNext()) {
 			StateWeights schedule = itr.next();
@@ -110,7 +114,9 @@ public class AStarParent {
 				similarSchedules.add(schedule);
 			}
 		}
-
+		
+		//Loop through the closed queue and add any schedules that are of the same time length
+		// Add them to similar schedules to inspect further
 		Iterator<StateWeights> closedITR = closedQueue.iterator();
 		while (closedITR.hasNext()) {
 			StateWeights schedule = closedITR.next();
@@ -121,6 +127,8 @@ public class AStarParent {
 			}
 		}
 
+		// for each of the similar schedules, check if the schedule is the same as 
+		// the one we are trying to add 
 		for (int k = 0; k < similarSchedules.size(); k++) {
 			Set<Set> currentSet = new HashSet<Set>();
 			for (int j = 0; j < options.getNumProcessors(); j++) {
