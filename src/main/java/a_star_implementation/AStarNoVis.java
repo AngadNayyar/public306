@@ -282,9 +282,12 @@ public class AStarNoVis {
 		return (node.weight + bottomLevel);
 	}
 	
-	/*private double IdleTime(Path state){
-		//This needs to compute idle time.
-	}*/
+	//Returns the idle time to be added to the expanded state
+	private double addToIdleTime(Path state, TaskNode nodeAdded){
+		int lastTimeOnProc = latestEndTimeOnProcessor(state, nodeAdded.allocProc);
+		int idleTimeToAdd = nodeAdded.startTime - lastTimeOnProc;
+		return idleTimeToAdd;
+	}
 	
 	private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight) {
 	// First we need to calculate the free nodes of the current state
