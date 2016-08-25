@@ -21,14 +21,12 @@ import a_star_implementation.Astar;
 import a_star_implementation.Path;
 
 import org.graphstream.graph.Node;
-//import org.graphstream.graph.*;
 import org.graphstream.graph.implementations.*;
 
 import java.awt.*;
 
 import javax.swing.*;
 
-//import org.graphstream.ui.swingViewer.GraphRenderer;
 
 /*
  * This class MainReadFile is the main class for the project. It processes the provided input file from command line
@@ -38,8 +36,7 @@ public class MainReadFile {
 
 	// This is the graph data structure we are building from the input file,
 	// that will be used to execute our algorithm
-	static DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph<TaskNode, DefaultEdge>(
-			DefaultWeightedEdge.class);
+	static DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph<TaskNode, DefaultEdge>(DefaultWeightedEdge.class);
 	private static SingleGraph visualGraph = new SingleGraph("visual");
 
 	// This class holds the options given at the command line
@@ -56,9 +53,10 @@ public class MainReadFile {
 			System.err.println("Invalid arguments count:" + args.length);
 		}
 
+		//create the taskgraph and the corresponding VisualisationGraph object
 		graph = createGraph(inputfile); 
 		VisualisationGraph visualGraphObj = new VisualisationGraph(visualGraph);
-		
+
 		// Read in number of processors from command line
 		options.setNumProcessors(Integer.parseInt(args[1]));
 		options.setOutputFileName(args[0]);
@@ -85,9 +83,9 @@ public class MainReadFile {
 		// Create new instance of Astar solving algorithm, and then run the
 		// algorithm.
 		if (options.getVisualisation()) {
-		visualGraphObj.display();
+			visualGraphObj.display();
 		}
-		
+
 		//If statements to decide which class file to run.
 		if (options.getVisualisation()){
 			if (options.getParallel()){
@@ -110,24 +108,16 @@ public class MainReadFile {
 				astarSolve.solveAstar();
 			}
 		}
-		
-		
-		
-		/* VISUALISATION */
-//		System.setProperty("org.graphstream.ui.renderer",
-//				"org.graphstream.ui.j2dviewer.J2DGraphRenderer");
-			
-		//Node n = visualGraph.addNode("A");
 
-//		visualGraph.display();
-		
-		//Write the output graph to the output file
+		//write the solution to the output file
 		OutputFile.fileWriter();
-		Thread.sleep(1000); //TODO
+		//sleep the thread so user can see the final graph visualisation before the program closes
+		Thread.sleep(1000);
 		System.exit(0);
 
 	}
 
+	//function to create task graph from inputted data file
 	public static DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> createGraph(File inputfile) throws IOException {
 		String line, nodeName, edgeOne, edgeTwo;
 		int nodeWeight, edgeWeight;

@@ -9,7 +9,7 @@ public class TaskNode {
 	public int startTime;
 	public int allocProc;
 	public int finishTime;
-	
+
 	//Constructor of Node class
 	public TaskNode(String n, int w, int s, int a, int f){
 		name = n;
@@ -18,7 +18,8 @@ public class TaskNode {
 		allocProc = a;
 		finishTime = f;
 	}
-	
+
+	//constructor
 	public TaskNode(){
 		name = "$";
 		weight = 0;
@@ -26,7 +27,8 @@ public class TaskNode {
 		allocProc = 0;
 		finishTime = 0;	
 	}
-	
+
+	//constructor
 	public TaskNode(TaskNode other){
 		name = other.name;
 		weight = other.weight;
@@ -34,39 +36,44 @@ public class TaskNode {
 		allocProc = other.allocProc;
 		finishTime = other.finishTime;
 	}
-	
+
+	//setter for finish time
 	public void setFinish(int f){
 		this.finishTime = f;
 	}
-	
+
+	//setter for start time
 	public void setStart(int s){
 		this.startTime = s;
 	}
-	
+
+	//setter for processor number that the node is allocated to
 	public void setProc(int p){
 		this.allocProc = p;
 	}
-	
+
+	//overriding toString function to return the name of the node
 	@Override 
 	public String toString(){
 		return name; 
 	}
-	
+
+	//override equals function to allow for correct comparison of nodes by name
 	@Override
 	public boolean equals(Object obj){
 		TaskNode node = (TaskNode) obj; 
-//		return true; 
-//		if ((this.name.equals(node.name)) && this.startTime == node.startTime && this.allocProc == node.allocProc && this.finishTime == node.finishTime && this.weight == node.weight){
 		if (this.name.equals(node.name)){	
 			return true; 
 		} else {
-		return false;
+			return false;
 		}
 	}
-	
+
+	//override hashCode function from Set class to allow for correct comparison of sets
+	//using our nodes
 	@Override
 	public int hashCode(){
 		return 1; 
 	}
-	
+
 }

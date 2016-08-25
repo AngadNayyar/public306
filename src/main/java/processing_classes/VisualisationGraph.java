@@ -14,13 +14,16 @@ public class VisualisationGraph {
 	private SingleGraph visualGraph = new SingleGraph("visual");
 	private Viewer viewer;
 
+	//constructor
 	public VisualisationGraph(SingleGraph visualGraph){
 		this.visualGraph = visualGraph;
 	}
 
+	//constructor
 	public VisualisationGraph() {
 	}
 
+	//update the look of the graph gui
 	public void update(StateWeights stateWeight, Options options){
 		if (options.getParallel()){
 			visualGraph.addAttribute("ui.title", "Parallel Graph Visualization");
@@ -36,7 +39,8 @@ public class VisualisationGraph {
 		visualGraph.addAttribute("ui.stylesheet", "node { text-background-color: white; text-style: bold; text-size: 15px; }");
 		visualGraph.addAttribute("ui.stylesheet", "node { text-color: white; }");
 
-
+		//update colours of nodes that have been scheduled and the number of the processor they are
+		//currently scheduled to
 		if (options.getVisualisation()) {
 			Path current = stateWeight.state;
 			ArrayList<TaskNode> nodePath = current.getPath();
@@ -50,6 +54,7 @@ public class VisualisationGraph {
 		}
 	}
 
+	//function to update the colour of the node currently being expanded
 	public void updateNode(TaskNode node) {
 		if (!node.name.equals("$")) {
 			Node n = visualGraph.getNode(node.name);
@@ -57,8 +62,9 @@ public class VisualisationGraph {
 		}
 	}
 
+	//display the graph (update the visual)
 	public void display() {
 		this.viewer = this.visualGraph.display();
 	}
-	
+
 }

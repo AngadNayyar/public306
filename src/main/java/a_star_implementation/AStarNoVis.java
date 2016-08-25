@@ -18,25 +18,27 @@ import processing_classes.Options;
 import processing_classes.TaskNode;
 
 public class AStarNoVis extends AStarParent{
-	
+
+	//constructor
 	public AStarNoVis(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph, Options options){
 		this.graph = graph;
 		this.options = options; 
 	}
-	
+
+	//constructor
 	public AStarNoVis(DefaultDirectedWeightedGraph <TaskNode, DefaultEdge> graph){
 		this.graph = graph; 
 	}
-	
+
 	public Path solveAstar() throws InterruptedException{
 		//Set initial node for openQueue
 		TaskNode initialNode = new TaskNode();
 		Path initialPath = new Path(initialNode);
 		StateWeights initialSW = new StateWeights(initialPath,0.0);
 		openQueue.add(initialSW);
-		
+
 		while (!openQueue.isEmpty()){
-			
+
 			//Gets the state with best f value, remove this state from openQueue
 			StateWeights stateWeight = openQueue.poll();
 			if (isComplete(stateWeight)){				
@@ -44,13 +46,13 @@ public class AStarNoVis extends AStarParent{
 				setScheduleOnGraph(stateWeight.getState());
 				return stateWeight.getState();
 			} else {
-			//Expanding the state to all possible next states
-			expandState(stateWeight, options.getNumProcessors());
+				//Expanding the state to all possible next states
+				expandState(stateWeight, options.getNumProcessors());
 			}
 			closedQueue.add(stateWeight);
 		}
-		
+
 		return null;
 	}
-	
+
 }

@@ -22,8 +22,7 @@ public class AStarParent {
 	protected PriorityBlockingQueue<StateWeights> newStates = new PriorityBlockingQueue<StateWeights>();
 	protected PriorityBlockingQueue<StateWeights> closedQueue = new PriorityBlockingQueue<StateWeights>();
 	protected int numProc;
-	protected DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph<TaskNode, DefaultEdge>(
-			DefaultWeightedEdge.class);;
+	protected DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph = new DefaultDirectedWeightedGraph<TaskNode, DefaultEdge>(DefaultWeightedEdge.class);;
 	protected Options options = new Options();
 	protected VisualisationGraph visualGraphObj = new VisualisationGraph();
 	protected CopyOnWriteArrayList<Path> threadPathList = new CopyOnWriteArrayList<Path>();
@@ -62,7 +61,7 @@ public class AStarParent {
 				boolean add = checkIfPathExists(newState.state, pathWeight);
 				if (add){
 					if (removeCurrentNodeDuplicates(newState)){
-							openQueue.add(newState);
+						openQueue.add(newState);
 					}
 				}
 			} 
@@ -82,7 +81,6 @@ public class AStarParent {
 
 		ArrayList<StateWeights> similarSchedules = new ArrayList<StateWeights>();
 		Set<Set> tempProcSet = new HashSet<Set>();
-		boolean remove = true;
 
 		// Create the sets for the schedule we want to add to the queue
 		// One set is created per processor 
@@ -106,11 +104,11 @@ public class AStarParent {
 			StateWeights schedule = itr.next();
 			if (schedule.pathWeight == pathWeight
 					&& (schedule.state.getPath().size() == temp.getPath()
-							.size())) {
+					.size())) {
 				similarSchedules.add(schedule);
 			}
 		}
-		
+
 		//Loop through the closed queue and add any schedules that are of the same time length
 		// Add them to similar schedules to inspect further
 		Iterator<StateWeights> closedITR = closedQueue.iterator();
@@ -118,7 +116,7 @@ public class AStarParent {
 			StateWeights schedule = closedITR.next();
 			if (schedule.pathWeight == pathWeight
 					&& (schedule.state.getPath().size() == temp.getPath()
-							.size())) {
+					.size())) {
 				similarSchedules.add(schedule);
 			}
 		}
@@ -148,11 +146,13 @@ public class AStarParent {
 
 		return true;
 	}
+
+	//function to remove duplicate paths
 	public boolean removePathDuplicates(StateWeights newState){
 		Iterator<StateWeights> itrO = openQueue.iterator();
 		Iterator<StateWeights> itrC = closedQueue.iterator();
 		ArrayList<TaskNode> newPath = newState.state.getPath();
-		
+
 		while(itrO.hasNext()){
 			StateWeights temp = itrO.next();
 			ArrayList<TaskNode> path = temp.state.getPath();
@@ -160,23 +160,16 @@ public class AStarParent {
 				return false;
 			}
 		}
-		
-		/*while(itrC.hasNext()){
-			StateWeights temp = itrC.next();
-			ArrayList<TaskNode> path = temp.state.getPath();
-			if (path.containsAll(newPath)){
-				return false;
-			}
-		}*/
-		
+
 		return true;
-		
+
 	}
-	
+
+	//function to remove duplicate paths
 	public boolean removeCurrentNodeDuplicates(StateWeights newState){
 		Iterator<StateWeights> itr = newStates.iterator();
 		TaskNode newNode = newState.state.getCurrent();
-		
+
 		while (itr.hasNext()){
 			StateWeights temp = itr.next();
 			TaskNode tempNode = temp.state.getCurrent();
@@ -186,10 +179,10 @@ public class AStarParent {
 				}
 			}
 		}
-		
+
 		newStates.add(newState);
 		return true;
-		
+
 	}
 
 	// Function to determine the start and finish time for the node
@@ -303,17 +296,17 @@ public class AStarParent {
 		// Get start time of node
 		startTime = maxNode.startTime;
 		bottomLevel = (double) (nodeBottomLevel + startTime);
-		
+
 		idleTime = addToIdleTime(oldState, newState.state.getCurrent());
-		
+
 		newState.idleTime = oldState.idleTime + idleTime;
-		
+
 		if (bottomLevel > oldState.bottomLevel){
 			newState.bottomLevel = bottomLevel;
 		} else {
 			newState.bottomLevel = oldState.bottomLevel;
 		}
-		
+
 		if (newState.idleTime > newState.bottomLevel){
 			newState.pathWeight = newState.idleTime;
 			return newState.idleTime;
@@ -322,8 +315,8 @@ public class AStarParent {
 			return newState.bottomLevel;
 		}
 	}
-		
-//Returns the idle time to be added to the expanded state
+
+	//Returns the idle time to be added to the expanded state
 	private double addToIdleTime(StateWeights state, TaskNode nodeAdded){
 		Path path = state.getState();
 		int lastTimeOnProc = latestEndTimeOnProcessor(path, nodeAdded.allocProc);
@@ -354,7 +347,7 @@ public class AStarParent {
 			}
 		return (node.weight + bottomLevel);
 	}
-	
+
 	private double getIdleTime(Path state, TaskNode currentNode, StateWeights stateWeight) {
 		// First we need to calculate the free nodes of the current state
 		ArrayList<TaskNode> freeNodes = new ArrayList<TaskNode>();
@@ -467,16 +460,6 @@ public class AStarParent {
 		// has been found.
 		all.removeAll(used);
 		if (all.isEmpty()) {
-			/*
-			 * for (StateWeights s: closedQueue){
-			 * System.out.print("\n Closed path, weight: " + s.pathWeight +
-			 * " "); for (Node n: s.state.getPath()){ System.out.print(n.name);
-			 * System.out.print(" " + n.allocProc); } } for (StateWeights s:
-			 * openQueue){ System.out.print("\n Open path, weight: " +
-			 * s.pathWeight + " "); for (Node n: s.state.getPath()){
-			 * System.out.print(n.name); System.out.print(" " + n.allocProc); }
-			 * }
-			 */
 			return true;
 		} else {
 			return false;

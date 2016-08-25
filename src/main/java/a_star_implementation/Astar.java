@@ -21,13 +21,14 @@ import processing_classes.VisualisationGraph;
 
 public class Astar extends AStarParent{
 
-	public Astar(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph,
-			Options options, VisualisationGraph visualGraphObj) {
+	//constructor
+	public Astar(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph, Options options, VisualisationGraph visualGraphObj) {
 		this.graph = graph;
 		this.options = options;
 		this.visualGraphObj = visualGraphObj;
 	}
 
+	//constructor
 	public Astar(DefaultDirectedWeightedGraph<TaskNode, DefaultEdge> graph) {
 		this.graph = graph;
 	}

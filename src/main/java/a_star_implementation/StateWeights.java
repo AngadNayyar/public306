@@ -7,7 +7,7 @@ public class StateWeights implements Comparable<StateWeights> {
 	public Double pathWeight;
 	public Double bottomLevel;
 	public Double idleTime;
-	
+
 	//Constructor
 	public StateWeights(Path state, Double pathWeight){
 		this.state = state;
@@ -15,11 +15,13 @@ public class StateWeights implements Comparable<StateWeights> {
 		this.bottomLevel = 0.0;
 		this.idleTime = 0.0;
 	}
-	
+
+	//getter for state
 	public Path getState(){
 		return state;
 	}
-	
+
+	//compare states using pathWeights
 	public int compareTo(StateWeights second){
 		return pathWeight.compareTo(second.pathWeight);
 	}
