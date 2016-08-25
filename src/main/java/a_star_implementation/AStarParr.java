@@ -47,105 +47,102 @@ public class AStarParr extends AStarParent {//####[27]####
     }//####[36]####
 //####[38]####
     public void solveAstar() throws InterruptedException {//####[38]####
-        long begin = System.currentTimeMillis();//####[39]####
-        TaskNode initialNode = new TaskNode();//####[41]####
-        Path initialPath = new Path(initialNode);//####[42]####
-        StateWeights initialSW = new StateWeights(initialPath, 0.0);//####[43]####
-        openQueue.add(initialSW);//####[44]####
-        TaskIDGroup taskGroup = new TaskIDGroup(options.getNumThreads());//####[47]####
-        for (int i = 0; i < options.getNumThreads(); i++) //####[48]####
-        {//####[48]####
-            TaskID id = parallelSearch();//####[49]####
-            taskGroup.add(id);//####[50]####
-        }//####[51]####
-        try {//####[53]####
-            taskGroup.waitTillFinished();//####[54]####
-        } catch (Exception e) {//####[55]####
-            e.printStackTrace();//####[56]####
-        }//####[57]####
-        Path optimalPath = getSmallestPathFromList();//####[59]####
-        setScheduleOnGraph(optimalPath);//####[60]####
-        long end = System.currentTimeMillis();//####[61]####
-        System.out.println("Time: " + (end - begin) + "ms");//####[63]####
-    }//####[64]####
-//####[66]####
-    private static volatile Method __pt__parallelSearch__method = null;//####[66]####
-    private synchronized static void __pt__parallelSearch__ensureMethodVarSet() {//####[66]####
-        if (__pt__parallelSearch__method == null) {//####[66]####
-            try {//####[66]####
-                __pt__parallelSearch__method = ParaTaskHelper.getDeclaredMethod(new ParaTaskHelper.ClassGetter().getCurrentClass(), "__pt__parallelSearch", new Class[] {//####[66]####
-                    //####[66]####
-                });//####[66]####
-            } catch (Exception e) {//####[66]####
-                e.printStackTrace();//####[66]####
-            }//####[66]####
-        }//####[66]####
-    }//####[66]####
-    TaskIDGroup<Void> parallelSearch() {//####[66]####
-        //-- execute asynchronously by enqueuing onto the taskpool//####[66]####
-        return parallelSearch(new TaskInfo());//####[66]####
-    }//####[66]####
-    TaskIDGroup<Void> parallelSearch(TaskInfo taskinfo) {//####[66]####
-        // ensure Method variable is set//####[66]####
-        if (__pt__parallelSearch__method == null) {//####[66]####
-            __pt__parallelSearch__ensureMethodVarSet();//####[66]####
-        }//####[66]####
-        taskinfo.setParameters();//####[66]####
-        taskinfo.setMethod(__pt__parallelSearch__method);//####[66]####
-        taskinfo.setInstance(this);//####[66]####
-        return TaskpoolFactory.getTaskpool().enqueueMulti(taskinfo, -1);//####[66]####
-    }//####[66]####
-    public void __pt__parallelSearch() {//####[66]####
-        while (!openQueue.isEmpty()) //####[67]####
-        {//####[67]####
-            if (threadPathList.size() > 0) //####[68]####
-            {//####[68]####
-                astarAlgo();//####[69]####
-                break;//####[70]####
-            }//####[71]####
-            astarAlgo();//####[72]####
-        }//####[74]####
-    }//####[75]####
-//####[75]####
-//####[77]####
-    private void astarAlgo() {//####[77]####
-        StateWeights stateWeight = openQueue.poll();//####[79]####
-        if (stateWeight == null) //####[80]####
-        {//####[80]####
-            TaskNode initialNode = new TaskNode();//####[81]####
-            Path initialPath = new Path(initialNode);//####[82]####
-            stateWeight = new StateWeights(initialPath, 0.0);//####[83]####
-        }//####[84]####
-        if (isComplete(stateWeight)) //####[85]####
-        {//####[85]####
-            threadPathList.add(stateWeight.getState());//####[87]####
-            return;//####[88]####
-        } else {//####[89]####
-            expandState(stateWeight, options.getNumProcessors());//####[91]####
-        }//####[92]####
-        closedQueue.add(stateWeight);//####[93]####
-    }//####[94]####
-//####[97]####
-    private Path getSmallestPathFromList() {//####[97]####
-        int smallestFinPath = Integer.MAX_VALUE;//####[99]####
-        int finishTimeOfPath = 0;//####[100]####
-        Path optimalPath = null;//####[101]####
-        for (Path p : threadPathList) //####[103]####
-        {//####[103]####
-            finishTimeOfPath = 0;//####[104]####
-            for (TaskNode n : p.getPath()) //####[106]####
-            {//####[106]####
-                if (n.finishTime > finishTimeOfPath) //####[107]####
-                {//####[107]####
-                    finishTimeOfPath = n.finishTime;//####[108]####
-                }//####[109]####
-            }//####[110]####
-            if (finishTimeOfPath < smallestFinPath) //####[112]####
-            {//####[112]####
-                smallestFinPath = finishTimeOfPath;//####[113]####
-                optimalPath = p;//####[114]####
-            }//####[115]####
-        }//####[116]####
-        return optimalPath;//####[117]####
-    }//####[118]####
-}//####[118]####
+        TaskNode initialNode = new TaskNode();//####[40]####
+        Path initialPath = new Path(initialNode);//####[41]####
+        StateWeights initialSW = new StateWeights(initialPath, 0.0);//####[42]####
+        openQueue.add(initialSW);//####[43]####
+        TaskIDGroup taskGroup = new TaskIDGroup(options.getNumThreads());//####[46]####
+        for (int i = 0; i < options.getNumThreads(); i++) //####[47]####
+        {//####[47]####
+            TaskID id = parallelSearch();//####[48]####
+            taskGroup.add(id);//####[49]####
+        }//####[50]####
+        try {//####[52]####
+            taskGroup.waitTillFinished();//####[53]####
+        } catch (Exception e) {//####[54]####
+            e.printStackTrace();//####[55]####
+        }//####[56]####
+        Path optimalPath = getSmallestPathFromList();//####[58]####
+        setScheduleOnGraph(optimalPath);//####[59]####
+    }//####[60]####
+//####[62]####
+    private static volatile Method __pt__parallelSearch__method = null;//####[62]####
+    private synchronized static void __pt__parallelSearch__ensureMethodVarSet() {//####[62]####
+        if (__pt__parallelSearch__method == null) {//####[62]####
+            try {//####[62]####
+                __pt__parallelSearch__method = ParaTaskHelper.getDeclaredMethod(new ParaTaskHelper.ClassGetter().getCurrentClass(), "__pt__parallelSearch", new Class[] {//####[62]####
+                    //####[62]####
+                });//####[62]####
+            } catch (Exception e) {//####[62]####
+                e.printStackTrace();//####[62]####
+            }//####[62]####
+        }//####[62]####
+    }//####[62]####
+    TaskIDGroup<Void> parallelSearch() {//####[62]####
+        //-- execute asynchronously by enqueuing onto the taskpool//####[62]####
+        return parallelSearch(new TaskInfo());//####[62]####
+    }//####[62]####
+    TaskIDGroup<Void> parallelSearch(TaskInfo taskinfo) {//####[62]####
+        // ensure Method variable is set//####[62]####
+        if (__pt__parallelSearch__method == null) {//####[62]####
+            __pt__parallelSearch__ensureMethodVarSet();//####[62]####
+        }//####[62]####
+        taskinfo.setParameters();//####[62]####
+        taskinfo.setMethod(__pt__parallelSearch__method);//####[62]####
+        taskinfo.setInstance(this);//####[62]####
+        return TaskpoolFactory.getTaskpool().enqueueMulti(taskinfo, -1);//####[62]####
+    }//####[62]####
+    public void __pt__parallelSearch() {//####[62]####
+        while (!openQueue.isEmpty()) //####[63]####
+        {//####[63]####
+            if (threadPathList.size() > 0) //####[64]####
+            {//####[64]####
+                astarAlgo();//####[65]####
+                break;//####[66]####
+            }//####[67]####
+            astarAlgo();//####[68]####
+        }//####[70]####
+    }//####[71]####
+//####[71]####
+//####[73]####
+    private void astarAlgo() {//####[73]####
+        StateWeights stateWeight = openQueue.poll();//####[75]####
+        if (stateWeight == null) //####[76]####
+        {//####[76]####
+            TaskNode initialNode = new TaskNode();//####[77]####
+            Path initialPath = new Path(initialNode);//####[78]####
+            stateWeight = new StateWeights(initialPath, 0.0);//####[79]####
+        }//####[80]####
+        if (isComplete(stateWeight)) //####[81]####
+        {//####[81]####
+            threadPathList.add(stateWeight.getState());//####[83]####
+            return;//####[84]####
+        } else {//####[85]####
+            expandState(stateWeight, options.getNumProcessors());//####[87]####
+        }//####[88]####
+        closedQueue.add(stateWeight);//####[89]####
+    }//####[90]####
+//####[93]####
+    private Path getSmallestPathFromList() {//####[93]####
+        int smallestFinPath = Integer.MAX_VALUE;//####[95]####
+        int finishTimeOfPath = 0;//####[96]####
+        Path optimalPath = null;//####[97]####
+        for (Path p : threadPathList) //####[99]####
+        {//####[99]####
+            finishTimeOfPath = 0;//####[100]####
+            for (TaskNode n : p.getPath()) //####[102]####
+            {//####[102]####
+                if (n.finishTime > finishTimeOfPath) //####[103]####
+                {//####[103]####
+                    finishTimeOfPath = n.finishTime;//####[104]####
+                }//####[105]####
+            }//####[106]####
+            if (finishTimeOfPath < smallestFinPath) //####[108]####
+            {//####[108]####
+                smallestFinPath = finishTimeOfPath;//####[109]####
+                optimalPath = p;//####[110]####
+            }//####[111]####
+        }//####[112]####
+        return optimalPath;//####[113]####
+    }//####[114]####
+}//####[114]####

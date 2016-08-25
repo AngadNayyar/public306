@@ -36,7 +36,6 @@ public class AStarParr extends AStarParent{
 	}
 	
 	public void solveAstar() throws InterruptedException{
-		long begin = System.currentTimeMillis();
 		//Set initial node for openQueue
 		TaskNode initialNode = new TaskNode();
 		Path initialPath = new Path(initialNode);
@@ -58,9 +57,6 @@ public class AStarParr extends AStarParent{
 		
 		Path optimalPath = getSmallestPathFromList();
 		setScheduleOnGraph(optimalPath);
-		long end = System.currentTimeMillis();
-		
-		System.out.println("Time: " + (end - begin) + "ms");
 	}
 	
 	TASK(*) void parallelSearch(){
